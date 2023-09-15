@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors & Daniel Moreno">
+    <meta name="author" content="Daniel Moreno">
     <meta name="generator" content="Hugo 0.84.0">
     <title>Daniel's Website</title>
+	<link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/cheatsheet/">
 
@@ -15,45 +16,46 @@
     <!-- Custom styles for this template -->
     <link href="css/website.css" rel="stylesheet">
   </head>
-  <body class="bg-light">
+  <body class="bg-light" id="bodyTag"> <!-- First class must always be the theme -->
         
-    <header class="bd-header bg-dark py-3 d-flex align-items-stretch border-bottom border-dark">
+    <header class="bd-header py-3 d-flex align-items-stretch border-bottom border-dark" id="navbarTag">
       <div class="container-fluid d-flex align-items-center">
-        <h1 class="d-flex align-items-center fs-4 text-white mb-0">
-          <img src="assets/bootstrap-logo-white.svg" width="38" height="30" class="me-3" alt="Bootstrap">
-          Cheatsheet - Daniel Moreno
+        <h1 class="d-flex align-items-center fs-4 mb-0">
+          <img src="assets/favicon.ico" width="38" height="30" class="me-3 img-thumbnail" alt="My image">
+          Daniel's Portfolio
         </h1>
+		<select id="theme" class="form-select form-select-sm sticky-xl-top">
+		</select>
       </div>
     </header>
-    <aside class="bd-aside sticky-xl-top text-muted align-self-start mb-3 mb-xl-5 px-2">
+    <aside class="bd-aside sticky-xl-top align-self-start mb-3 mb-xl-5 px-2" id="tableOfContents">
       <h2 class="h6 pt-4 pb-3 mb-4 border-bottom">On this page</h2>
       <nav class="small" id="toc">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled text-white">
           <li class="my-2">
-            <button class="btn d-inline-flex align-items-center collapsed" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#contents-collapse" aria-controls="contents-collapse">Contents</button>
+            <button class="btn btn-light d-inline-flex align-items-center collapsed" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#contents-collapse" aria-controls="contents-collapse">Web Design</button>
             <ul class="list-unstyled ps-3 collapse" id="contents-collapse">
-              <li><a class="d-inline-flex align-items-center rounded" href="#introduction">Introduction</a></li>
+              <li><a class="d-inline-flex align-items-center rounded" class="tocText" href="#introduction">Introduction</a></li>
               <li><a class="d-inline-flex align-items-center rounded" href="#tables">Tables</a></li>
               <li><a class="d-inline-flex align-items-center rounded" href="#figures">Images</a></li>
             </ul>
           </li>
           <li class="my-2">
-            <button class="btn d-inline-flex align-items-center collapsed" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#forms-collapse" aria-controls="forms-collapse">Forms</button>
+            <button class="btn btn-light d-inline-flex align-items-center collapsed" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#forms-collapse" aria-controls="forms-collapse">GitHub Projects</button>
             <ul class="list-unstyled ps-3 collapse" id="forms-collapse">
               <li><a class="d-inline-flex align-items-center rounded" href="#overview">Overview</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#disabled-forms">Disabled forms</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Sizing</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#input-group">Input group</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#floating-labels">Floating labels</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#validation">Validation</a></li>
+              <li><a class="d-inline-flex align-items-center rounded" href="#sizing">C++</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Java</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Python</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Websites</a></li>
             </ul>
           </li>
         </ul>
       </nav>
     </aside>
-    <div class="bd-cheatsheet container-fluid bg-body">
-      <section id="content">
-        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3">Contents</h2>
+    <div class="bd-cheatsheet container-fluid bodyContentContainer">
+      <section id="content" class="contentSection">
+        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3 gradient">Web Design</h2>
 
         <article class="my-3" id="introduction">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
@@ -62,7 +64,7 @@
 
           <div>
             <div class="bd-example">
-              <p class="display-1 text-center">Daniel Moreno's Basic Bootstrap Website</p>
+              <p class="display-1 text-center">Daniel Moreno's Portfolio</p>
             </div>
 
             <div class="bd-example">
@@ -71,7 +73,7 @@
 
             <div class="bd-example">
               <p class="lead">
-                This is a modified version of the default Bootstrap example page. Most of the website after this section has not been changed.
+                This is my portfolio to showcase some of my web design abilities and some of my GitHub projects.
               </p>
             </div>
           </div>
@@ -83,36 +85,38 @@
 
           <div>
             <div class="bd-example">
-              <table class="table table-striped table-bordered">
-                <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">First</th>
-                  <th scope="col">Last</th>
-                  <th scope="col">EUID</th>
-                </tr>
+			  <input type="text" id="inputFilterPlaceholderTable" onkeyup="filterBookTable()" placeholder="Search for titles..">
+              <table class="sortable table table-light table-hover table-striped table-bordered" id="placeholderTable">
+                <thead id="placeholderTableHeader" class="thead-light">
+					<tr>
+					  <th scope="col" width="10%">#</th>
+					  <th scope="col" width="30%">1</th>
+					  <th scope="col" width="30%">2</th>
+					  <th scope="col" width="30%">3</th>
+					</tr>
                 </thead>
                 <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>Daniel</td>
-                  <td>Moreno</td>
-                  <td>dam0503</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>Daniel</td>
-                  <td>Moreno</td>
-                  <td>dam0503</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>Daniel</td>
-                  <td>Moreno</td>
-                  <td>dam0503</td>
-                </tr>
+					<tr>
+					  <th scope="row">1</th>
+					  <td>a</td>
+					  <td>b</td>
+					  <td>c</td>
+					</tr>
+					<tr>
+					  <th scope="row">2</th>
+					  <td>d</td>
+					  <td>e</td>
+					  <td>f</td>
+					</tr>
+					<tr>
+					  <th scope="row">3</th>
+					  <td>g</td>
+					  <td>h</td>
+					  <td>i</td>
+					</tr>
                 </tbody>
               </table>
+			  <p id="placeholderTableErrorMsg"><strong>Nothing Found</strong></p>
             </div>
 
             <div class="bd-example">
@@ -192,8 +196,8 @@
         </article>
       </section>
 
-      <section id="forms">
-        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3">Forms</h2>
+      <section id="github" class="contentSection">
+        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3">GitHub Projects</h2>
 
         <article class="my-3" id="overview">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
@@ -202,277 +206,78 @@
 
           <div>
             <div class="bd-example">
-              <form>
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">Email address</label>
-                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                </div>
-                <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="exampleInputPassword1">
-                </div>
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                  <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
-                <fieldset class="mb-3">
-                  <legend>Radios buttons</legend>
-                  <div class="form-check">
-                    <input type="radio" name="radios" class="form-check-input" id="exampleRadio1">
-                    <label class="form-check-label" for="exampleRadio1">Default radio</label>
-                  </div>
-                  <div class="mb-3 form-check">
-                    <input type="radio" name="radios" class="form-check-input" id="exampleRadio2">
-                    <label class="form-check-label" for="exampleRadio2">Another radio</label>
-                  </div>
-                </fieldset>
-                <div class="mb-3">
-                  <label class="form-label" for="customFile">Upload</label>
-                  <input type="file" class="form-control" id="customFile">
-                </div>
-                <div class="mb-3 form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                  <label class="form-check-label" for="flexSwitchCheckChecked">Checked switch checkbox input</label>
-                </div>
-                <div class="mb-3">
-                  <label for="customRange3" class="form-label">Example range</label>
-                  <input type="range" class="form-range" min="0" max="5" step="0.5" id="customRange3">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-              </form>
+              <p>This section contains links to various GitHub projects and software.</p>
             </div>
           </div>
         </article>
-        <article class="my-3" id="disabled-forms">
+        <article class="my-3" id="cpp">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <h3>Disabled forms</h3>
+            <h3>C++</h3>
           </div>
-
           <div>
             <div class="bd-example">
-              <form>
-                <fieldset disabled aria-label="Disabled fieldset example">
-                  <div class="mb-3">
-                    <label for="disabledTextInput" class="form-label">Disabled input</label>
-                    <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
-                  </div>
-                  <div class="mb-3">
-                    <label for="disabledSelect" class="form-label">Disabled select menu</label>
-                    <select id="disabledSelect" class="form-select">
-                      <option>Disabled select</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
-                      <label class="form-check-label" for="disabledFieldsetCheck">
-                        Can't check this
-                      </label>
-                    </div>
-                  </div>
-                  <fieldset class="mb-3">
-                    <legend>Disabled radios buttons</legend>
-                    <div class="form-check">
-                      <input type="radio" name="radios" class="form-check-input" id="disabledRadio1" disabled>
-                      <label class="form-check-label" for="disabledRadio1">Disabled radio</label>
-                    </div>
-                    <div class="mb-3 form-check">
-                      <input type="radio" name="radios" class="form-check-input" id="disabledRadio2" disabled>
-                      <label class="form-check-label" for="disabledRadio2">Another radio</label>
-                    </div>
-                  </fieldset>
-                  <div class="mb-3">
-                    <label class="form-label" for="disabledCustomFile">Upload</label>
-                    <input type="file" class="form-control" id="disabledCustomFile" disabled>
-                  </div>
-                  <div class="mb-3 form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="disabledSwitchCheckChecked" checked disabled>
-                    <label class="form-check-label" for="disabledSwitchCheckChecked">Disabled checked switch checkbox input</label>
-                  </div>
-                  <div class="mb-3">
-                    <label for="disabledRange" class="form-label">Disabled range</label>
-                    <input type="range" class="form-range" min="0" max="5" step="0.5" id="disabledRange">
-                  </div>
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </fieldset>
-              </form>
+              <p>Test</p>
             </div>
           </div>
         </article>
-        <article class="my-3" id="sizing">
+		<article class="my-3" id="java">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <h3>Sizing</h3>
+            <h3>Java</h3>
           </div>
-
           <div>
             <div class="bd-example">
-              <div class="mb-3">
-                <input class="form-control form-control-lg" type="text" placeholder=".form-control-lg" aria-label=".form-control-lg example">
-              </div>
-              <div class="mb-3">
-                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                  <option selected>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <input type="file" class="form-control form-control-lg" aria-label="Large file input example">
-              </div>
-            </div>
-
-            <div class="bd-example">
-              <div class="mb-3">
-                <input class="form-control form-control-sm" type="text" placeholder=".form-control-sm" aria-label=".form-control-sm example">
-              </div>
-              <div class="mb-3">
-                <select class="form-select form-select-sm" aria-label=".form-select-sm example">
-                  <option selected>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <input type="file" class="form-control form-control-sm" aria-label="Small file input example">
-              </div>
+              <p>Test</p>
             </div>
           </div>
         </article>
-        <article class="my-3" id="input-group">
+		<article class="my-3" id="python">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <h3>Input group</h3>
+            <h3>Python</h3>
           </div>
-
           <div>
             <div class="bd-example">
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">@</span>
-                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-              </div>
-              <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                <span class="input-group-text" id="basic-addon2">@example.com</span>
-              </div>
-              <label for="basic-url" class="form-label">Your vanity URL</label>
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
-                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
-              </div>
-              <div class="input-group mb-3">
-                <span class="input-group-text">$</span>
-                <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-                <span class="input-group-text">.00</span>
-              </div>
-              <div class="input-group">
-                <span class="input-group-text">With textarea</span>
-                <textarea class="form-control" aria-label="With textarea"></textarea>
-              </div>
+              <p>Test</p>
             </div>
           </div>
         </article>
-        <article class="my-3" id="floating-labels">
+		<article class="my-3" id="sites">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <h3>Floating labels</h3>
+            <h3>Websites</h3>
           </div>
-
           <div>
             <div class="bd-example">
-              <form>
-                <div class="form-floating mb-3">
-                  <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                  <label for="floatingInput">Email address</label>
-                </div>
-                <div class="form-floating">
-                  <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                  <label for="floatingPassword">Password</label>
-                </div>
-              </form>
+              <p>Test</p>
             </div>
           </div>
         </article>
-        <article class="my-3" id="validation">
-          <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
-            <h3>Validation</h3>
-          </div>
-
-          <div>
-            <div class="bd-example">
-              <form class="row g-3">
-                <div class="col-md-4">
-                  <label for="validationServer01" class="form-label">First name</label>
-                  <input type="text" class="form-control is-valid" id="validationServer01" value="Mark" required>
-                  <div class="valid-feedback">
-                    Looks good!
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label for="validationServer02" class="form-label">Last name</label>
-                  <input type="text" class="form-control is-valid" id="validationServer02" value="Otto" required>
-                  <div class="valid-feedback">
-                    Looks good!
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <label for="validationServerUsername" class="form-label">Username</label>
-                  <div class="input-group has-validation">
-                    <span class="input-group-text" id="inputGroupPrepend3">@</span>
-                    <input type="text" class="form-control is-invalid" id="validationServerUsername" aria-describedby="inputGroupPrepend3" required>
-                    <div class="invalid-feedback">
-                      Please choose a username.
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <label for="validationServer03" class="form-label">City</label>
-                  <input type="text" class="form-control is-invalid" id="validationServer03" required>
-                  <div class="invalid-feedback">
-                    Please provide a valid city.
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <label for="validationServer04" class="form-label">State</label>
-                  <select class="form-select is-invalid" id="validationServer04" required>
-                    <option selected disabled value="">Choose...</option>
-                    <option>...</option>
-                  </select>
-                  <div class="invalid-feedback">
-                    Please select a valid state.
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <label for="validationServer05" class="form-label">Zip</label>
-                  <input type="text" class="form-control is-invalid" id="validationServer05" required>
-                  <div class="invalid-feedback">
-                    Please provide a valid zip.
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-check">
-                    <input class="form-check-input is-invalid" type="checkbox" value="" id="invalidCheck3" required>
-                    <label class="form-check-label" for="invalidCheck3">
-                      Agree to terms and conditions
-                    </label>
-                    <div class="invalid-feedback">
-                      You must agree before submitting.
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <button class="btn btn-primary" type="submit">Submit form</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </article>
-      </section>
+	  </section>
     </div>
+	
+	<footer class="flex-shrink-0" id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="">
+                    <h4 class="text-left">Daniel's Portfolio</h5>
+                    <p class="small">This is my personal portfolio.
+						<span class="small" id="copyright">&copy; 2023 Daniel Moreno. All rights reserved.</span>
+					</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
+	<button onclick="topFunction()" id="topButton" title="Go to top"><strong>&#8593;</strong></button>
 
+	<!-- Bootstrap Javascript -->
     <script src="js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
+	<!-- Custom Javascript -->
     <script src="js/website.js"></script>
+	<script src="js/sortTableColumns.js"></script>
+	<script src="js/filterTable.js"></script>
+	<script src="js/toTop.js"></script>
+	<script src="js/themeSetter.js"></script>
   </body>
 </html>
