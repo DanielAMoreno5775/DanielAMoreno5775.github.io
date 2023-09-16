@@ -44,10 +44,11 @@
             <button class="btn btn-light d-inline-flex align-items-center collapsed" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#forms-collapse" aria-controls="forms-collapse">GitHub Projects</button>
             <ul class="list-unstyled ps-3 collapse" id="forms-collapse">
               <li><a class="d-inline-flex align-items-center rounded" href="#overview">Overview</a></li>
-              <li><a class="d-inline-flex align-items-center rounded" href="#sizing">C++</a></li>
-			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Java</a></li>
-			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Python</a></li>
-			  <li><a class="d-inline-flex align-items-center rounded" href="#sizing">Websites</a></li>
+              <li><a class="d-inline-flex align-items-center rounded" href="#cpp">C++</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#java">Java</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#python">Python</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#sites">Websites</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#security">Cybersecurity</a></li>
             </ul>
           </li>
         </ul>
@@ -196,8 +197,8 @@
         </article>
       </section>
 
-      <section id="github" class="contentSection">
-        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3">GitHub Projects</h2>
+    <section id="github" class="contentSection">
+        <h2 class="sticky-xl-top fw-bold pt-3 pt-xl-5 pb-2 pb-xl-3 gradient">GitHub Projects</h2>
 
         <article class="my-3" id="overview">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
@@ -206,7 +207,7 @@
 
           <div>
             <div class="bd-example">
-              <p>This section contains links to various GitHub projects and software.</p>
+              <p>This section contains links to various GitHub projects and software divided by programming language and topic.</p>
             </div>
           </div>
         </article>
@@ -214,29 +215,348 @@
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
             <h3>C++</h3>
           </div>
-          <div>
-            <div class="bd-example">
-              <p>Test</p>
-            </div>
-          </div>
+		  
+		  <div>
+			<div class="bd-example">
+				<div class="row  row-cols-1 row-cols-md-2 g-4">    
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/plain-text-encoder';">Basic Encryption</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program converts a file's contents into their ASCII values. Then, it applies a really basic encryption algorithm to the file. Finally, it outputs the encoded text to a new file.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/phone-number-reformatter';">Phone Number Reformatter</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program asks the user to input a phone number in any format. Then, it outputs the number according to the international standard for US phone numbers: +1-111-111-1111.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/console-line-wiki';">CLI Wiki</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program creates a wiki that is accessed and managed from the command line. From the menu, a user can search and view articles, create an article, search and edit articles, search and remove articles, export the article database to a file, import the article database, or quit. A recursive binary search is used to locate articles within the database. If a match is not found, it will provide suggestions based on a variety of techniques. It will check whether the input was a substring of a title. It will use Stephen Lacy's Double Metaphone Phonetic Algorithm and Levenshtein Distance to suggest similar words. Then, it will suggest an article with a metaphone code that contains the code of the user's input as a substring. The sample articles are copied from Wikipedia to demonstrate how the program works.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/find-popular-name';">Search Large File</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will allow a user to type in a file name and then will try to open that file. The sample file in the repository has 1000 entries which are stored in individual objects and then grouped in a larger object. Next, the user is able to enter a name to search for within the database via linear and binary searches. The chrono library is used to determine how much time was required to complete each search.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/letter-frequency';">Letter Frequency</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in a file. Then, it will output the most and least common letters in that file.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/CLI-game-inventory';">CLI Game Inventory</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program prints a menu for the user, displays the contents of their inventory (or the file's contents), and allows the user to add new lines. If the added item already exists in the inventory, the quantity of that item is incremented.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/bullcow';">Bulls and Cows</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program allows the user to play Bulls and Cows in the terminal. In the game, players will guess what isogram (a word without repeating letters) has been randomly selected. A player receives a bull when they guess a correct letter in the correct place. A player receives a cow when they guess a correct letter in the wrong place. However, they don't know which letters are bulls and cows. The program has been written to support the Unreal Engine.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/bankaccounts';">Bank Accounts</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in commands from a file which will create a bank account (savings or checkings), deposit money, withdraw money, and display the balance. Each command is tied to a specific account holder ID which indicates what account to manipulate. The last two commands conduct end-of-month processing, like applying interest rates, and report the balance of all accounts.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/towers-of-hanoi';">Towers of Hanoi Solver</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will print the solution to the classic Towers of Hanoi puzzle and print the number of moves necessary to solve the puzzle.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/smallest-palindromic-products';">Smallest Palindromic Products</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will calculate every possible product of three 3-digit integers to determine the smallest palindromic products with an even and odd number of digits.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/checkerboard-move-calculator/';">Checkerboard Moves</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program allows you to calculate possible jumps in a Checkerboard's current state on the same turn, under the assumption that the player only has 1 checker left. It will account for multiple jumps on the same turn.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			</div>
+		  </div>
         </article>
-		<article class="my-3" id="java">
+		    <article class="my-3" id="java">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
             <h3>Java</h3>
           </div>
           <div>
             <div class="bd-example">
-              <p>Test</p>
+				<div class="row  row-cols-1 row-cols-md-2 g-4">    
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/city-details-GUI';">City Details GUI</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in about 800 entries, store them in a linked list, and display them in a GUI. Once the user selects a state and then a city within that state, various details about that city will be provided.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/top-10-mass-database';">Massive Database GUI</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in a csv file with over 46,000 entries which are stored in a red-black tree. In a GUI, the user will be able to select a state and then select a city from that state to see details about it. That city will be one of the 10 largest cities in that state, based on the number of zip codes in it.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/GUI-path-finder';">Path Finder</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in a csv file and store the entries in a red-black tree. In the GUI, a user will be able to select a starting city and a destination city. The program will use Dijkstra's Algorithm with a priority queue to identify the shortest path from the starting city to the destination city. The program will assume that the path will be followed by a drone which must refuel in another city after 300 miles of travel.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
             </div>
           </div>
         </article>
-		<article class="my-3" id="python">
+		    <article class="my-3" id="python">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
             <h3>Python</h3>
           </div>
           <div>
             <div class="bd-example">
-              <p>Test</p>
+			    <div class="row  row-cols-1 row-cols-md-2 g-4">    
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/passphrase-gen';">Passphrase Generator</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in a file of words. Then, the user can set a desired passphrase length which will determine how many words to randomly combine for the password. If the desired length is less than the number of words in the file, then every word in the passphrase will be unique.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/log-analysis';">Log Analysis</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will read in a log file. Then, it will print out the number of bytes transferred and the frequency of all IP addresses within the log file. The log format is 216.218.206.66 - - [30/Sep/2015:00:38:26 -0400] "GET / HTTP/1.1" 502 166 "-" "-".</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/GUI-path-finder';">Base-K Handler</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will convert a decimal integer into a number of a specified base. In addition, the program will add numbers regardless of its base.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/analyze-text';">Text Analyzer</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will analyze a text file for certain key words. Then, it will determine certain statistics related to those keywords which are outputted to a csv file.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/sierpinski-triangle-drawer';">Sierpinski Triangle Drawer</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will use the turtle library to print multiple levels of Sierpinski triangles.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/python-game-of-life';">Game of Life</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program will play Conway's Game of Life in the console window for a number of iterations set by the user. Also, the user can exit the game early with Ctrl+C without producing an error.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/checkerboard-move-calculator';">Checkerboard Moves</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This program allows you to calculate possible jumps in a Checkerboard's current state on the same turn, under the assumption that the player only has 1 checker left. It will account for multiple jumps on the same turn.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
             </div>
           </div>
         </article>
@@ -246,25 +566,114 @@
           </div>
           <div>
             <div class="bd-example">
-              <p>Test</p>
+				<div class="row  row-cols-1 row-cols-md-2 g-4">    
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/color-picker';">Color Picker</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This website will present a color palette to the user. The user can then select a spot on that palette which will be blown up to the right in a separate circle.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/code-runner-site';">Code Runner</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This website will allow the user to enter HTML, CSS, and Javascript code which will be executed in a fourth area, similar to other sites like JSFiddle.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/cyberdefender-club';">Club Website</button>
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This is a website I created for the CyberDefenders Club at Tarrant County College. This is not the version that ended up being used, though I created both versions. The other version was chosen after it was discovered that the school's firewall only allowed very specific hosting services and that the club's members were uncomfortable with managing a website of this complexity. However, this is my favorite version and the version that best showcases my abilities.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+            </div>
+          </div>
+        </article>
+		<article class="my-3" id="security">
+          <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+            <h3>Cybersecurity</h3>
+          </div>
+          <div>
+            <div class="bd-example">
+			
+				<div class="row row-cols-1 row-cols-md-2 g-4">    
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/cybersec-policies-and-papers/blob/main/An%20Evaluation%20of%20the%20Impact%20of%20Utilizing%20Active%20Directory%20in%20Place%20of%20Workgroups.pdf';">Active Directory Over Workgroups</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This paper describes the usage of Active Directory in place of workgroups. The paper was written from the perspective of an analyst hired by Always Fresh Foods Inc. to prevent future data breaches. After analyzing the issues with the current workgroup network, I assessed the benefits of Active Directory and efforts necessary to transition from one to the other.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/cybersec-policies-and-papers/blob/main/Sample%20Forensic%20Evidence%20Collection%20and%20Handling%20Policy.pdf';">Sample Forensic Policy</button>
+
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This paper is a sample policy I wrote regarding evidence collection, handling, and analysis when conducting a forensic investigation of a data breach.</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				  <div class="col">
+					<div class="card">
+					  <div class="row g-0">
+						<div class="col-md-4">
+							<button type="button" class="btn programGitHubRepoLink" onclick="window.location.href='https://github.com/DanielAMoreno5775/cybersec-policies-and-papers/blob/main/Sample%20Policy%20Statements.pdf';">Sample Policy Statements</button>
+						</div>
+						<div class="col-md-8">
+						  <div class="card-body text-dark">
+							<p class="card-text">This paper includes three sample security policy statements for remote access, boundary protection, and transmission confidentiality & integrity. In addition, I provided various controls that can meet the requirements established in the policy statements</p>
+						  </div>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
             </div>
           </div>
         </article>
 	  </section>
-    </div>
-	
-	<footer class="flex-shrink-0" id="footer">
-        <div class="container">
-            <div class="row">
-                <div class="">
-                    <h4 class="text-left">Daniel's Portfolio</h5>
-                    <p class="small">This is my personal portfolio.
-						<span class="small" id="copyright">&copy; 2023 Daniel Moreno. All rights reserved.</span>
-					</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+  </div>
+
 
 	<button onclick="topFunction()" id="topButton" title="Go to top"><strong>&#8593;</strong></button>
 

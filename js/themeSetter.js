@@ -4,15 +4,14 @@ let nav = document.getElementById('navbarTag');
 let themeSelector = document.getElementById('theme');
 let table = document.getElementById('placeholderTable');
 let tableHeader = document.getElementById('placeholderTableHeader');
-let footer = document.getElementById('footer');
 let tableOfContentsLinks = document.getElementById('toc').getElementsByTagName('a');
 let tableOfContentsButtons = document.getElementById('toc').getElementsByTagName('button');
 let areaHeaders = document.getElementsByClassName('gradient');
 
 //  add in the CSS style options
 themeSelector.innerHTML += `
-        <option value='light' selected="selected">Light</option>
-		<option value='dark'>Dark</option>
+        <option value='light' selected="selected">Light Mode</option>
+		<option value='dark'>Dark Mode</option>
     `;
 
 function getRGB(c) {
@@ -104,7 +103,9 @@ function setTheme (themeColor) {
 	body.style.color = textColor;
 	nav.style.backgroundColor = textColor;
 	nav.style.color = colorStr;
-	footer.style.color = textColor;
+	for(var i = 0, length = areaHeaders.length; i < length; i++) {
+        areaHeaders[i].style.backgroundColor = colorStr;
+    }
 	for(var i = 0, length = tableOfContentsLinks.length; i < length; i++) {
         tableOfContentsLinks[i].style.color = textColor;
     }
