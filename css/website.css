@@ -4,10 +4,17 @@ html {
   box-sizing: border-box; 
 }
 
+#siteTitle {
+	background-color: #58a1b8;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	font-family: Georgia,Times,Times New Roman,serif;
+}
+
 h2, h3 {
 	font-family: Georgia,Times,Times New Roman,serif;
 	font-size: 300%;
-	color: #58a1b8
+	color: #58a1b8;
 }
 
 .gradient {
