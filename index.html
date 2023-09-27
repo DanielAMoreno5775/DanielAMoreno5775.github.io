@@ -13,6 +13,8 @@
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom styles for this template -->
     <link href="css/website.css" rel="stylesheet">
   </head>
@@ -37,6 +39,7 @@
             <ul class="list-unstyled ps-3 collapse" id="contents-collapse">
               <li><a class="d-inline-flex align-items-center rounded" class="tocText" href="#introduction">Introduction</a></li>
               <li><a class="d-inline-flex align-items-center rounded" href="#tables">Tables</a></li>
+			  <li><a class="d-inline-flex align-items-center rounded" href="#forms">Forms</a></li>
               <li><a class="d-inline-flex align-items-center rounded" href="#figures">Images</a></li>
             </ul>
           </li>
@@ -181,6 +184,143 @@
             </div>
           </div>
         </article>
+		<article class="my-3" id="forms">
+          <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
+            <h3>Forms</h3>
+          </div>
+
+          <div>
+            <div class="bd-example">
+              <p class="h1">Example Forms</p>
+            </div>
+
+			<p>Not all of these form options would traditionally be placed together. Instead, they are here to show that I know how to create form elements. In addition, this is why the submit button will not do anything except validate user input. <br>
+            This example form uses Bootstrap's <code class="highlighter-rouge">.{valid|invalid}-feedback</code> classes to display validation feedback in a styled tooltip. <br>
+			A * means that the element is required.</p>
+
+			<div class="bd-example">
+				<form class="row g-3 needs-validation" id="form" novalidate>
+				  <div class="col-md-4">
+				    <label for="validationCustom01" class="form-label">*First name</label>
+					<small>
+						<input disabled  maxlength="3" size="3" value="100" id="firstNameCounter" class="charCounter">
+						<span class="charsRemaining"> chars remaining</span>
+					</small>
+					<input type="text" class="form-control countsChars" id="validationCustom01" placeholder="John" required="" maxlength="100" onkeyup="textCounter(this,'firstNameCounter',100);">
+					<div class="valid-feedback">
+					  Looks good!
+					</div>
+					<div class="invalid-feedback">
+						Please enter your first name.
+					</div>
+				  </div>
+				  <div class="col-md-4">
+					<label for="validationCustom02" class="form-label">*Last name</label>
+					<small>
+						<input disabled  maxlength="3" size="3" value="100" id="lastNameCounter" class="charCounter">
+						<span class="charsRemaining"> chars remaining</span>
+					</small>
+					<input type="text" class="form-control countsChars" id="validationCustom02" placeholder="Doe" required="" maxlength="100" onkeyup="textCounter(this,'lastNameCounter',100);">
+					<div class="valid-feedback">
+					  Looks good!
+					</div>
+					<div class="invalid-feedback">
+						Please enter your last name.
+					</div>
+				  </div>
+				  <div class="col-md-4">
+					<label for="validationCustomUsername" class="form-label">*Username</label>
+					<div class="input-group has-validation">
+					  <span class="input-group-text" id="inputGroupPrepend">@</span>
+					  <input type="text" pattern="[a-zA-Z0-9]{8,}" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required="">
+					  <div class="invalid-feedback">
+						Please choose a username with letters and numbers that is at least 8 characters long.
+					  </div>
+					</div>
+				  </div>
+				  <div class="col-md-6">
+					<label for="validationCustom03" class="form-label">*City</label>
+					<!--Will work for most city names including Å, Fort Worth, Niagara on the Lake, Val-d'Or, toRonTo, Provence-Alpes-Côte d'Azur, Sauðárkrókur, and Þorlákshöfn-->
+					<input type="text" class="form-control" id="validationCustom03" pattern="([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*" required="">
+					<div class="invalid-feedback">
+					  Please provide a valid city.
+					</div>
+				  </div>
+				  <div class="col-md-3">
+					<label for="validationCustom04" class="form-label">*State</label>
+					<select class="form-select" id="validationCustom04" required="">
+					  <option value="" selected disabled hidden>--Select An Option--</option>
+					  <option value="AL">Alabama</option>
+					  <option value="AK">Alaska</option>
+					  <option value="TX">Texas</option>
+					</select>
+					<div class="invalid-feedback">
+					  Please select a valid state.
+					</div>
+				  </div>
+				  <div class="col-md-3">
+					<label for="validationCustom05" class="form-label">*Zip</label>
+					<input type="text" pattern="[0-9]{5}-[0-9]{4}" placeholder="12345-6789" class="form-control" id="validationCustom05" required="">
+					<div class="invalid-feedback">
+					  Please provide a valid zip.
+					</div>
+				  </div>
+				  <div class="col-md-3 updates">
+					<span><strong>Do you want to receive updates?</strong></span>
+					<input class="form-check-input" type="checkbox" name="update" id="yesUpdate" value="yesUpdate">
+					<label for="yesUpdate"></label>
+					<br>
+					<small class="form-text">Enable to view email/phone options</small>
+				  </div>
+				  <div class="col-md-4 contact-method hide form-check form-check-inline">
+					<span><strong>Preferred Contact Method: </strong></span>
+					<br>
+					<div class="form-check form-check-inline" style="padding:0px;">
+						<input type="radio" class="hide" name="contactMethod" id="def" value="def" selected>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="contactMethod" id="emailRadio" value="email">
+						<label class="form-check-label" for="email">Email</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="contactMethod" id="phoneRadio" value="phone">
+						<label class="form-check-label" for="phone">Phone</label>
+					</div>
+				  </div>
+				  <div class="col-md-2 phone hide">
+					<label for="phoneNum" class="form-label">Phone: </label>
+					<input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" id="phoneNum" name="phoneNum" class="selectionBox form-control">
+					<div class="invalid-feedback">
+						Please enter a valid phone number in the format of 123-456-7890.
+					</div>
+				  </div>
+				  <div class="col-md-4 email hide">
+					<label for="emailAddr" class="form-label">Email: </label>
+					<!--Uses special regex pattern that can handle most acceptable email names and all possible domains with an infinite number of subdomains-->
+					<input type="email" id="emailAddr" name="emailAddr" pattern="[a-zA-Z0-9!#\$%&'\*\+\-/_=\?\^_`\{\|\}~]{1}[a-zA-Z0-9!\.#\$%&'\*\+\-/_=\?\^_`\{\|\}~]*@(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})" class="selectionBox form-control" placeholder="name@example.com">
+					<div class="invalid-feedback">
+						Please enter a valid email address.
+					</div>
+				  </div>
+				  <div class="col-12">
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="">
+					  <label class="form-check-label" for="invalidCheck">
+						*Agree to terms and conditions
+					  </label>
+					  <div class="invalid-feedback">
+						You must agree before submitting.
+					  </div>
+					</div>
+				  </div>
+				  <div class="col-12">
+						<button class="btn btn-primary" type="submit" onclick="checkIfValid()">Submit Form</button>
+						<button class="btn btn-primary" type="reset" value="Reset" onclick="resetValidityCheck()">Reset Form</button>
+				  </div>
+				</form>
+			</div>
+          </div>
+        </article>		
         <article class="my-3" id="figures">
           <div class="bd-heading sticky-xl-top align-self-start mt-5 mb-3 mt-xl-0 mb-xl-2">
             <h3>Responsive Image</h3>
@@ -681,6 +821,7 @@
     <script src="js/bootstrap.bundle.min.js"></script>
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 	<!-- Custom Javascript -->
     <script src="js/website.js"></script>
@@ -688,5 +829,8 @@
 	<script src="js/filterTable.js"></script>
 	<script src="js/toTop.js"></script>
 	<script src="js/themeSetter.js"></script>
+	<script src="js/formValidation.js"></script>
+	<script src="js/hideFormOptions.js"></script>
+	<script src="js/remainingCharCounter.js"></script>
   </body>
 </html>

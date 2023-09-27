@@ -4,6 +4,36 @@ html {
   box-sizing: border-box; 
 }
 
+.container {
+  padding: 3rem 0rem;
+}
+
+h4 {
+  margin: 2rem 0rem 1rem;
+}
+.form-group {
+  position: relative;
+}
+
+.hide {
+	display: none;
+}
+
+.charCounter {
+	background: none;
+	border: none;
+	text-align: right;
+	margin-top: 0px;
+}
+
+.countsChars {
+	margin-bottom: 0px !important;
+}
+
+.charsRemaining {
+	color: #7e7f7f;
+}
+
 #siteTitle {
 	background-color: #58a1b8;
 	padding-top: 50px;
