@@ -9,8 +9,9 @@
     
     <script>
        document.addEventListener("DOMContentLoaded", function () {
+        const authString = btoa(`d17aac5e-d2d1-4534-9e47-36a1ec1cc000:e6066031a8c91e638c47fe8b135457a31e034eafc057e2be4770551214c0783f2d555a8b84f9d64dac093495325fd7746652ece4164dacb2f25eccf0b6f6aee3ce462823e719ef55608c916f0c7bd8855f6ccadcada43d1590118e99f90c930c28ba6caa6d20d7f6d60eb518b67e981d`);
         var client = new AstronomyAPI({
-          basicToken: "e6066031a8c91e638c47fe8b135457a31e034eafc057e2be4770551214c0783f2d555a8b84f9d64dac093495325fd7746652ece4164dacb2f25eccf0b6f6aee3674569ba0614d091c0f640da17a86b8ca8ac576e724016b7ca721d168e2a1490f6f1d8c999a4f5d321ebc18da15014c9",
+          basicToken: authString,
         });
 
         client.moonPhase();
