@@ -8,6 +8,29 @@ let tableOfContentsLinks = document.getElementById('toc').getElementsByTagName('
 let tableOfContentsButtons = document.getElementById('toc').getElementsByTagName('button');
 let areaHeaders = document.getElementsByClassName('gradient');
 
+function setCookie(cookieName, cookieValue, expirationDays) {
+	const d = new Date();
+	d.setTime(d.getTime() + (expirationDays*24*60*60*1000));
+	let expires = "expires="+ d.toUTCString();
+	document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+}
+
+function getCookie(cookieName) {
+	let name = cookieName + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i <ca.length; i++) {
+	  let c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
+
 //  add in the CSS style options
 themeSelector.innerHTML += `
         <option value='light' selected="selected">Light Mode</option>
@@ -112,7 +135,7 @@ function setTheme (themeColor) {
 }
 
 //  If there is an entry in LS for the style for this page use it
-let activeTab = document.title;
+/*let activeTab = document.title;
 let themeColor = localStorage.getItem(activeTab);
 if ( themeColor !== null) {
 	setTheme (themeColor);
@@ -128,6 +151,29 @@ theme.addEventListener('change', () => {
 	choice = themeSelector.value;
 	setTheme (choice);
     localStorage.setItem(activeTab, choice);
+	console.log("event listener");
+	console.log(choice);
+} );*/
+
+let colorCookie = getCookie("colorMode");
+//if the cookie exists, use it
+if (colorCookie != "") {
+	setTheme (colorCookie);
+	console.log("Cookie setter");
+	console.log(colorCookie);
+} else {
+	setCookie("colorMode","light",366);
+	setTheme ("light");
+}
+
+//  add an event listener to the style drop down list
+//  when the list changes alter the css.href to be the new color theme from the drop down
+//  save the new style to LS
+choice = themeSelector.value;
+theme.addEventListener('change', () => {
+	choice = themeSelector.value;
+	setTheme (choice);
+	setCookie("colorMode",choice,366);
 	console.log("event listener");
 	console.log(choice);
 } );
