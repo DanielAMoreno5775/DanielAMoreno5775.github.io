@@ -1,0 +1,250 @@
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  box-sizing: border-box; 
+}
+
+.container {
+  padding: 3rem 0rem;
+}
+
+h4 {
+  margin: 2rem 0rem 1rem;
+}
+
+.hide {
+	display: none !important;
+}
+
+h1 {
+	font-family: Georgia,Times,Times New Roman,serif;
+	font-size: 300%;
+	color: #58a1b8;
+}
+
+h3 {
+	font-family: Georgia,Times,Times New Roman,serif;
+	font-size: 225%;
+	color: #58a1b8;
+}
+
+body {
+	position: relative;
+	padding-top: 80px;
+	min-height: 100%;
+	margin: 0px;
+}
+
+.nopadding{
+    margin:0 !important;
+    padding:0 !important;    
+}
+
+#theme {
+	width: 130px;
+	position:absolute;
+	right: 30px;
+	top: 10px;
+}
+
+.bd-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  grid-column: 1 / span 3;
+}
+
+.bd-heading + div > * + * {
+  margin-top: 3rem;
+}
+
+.questionContainer {
+  border-color: #8b8b8b ;
+  border-style: solid;
+  border-width: 2px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.questionHeader {
+  border-bottom:2px solid #8b8b8b;
+  background-color: #d1d1d1;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 18px;
+}
+
+.questionQuestion {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-left: -5px;
+}
+
+.answerHorizontalLines {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.questionAnswers > input {
+  accent-color: red !important;
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+  background-color: #58a2b842;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+  background-position: left center;
+  transition: background-position 0.15s ease-in-out;
+}
+
+.questionAnswers > input:active {
+  filter: brightness(90%);
+}
+
+.questionAnswers > input:focus {
+  border-color: #58a1b8;
+  border-radius: 75%;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(254, 134, 134, 0.25);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2386b7fe'/%3e%3c/svg%3e");
+}
+
+.questionAnswers > input:checked {
+  background-color: #DC143C;
+  border-color: #DC143C;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+  background-position: right center;
+}
+
+.questionAnswers > input:disabled {
+  pointer-events: none;
+  filter: none;
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .questionAnswers > input {
+      transition: none;
+  }
+}
+
+#previousButton {
+  margin: 0px;
+}
+
+#nextButton {
+  margin: 0px;
+}
+
+.questionFlag {
+  border: 5px solid #ffc107;
+  border-radius: 12px;
+}
+
+aside {
+  width: 15%;
+  height: 130px;
+  padding-left: 15px;
+  margin-left: 15px;
+  float: right;
+  overflow:auto;
+  position: absolute;
+  right: 0px;
+  color: white;
+}
+
+#containerOfPage {
+  clear:left;
+}
+
+.checkMark {
+  color: #34b233;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  padding: 0px;
+  vertical-align: middle;
+}
+
+.questionLink {
+  text-decoration: none;
+  color: #4169E1;
+}
+
+.flagged {
+  font-weight: bold;
+  color: #ffc107;
+}
+
+#questionResults {
+  margin: 0px;
+  padding: 0px;
+}
+
+.form-check-label {
+  position: relative;
+}
+
+.correctAnswerSelected:before {
+  background: url("../assets/correct-flag.png") no-repeat scroll 0 0 transparent;
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 130px;
+  height: 27px;
+  z-index: 1000;
+  left: -155px;
+}
+
+.correctAnswerSelected {
+  border-color: #4caa43;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+.correctAnswerNotSelected:before {
+  background: url("../assets/should-be-correct-flag.png") no-repeat scroll 0 0 transparent;
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 130px;
+  height: 27px;
+  z-index: 1000;
+  left: -155px;
+}
+
+.correctAnswerNotSelected {
+  border-color: #dadbdc;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+.wrongAnswerSelected:before {
+  background: url("../assets/wrong-flag.png") no-repeat scroll 0 0 transparent;
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 130px;
+  height: 27px;
+  z-index: 1000;
+  left: -155px;
+}
+
+.wrongAnswerSelected {
+  border-color: #d63c38;
+  border-style: solid;
+  border-radius: 10px;
+}
+
+.questionAnswers, .form-check-input, .form-check-label {
+  opacity: 1 !important;
+}

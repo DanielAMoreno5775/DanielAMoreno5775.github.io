@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Daniel Moreno">
+    <title>Daniel's Website</title>
+	<link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Custom styles for this template -->
+    <link href="css/quiz.css" rel="stylesheet">
+  </head>
+  <body class="bg-light" id="bodyTag"> <!-- First class must always be the theme -->
+    <!--Header that controls color mode and links this page to the rest of the website-->
+    <header class="bd-header py-3 d-flex align-items-stretch border-bottom border-dark" id="navbarTag">
+		<div class="container-fluid d-flex align-items-center">
+		  <h1 class="d-flex align-items-center fs-4 mb-0">
+			<img src="assets/favicon.ico" width="38" height="30" class="me-3 img-thumbnail" alt="My image">
+			Daniel's Portfolio
+		  </h1>
+		  <select id="theme" class="form-select form-select-sm sticky-xl-top">
+		  </select>
+		</div>
+	</header>
+
+	<!--Responsive flexbox that uses Bootstrap to position everything in the center of the page-->
+	<div class="container" id="containerOfPage">
+		<div class="row align-items-start">
+			<!--Use the columns to center the header-->
+			<div class="col-12 text-center">
+				<!--H1 header to label the page-->
+				<h1 class="text-center">JavaScript-based Quiz</h1>
+			</div>
+		</div>
+		<br><br>
+		<div class="row align-items-start">
+		  <!--These columns ensure that the quiz text is always centered on the page-->
+		  <!--Gapping to the left for the quiz box-->
+		  <div class="col-2"> </div>
+		  <div class="col-8">
+			<div class="text-left"> <!--This style allows HTML to translate literal tab characters and the &#x09; code-->
+				<!--Quiz Title-->
+				<h3>Cybersecurity Quiz</h3>
+				<!--Horizontal line-->
+				<hr>
+				<!--Quiz Points, Questions, Time Limit aligned using a Bootstrap row so that they are evenly spaced within the quiz box-->
+				<div class="row align-items-start">
+					<div class="col-4">
+						<strong>Points:</strong> 100
+					</div>
+					<div class="col-4">
+						<strong>Questions:</strong> <span class="numOfQuestions">4</span>
+					</div>
+					<div class="col-4">
+						<strong>Time Limit:</strong> <span class="numOfMins">8</span> minutes
+					</div>
+				</div>
+				<!--Horizontal line-->
+				<hr>
+				<!--Quiz Information aligned using a Bootstrap row so that they are evenly spaced within the quiz box-->
+				<div class="row align-items-start">
+					<div class="col-12">
+						<p>You will have <span class="numOfMins">8</span> minutes to answer <span class="numOfQuestions">4</span> questions. The quiz will be auto-submitted after <span class="numOfMins">8</span> minutes.</p>
+						<p><a href="./index.html">This link will take you back to the Home page.</a> </p>
+						<p>The header above this text will always display 100 points but the number of questions and the time limit will dynamically vary based on the number of questions. Two minutes will be given for each question. The 100 points will be evenly divided between the questions with the remainder being assigned to the final question. The possible question types are true-false, multiple-choice, and multiple-image-choice.</p>
+						<p>The javascript code will automatically handle the number of questions. To remove a question, simply delete a div with the class of "questionContainer". However, this div must be the final one. If there are 4 questions, you can only delete the fourth question, not the other three. To add a question, copy a div with the class of "questionContainer", and then you will need change all of the names, labels, fors, ids, classes, and the question name to alter the question's number. Make sure that all of these have the correct question number.</p>
+						<p>Press the "Take the Quiz" button to start the quiz.</p>
+						<p>During the quiz, please select the radio button that best answers the question. Use the "Previous" and "Next" buttons to navigate through the questions. You can also use the links in the aside to the right of the screen to go directly to a question. Toggle the yellow button on each question to flag it in the right aside. During the quiz, the timer will issue a warning at 30 minutes, 5 minutes, and 1 minute remaining.</p>
+						<p>Once you have answered all of the questions, you will be able to press the "Submit" button. The quiz will also automatically be submitted once the timer runs out. After the quiz has been submitted, all answers will be evaluated with points being assigned if the choice was correct. Correct selections will be marked by a green flag. If the selection was wrong, the wrong selection will be marked with a red flag and the correct option will be marked with a gray flag.</p>
+					</div>
+				</div>
+				<!--Horizontal line-->
+				<hr>
+				<br>
+			</div>
+		  </div>
+		  <div class="col-2"> </div>
+		<div class="row align-items-start">
+		  <div class="col-2"> </div>
+		  <div class="col-8">
+			<!--Container div for the Take the Quiz button-->
+			<div class="row align-items-start" id="questionStartButton">
+				<!--Use the columns to center the button-->
+				<div class="col-1 text-start">
+				</div>
+				<div class="col-10 text-center">
+					<button type="button" role="button" class="btn btn-success btn-lg" id="startButton">Take the Quiz</button>
+				</div>
+				<div class="col-1 text-start">
+				</div>
+			</div>
+			<!--Container div for the total earned points-->
+			<div class="row align-items-start" id="questionResults">
+				<!--Use the columns to center the button-->
+				<div class="col-12 text-start">
+					<h4><strong>Results:</strong> <span id="ptsResults">0 out of 100</span></h4>
+				</div>
+			</div>
+			<br>
+			<!--Container div for all of the quiz questions and the aside-->
+			<div id="containerOfAllQuestions">
+				<!--Container div for the first quiz question-->
+				<div class="questionContainer" id="question1">
+					<!--Div for each question's header-->
+					<div class="questionHeader row align-items-start">
+						<div class="col-2">
+							<button class="btn btn-outline-warning questionFlag" id="questionFlag1" onClick="flagButtonClicked(this.id)"></button>
+						</div>
+						<div class="col-8">
+							Question 1
+						</div>
+						<div class="col-2 text-end">
+							<span class="pointsPerQuestion">25</span> pts
+						</div>
+					</div>
+					<!--Div for each question's body: question and the possible answers-->
+					<div class="questionBody">
+						<div class="questionQuestion">
+							Which of the following interpret requirements and apply them to specific situations?
+						</div>
+						<form class="questionAnswers" name="question1">
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question1Answer" id="question1Answer1" value="Policies">
+							<label class="form-check-label" for="question1Answer1">
+								Policies
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question1Answer" id="question1Answer2" value="Standards">
+							<label class="form-check-label correctAnswer" for="question1Answer2">
+								Standards
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question1Answer" id="question1Answer3" value="Guidelines">
+							<label class="form-check-label" for="question1Answer3">
+								Guidelines
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question1Answer" id="question1Answer4" value="Procedures">
+							<label class="form-check-label" for="question1Answer4">
+								Procedures
+							</label>
+							<br>
+							<br>
+						</form>
+					</div>
+				</div>
+				<br class="questionSeparator"><br class="questionSeparator">
+				<!--Container div for the second quiz question-->
+				<div class="questionContainer" id="question2">
+					<!--Div for each question's header-->
+					<div class="questionHeader row align-items-start">
+						<div class="col-2">
+							<button class="btn btn-outline-warning questionFlag" id="questionFlag2" onClick="flagButtonClicked(this.id)"></button>
+						</div>
+						<div class="col-8">
+							Question 2
+						</div>
+						<div class="col-2 text-end">
+							<span class="pointsPerQuestion">25</span> pts
+						</div>
+					</div>
+					<!--Div for each question's body: question and the possible answers-->
+					<div class="questionBody">
+						<div class="questionQuestion">
+							Privacy essures that information and programs are changed only in a specified and authorized manner.
+						</div>
+						<form class="questionAnswers" name="question2">
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question2Answer" id="question2Answer1" value="True">
+							<label class="form-check-label" for="question2Answer1">
+								True
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question2Answer" id="question2Answer2" value="False">
+							<label class="form-check-label correctAnswer" for="question2Answer2">
+								False
+							</label>
+							<br>
+							<br>
+						</form>
+					</div>
+				</div>
+				<br class="questionSeparator"><br class="questionSeparator">
+				<!--Container div for the third quiz question-->
+				<div class="questionContainer" id="question3">
+					<!--Div for each question's header-->
+					<div class="questionHeader row align-items-start">
+						<div class="col-2">
+							<button class="btn btn-outline-warning questionFlag" id="questionFlag3" onClick="flagButtonClicked(this.id)"></button>
+						</div>
+						<div class="col-8">
+							Question 3
+						</div>
+						<div class="col-2 text-end">
+							<span class="pointsPerQuestion">25</span> pts
+						</div>
+					</div>
+					<!--Div for each question's body: question and the possible answers-->
+					<div class="questionBody">
+						<div class="questionQuestion">
+							Which of the following images best reflects the hierarchy of computer-related security types as defined by the ISACA?
+						</div>
+						<form class="questionAnswers" name="question3">
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question3Answer" id="question3Answer1" value="1">
+							<label class="form-check-label correctAnswer" for="question3Answer1">
+								1
+								<img src="./assets/info-physical-cyber-tech-user.png" alt="Tree of Information Security -> Physical Security -> Cyber Security leading to Technology Security and User Security" width="300" height="300"> 
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question3Answer" id="question3Answer2" value="2">
+							<label class="form-check-label" for="question3Answer2">
+								2
+								<img src="./assets/digital-endpoint-app-net-data.png" alt="Tree of Digital Security -> Network Security leading to Data Security & -> Endpoint Security leading to Application Security" width="300" height="300"> 
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question3Answer" id="question3Answer3" value="3">
+							<label class="form-check-label" for="question3Answer3">
+								3
+								<img src="./assets/info-comm-net-endpoint-cyber-app-info.png" alt="Tree of Information Security -> Cyber Security leading to App Security and Data Security & -> Communications Security leading to Network Security and Endpoint Security" width="300" height="300"> 
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question3Answer" id="question3Answer4" value="4">
+							<label class="form-check-label" for="question3Answer4">
+								4
+								<img src="./assets/info-equity-derivative-physical-internal.png" alt="Tree of Information Security -> Equity Security & -> Derivative Security leading to Physical Security and Internal Security" width="300" height="300"> 
+							</label>
+							<br>
+							<br>
+						</form>
+					</div>
+				</div>
+				<br class="questionSeparator"><br class="questionSeparator">
+				<!--Container div for the fourth quiz question-->
+				<div class="questionContainer" id="question4">
+					<!--Div for each question's header-->
+					<div class="questionHeader row align-items-start">
+						<div class="col-2">
+							<button class="btn btn-outline-warning questionFlag" id="questionFlag4" onClick="flagButtonClicked(this.id)"></button>
+						</div>
+						<div class="col-8">
+							Question 4
+						</div>
+						<div class="col-2 text-end">
+							<span class="pointsPerQuestion">25</span> pts
+						</div>
+					</div>
+					<!--Div for each question's body: question and the possible answers-->
+					<div class="questionBody">
+						<div class="questionQuestion">
+							Which is the best answer for which people in a business should be responsible for cybersecurity?
+						</div>
+						<form class="questionAnswers" name="question4">
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question4Answer" id="question4Answer1" value="Business owners">
+							<label class="form-check-label" for="question4Answer1">
+								Business owners
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question4Answer" id="question4Answer2" value="IT specialists">
+							<label class="form-check-label" for="question4Answer2">
+								IT specialists
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question4Answer" id="question4Answer3" value="Managers">
+							<label class="form-check-label" for="question4Answer3">
+								Managers
+							</label>
+							<hr class="answerHorizontalLines">
+							<input class="form-check-input" type="radio" name="question4Answer" id="question4Answer4" value="All staff members">
+							<label class="form-check-label correctAnswer" for="question4Answer4">
+								All staff members
+							</label>
+							<br>
+							<br>
+						</form>
+					</div>
+				</div>
+			</div>
+			<br><br>
+			<!--Container div for the Next and Previous buttons-->
+			<div class="row align-items-start" id="questionControlButtons">
+				<div class="col-6 text-start">
+					<button type="button" class="btn btn-danger btn-lg" id="previousButton">&#11164;  Previous</button>
+				</div>
+				<div class="col-6 text-end">
+					<button type="button" class="btn btn-danger btn-lg" id="nextButton">Next  &#11166;</button>
+				</div>
+			</div>
+			<br>
+			<!--Container div for the Submit button-->
+			<div class="row align-items-start" id="questionSubmitButton">
+				<div class="col-6 text-start">
+				</div>
+				<div class="col-6 text-end">
+					<button type="button" class="btn btn-secondary btn-lg disabled" id="submitButton" onClick="onSubmission()">Submit</button>
+				</div>
+			</div>
+		  </div>
+		  <!--Gapping to the right for the quiz box which will contain the quick link box-->
+		  <div class="col-2">
+				<!--Create an aside scrollbox-->
+				<aside id="quickLinkBox" class="">
+					<!--Div of links to each question and the timer-->
+					<div id="quickLinkList">
+						<div id="timer">0h 00m 0s</div>
+					</div>
+				</aside>
+		  </div>
+		</div>
+	</div>
+	
+
+	<!-- Bootstrap Javascript -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+	<!-- Custom Javascript -->
+	<script src="js/quizThemeSetter.js"></script>
+	<script src="js/quizManager.js"></script>
+  </body>
+</html>

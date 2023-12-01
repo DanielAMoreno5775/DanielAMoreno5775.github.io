@@ -2,11 +2,30 @@
 let body = document.getElementById('bodyTag');
 let nav = document.getElementById('navbarTag');
 let themeSelector = document.getElementById('theme');
-let table = document.getElementById('placeholderTable');
-let tableHeader = document.getElementById('placeholderTableHeader');
-let tableOfContentsLinks = document.getElementById('toc').getElementsByTagName('a');
-let tableOfContentsButtons = document.getElementById('toc').getElementsByTagName('button');
-let areaHeaders = document.getElementsByClassName('gradient');
+let questionHeaders = document.getElementsByClassName("questionHeader");
+
+function setCookie(cookieName, cookieValue, expirationDays) {
+	const d = new Date();
+	d.setTime(d.getTime() + (expirationDays*24*60*60*1000));
+	let expires = "expires="+ d.toUTCString();
+	document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+}
+
+function getCookie(cookieName) {
+	let name = cookieName + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i <ca.length; i++) {
+	  let c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+}
 
 //  add in the CSS style options
 themeSelector.innerHTML += `
@@ -68,56 +87,61 @@ function rgbToHex(rgb) {
 function setTheme (themeColor) {
 	//remove current themes
 	body.classList.remove('bg-light', 'bg-dark');
-	table.classList.remove('table-light', 'table-dark');
-	tableHeader.classList.remove('thead-light', 'thead-dark');
-	for(var i = 0, length = tableOfContentsButtons.length; i < length; i++) {
-        tableOfContentsButtons[i].classList.remove('btn-light', 'btn-dark');
-    }
-	
 	
 	//set variable for theme class based on Bootstrap format
 	let theme = 'bg-'.concat(themeColor);
-	let tableColor = 'table-'.concat(themeColor);
-	let headerColor = 'thead-'.concat(themeColor);
-	let buttonColor = 'btn-'.concat(themeColor);
 	
 	//set new theme
 	themeSelector.value = themeColor;
 	body.classList.add(theme);
-	table.classList.add(tableColor);
-	tableHeader.classList.add(headerColor);
-	for(var i = 0, length = tableOfContentsButtons.length; i < length; i++) {
-        tableOfContentsButtons[i].classList.add(buttonColor);
-    }
 	
 	//get new background color and calculate text color based on contrast ratio
 	let rgbArray = [];
 	let rgbSTR = window.getComputedStyle(body).backgroundColor;
+	//assemble the rgb values into an array
 	rgbArray[0] = rgbSTR.split(",")[0].split("(")[1];
 	rgbArray[1] = rgbSTR.split(",")[1].trim();
 	rgbArray[2] = rgbSTR.split(",")[2].split(")")[0].trim();
 	let colorStr = rgbToHex(rgbSTR);
 	let textColor = getTextColor(colorStr);
+
+	//if the text color is white,
+	if (textColor == "#ffffff") {
+		let redValue = parseInt(rgbArray[0], 10) + 40
+		let greenValue = parseInt(rgbArray[1], 10) + 40
+		let blueValue = parseInt(rgbArray[2], 10) + 40
+		let accentRGBSTR = "rgb(" + redValue + ", " + greenValue + ", " + blueValue + ")"
+		accentStr = rgbToHex(accentRGBSTR)
+	}
+	//otherwise assume that the text color is black,
+	else {
+		let redValue = parseInt(rgbArray[0], 10) - 30
+		let greenValue = parseInt(rgbArray[1], 10) - 30
+		let blueValue = parseInt(rgbArray[2], 10) - 30
+		let accentRGBSTR = "rgb(" + redValue + ", " + greenValue + ", " + blueValue + ")"
+		accentStr = rgbToHex(accentRGBSTR)
+	}
 	
 	//set colors
 	body.style.color = textColor;
 	nav.style.backgroundColor = textColor;
 	nav.style.color = colorStr;
-	for(var i = 0, length = areaHeaders.length; i < length; i++) {
-        areaHeaders[i].style.backgroundColor = colorStr;
-    }
-	for(var i = 0, length = tableOfContentsLinks.length; i < length; i++) {
-        tableOfContentsLinks[i].style.color = textColor;
+	document.getElementById("quickLinkBox").style.color = textColor;
+	document.getElementById("quickLinkBox").style.backgroundColor = accentStr;
+	for(var i = 0, length = questionHeaders.length; i < length; i++) {
+        questionHeaders[i].style.backgroundColor = accentStr;
     }
 }
 
-//  If there is an entry in LS for the style for this page use it
-let activeTab = document.title;
-let themeColor = localStorage.getItem(activeTab);
-if ( themeColor !== null) {
-	setTheme (themeColor);
-	console.log("LS setter");
-	console.log(themeColor);
+let colorCookie = getCookie("colorMode");
+//if the cookie exists, use it
+if (colorCookie != "") {
+	setTheme (colorCookie);
+	console.log("Cookie setter");
+	console.log(colorCookie);
+} else {
+	setCookie("colorMode","light",366);
+	setTheme ("light");
 }
 
 //  add an event listener to the style drop down list
@@ -127,7 +151,7 @@ choice = themeSelector.value;
 theme.addEventListener('change', () => {
 	choice = themeSelector.value;
 	setTheme (choice);
-    localStorage.setItem(activeTab, choice);
+	setCookie("colorMode",choice,366);
 	console.log("event listener");
 	console.log(choice);
 } );
