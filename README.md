@@ -1,5 +1,6 @@
 # DanielAMoreno5775.github.io
 This is the GitHub repository for my personal portfolio website.
+If the top bar is not a different color from the rest of the page, please use the color mode dropdown in the top-right corner to switch between the modes. This issue is due to the fact that you have not yet created a cookie with this website or your previous cookie expired.
 ## Home Page (/index.html)
 This page acts as an organizer for my various GitHub repositories along with a few basic website elements such as table sorting and form validation.
 ## API Page (/api.html)
