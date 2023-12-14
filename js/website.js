@@ -71,3 +71,18 @@
   setActiveItem()
   window.addEventListener('hashchange', setActiveItem)
 })()
+
+
+
+let pswd = document.getElementById("validationCustomPswd")
+let togglePswd = document.getElementById("pswdToggle")
+
+function showHidePswd () {
+  if (pswd.type === 'password') {
+    pswd.setAttribute('type', 'text')
+    togglePswd.classList.add('hidePasswordButton')
+  } else {
+    pswd.setAttribute('type', 'password')
+    togglePswd.classList.remove('hidePasswordButton')
+  }
+}

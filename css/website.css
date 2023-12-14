@@ -133,11 +133,26 @@ body {
 	font-size: 20px;
 }
 
+#pswdToggle {
+  color: rgba(0,0,0,0);
+  background: url(../assets/eye-password-show.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  cursor: pointer;
+}
+
+#pswdToggle.hidePasswordButton {
+  background: url(../assets/eye-password-hide.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
 .bd-placeholder-img {
     font-size: 1.125rem;
     text-anchor: middle;
     -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none;
 }
 
