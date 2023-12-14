@@ -1,0 +1,18 @@
+#starInfo {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 100;
+    width: 275px;
+    background: transparent;
+}
+
+#request {
+    position: relative;
+    background: #fcc1d4 none repeat scroll 0 0;
+    color: #000;
+    border-color: #000;
+    border-radius: 5px;
+    text-align: center;
+    width: 250px;
+}

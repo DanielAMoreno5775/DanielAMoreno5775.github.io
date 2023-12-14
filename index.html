@@ -15,11 +15,37 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://widgets.astronomyapi.com/cdn/astronomy-api-widgets.js"></script>
     <!-- Custom styles for this template -->
     <link href="css/website.css" rel="stylesheet">
+	<link href="css/api.css" rel="stylesheet">
   </head>
   <body class="bg-light" id="bodyTag"> <!-- First class must always be the theme -->
         
+	<!--This entire div was added by me to display the API images-->
+    <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="min-width:75%;">
+		  	<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-1" id="staticBackdropLabel">Astronomical Information Based on Selected Location</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" data-backdrop="false" aria-label="Close"></button>
+				</div>
+				<div class="modal-body container-fluid">
+					<p>Please wait up to 5 minutes for the API call to be processed, especially if you have made a call previously.</p>
+					<p>If you get an intermittent error message, it is likely due to CORS, too many API requests in a short period of time, or an issue with the IP address code. These can be fixed by reloading the page.</p>
+					<div id="moon-phase"></div>
+					<br><br>
+					<h4>Image of the stars in the sky directly above your current location</h4>
+					<div id="star-chart"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal" data-backdrop="false">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
     <header class="bd-header py-3 d-flex align-items-stretch border-bottom border-dark" id="navbarTag">
       <div class="container-fluid d-flex align-items-center">
         <h1 class="d-flex align-items-center fs-4 mb-0">
@@ -81,6 +107,9 @@
               </p>
 			  <p class="lead">
 				<a href="./questions.html">This link will take you the Quiz page.</a> 
+			  </p>
+			  <p>
+				<button id="request" class="btn btn-primary" data-bs-toggle="modal" data-toggle="modal" data-target="#staticBackdrop" data-bs-target="#staticBackdrop" data-inline="true">Get Astronomy Information</button>
 			  </p>
             </div>
           </div>
@@ -767,6 +796,7 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 	<!-- Custom Javascript -->
+	<script src="js/astronomyAPI.js"></script>
     <script src="js/website.js"></script>
 	<script src="js/sortTableColumns.js"></script>
 	<script src="js/filterTable.js"></script>
