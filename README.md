@@ -2,9 +2,7 @@
 This is the GitHub repository for my personal portfolio website.
 If the top bar is not a different color from the rest of the page, please use the color mode dropdown in the top-right corner to switch between the modes. This issue is due to the fact that you have not yet created a cookie with this website or your previous cookie expired.
 ## Home Page (/index.html)
-This page acts as an organizer for my various GitHub repositories along with a few basic website elements such as table sorting and form validation.
-## API Page (/api.html)
-This page has an example of some API calls.
+This page acts as an organizer for my various GitHub repositories along with a few basic website elements such as API calls, table sorting, and form validation.
 ## Quiz Page (/questions.html)
 This page is an example quiz.
 The quiz header will always display 100 points but the number of questions and the time limit will dynamically vary based on the number of questions. Two minutes will be given for each question. The 100 points will be evenly divided between the questions with the remainder being assigned to the final question. The possible question types are true-false, multiple-choice, and multiple-image-choice. 
