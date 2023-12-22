@@ -20,6 +20,8 @@ arrayOfPoints = Array(questionContainers.length).fill(0)
 arrayOfSelectedAnswers = Array(questionContainers.length).fill("")
 //initialize the time limit variable
 timeLimitVar = 0
+//set a submission flag
+quizSubmitted = 0
 //initial hiding
 initialSetup()
 
@@ -190,31 +192,30 @@ document.getElementById("startButton").addEventListener("click", function() {
         document.getElementById("timer").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
            
         //give a 30 minute warning: 1800200
-        if (minutesTimeLimit > 30 && distance < 1800200 && !thirtyMinWarningTriggered) {
+        if (minutesTimeLimit > 30 && distance < 1800200 && !thirtyMinWarningTriggered && !quizSubmitted) {
             alert("30 minutes remaining")
             thirtyMinWarningTriggered = true
         }
 
         //give a 5 minute warning: 300800
-        if (minutesTimeLimit > 5 && distance < 300700 && !fiveMinWarningTriggered) {
+        if (minutesTimeLimit > 5 && distance < 300700 && !fiveMinWarningTriggered && !quizSubmitted) {
             alert("5 minutes remaining")
             fiveMinWarningTriggered = true
         }
 
         //give a 1 minute warning: 60500
-        if (minutesTimeLimit > 1 && distance < 60500 && !oneMinWarningTriggered) {
+        if (minutesTimeLimit > 1 && distance < 60500 && !oneMinWarningTriggered && !quizSubmitted) {
             alert("1 minute remaining")
             oneMinWarningTriggered = true
         }
 
         // If the countdown is over,
-        if (distance < 0) {
+        if (distance < 0 && !quizSubmitted) {
             //clear the interval
             clearInterval(x);
             //print expired text and alert
             document.getElementById("timer").innerHTML = "EXPIRED";
             alert("Quiz submitted")
-            //submit the quiz
             onSubmission()
         }
     }, 1000);
@@ -306,52 +307,56 @@ function indexSetter(i) {
 
 //function that does stuff when submit button is clicked
 function onSubmission() {
-    //show the quiz's results
-    document.getElementById("questionResults").classList.remove("hide")
-    //hide the previous, next, submit buttons and the quick-link box which are no longer useful
-    document.getElementById("previousButton").classList.add("hide")
-    document.getElementById("nextButton").classList.add("hide")
-    document.getElementById("submitButton").classList.add("hide")
-    document.getElementById("quickLinkBox").classList.add("hide")
-    //hide all of the flag buttons
-    flagButtons = document.getElementsByClassName("questionFlag")
-    for (let i = 0; i < flagButtons.length; i++) {
-        flagButtons[i].classList.add("hide")
-    }
-    //disable all forms on the page
-    toggleFormElements(true)
-    //reveal all of question separators
-    for (let i = 0; i < questionSeparators.length; i++) {
-        questionSeparators[i].classList.remove("hide")
-    }
-    //reveal all of the questions
-    for (let i = 0; i < questionContainers.length; i++) {
-        questionContainers[i].classList.remove("hide")
-    }
-    //mark correct questions and the number of earned points using the shared index principle
-    totalEarnedPoints = 0
-    for (let i = 0; i < questionContainers.length; i++) {
-        //if the selected and correct answers match
-        if (arrayOfFlags[i] == arrayOfCorrectAnswers[i]) {
-            //give full points
-            ptsPerQuestionInstances[i].innerHTML = arrayOfPoints[i] + " / " + arrayOfPoints[i]
-            totalEarnedPoints = totalEarnedPoints + arrayOfPoints[i]
-            correctAnswers[i].classList.add("correctAnswerSelected")
-        } 
-        //otherwise,
-        else {
-            //assign 0 points
-            ptsPerQuestionInstances[i].innerHTML = "0 / " + arrayOfPoints[i]
-            totalEarnedPoints = totalEarnedPoints + 0
-            correctAnswers[i].classList.add("correctAnswerNotSelected")
-            //mark selected answer that is wrong but only if one was selected
-            console.log(arrayOfSelectedAnswers)
-            if (arrayOfSelectedAnswers[i] != '') {
-                labelElement = $('label[for="' + arrayOfSelectedAnswers[i] + '"]')[0]
-                console.log(labelElement)
-                labelElement.classList.add("wrongAnswerSelected")
+    //submit the quiz only if it hasn't already been submitted
+    if (!quizSubmitted) {
+        quizSubmitted = 1
+        //show the quiz's results
+        document.getElementById("questionResults").classList.remove("hide")
+        //hide the previous, next, submit buttons and the quick-link box which are no longer useful
+        document.getElementById("previousButton").classList.add("hide")
+        document.getElementById("nextButton").classList.add("hide")
+        document.getElementById("submitButton").classList.add("hide")
+        document.getElementById("quickLinkBox").classList.add("hide")
+        //hide all of the flag buttons
+        flagButtons = document.getElementsByClassName("questionFlag")
+        for (let i = 0; i < flagButtons.length; i++) {
+            flagButtons[i].classList.add("hide")
+        }
+        //disable all forms on the page
+        toggleFormElements(true)
+        //reveal all of question separators
+        for (let i = 0; i < questionSeparators.length; i++) {
+            questionSeparators[i].classList.remove("hide")
+        }
+        //reveal all of the questions
+        for (let i = 0; i < questionContainers.length; i++) {
+            questionContainers[i].classList.remove("hide")
+        }
+        //mark correct questions and the number of earned points using the shared index principle
+        totalEarnedPoints = 0
+        for (let i = 0; i < questionContainers.length; i++) {
+            //if the selected and correct answers match
+            if (arrayOfFlags[i] == arrayOfCorrectAnswers[i]) {
+                //give full points
+                ptsPerQuestionInstances[i].innerHTML = arrayOfPoints[i] + " / " + arrayOfPoints[i]
+                totalEarnedPoints = totalEarnedPoints + arrayOfPoints[i]
+                correctAnswers[i].classList.add("correctAnswerSelected")
+            } 
+            //otherwise,
+            else {
+                //assign 0 points
+                ptsPerQuestionInstances[i].innerHTML = "0 / " + arrayOfPoints[i]
+                totalEarnedPoints = totalEarnedPoints + 0
+                correctAnswers[i].classList.add("correctAnswerNotSelected")
+                //mark selected answer that is wrong but only if one was selected
+                console.log(arrayOfSelectedAnswers)
+                if (arrayOfSelectedAnswers[i] != '') {
+                    labelElement = $('label[for="' + arrayOfSelectedAnswers[i] + '"]')[0]
+                    console.log(labelElement)
+                    labelElement.classList.add("wrongAnswerSelected")
+                }
             }
         }
+        document.getElementById("ptsResults").innerHTML = totalEarnedPoints + " out of " + numOfPointsAvailable
     }
-    document.getElementById("ptsResults").innerHTML = totalEarnedPoints + " out of " + numOfPointsAvailable
 }
