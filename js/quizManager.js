@@ -2,11 +2,13 @@
 questionContainers = document.getElementsByClassName("questionContainer")
 questionSeparators = document.getElementsByClassName("questionSeparator")
 correctAnswers = document.getElementsByClassName("correctAnswer")
+pointCounters = document.getElementsByClassName("numOfPoints")
 questionCounters = document.getElementsByClassName("numOfQuestions")
 totalMinuteCounters = document.getElementsByClassName("numOfMins")
 ptsPerQuestionInstances = document.getElementsByClassName("pointsPerQuestion")
-//define the initial index
+//define the initial index and the number of points
 index = 0
+numOfPointsAvailable = 100 //changing this value will alter the number of points available everywhere
 //initialize an iterable array of flags which are all set to false (0) with the length of the array equaling the number of questions
 //a 0 in the array is false, a string is true
 arrayOfFlags = Array(questionContainers.length).fill(0)
@@ -68,6 +70,10 @@ function initialSetup() {
     for (let i = 0; i < questionContainers.length; i++) {
         questionContainers[i].classList.add("hide")
     }
+    //set the number of points at the top
+    for (let i = 0; i < pointCounters.length; i++) {
+        pointCounters[i].innerHTML = numOfPointsAvailable
+    }
     //set the number of questions at the top
     for (let i = 0; i < questionCounters.length; i++) {
         questionCounters[i].innerHTML = questionContainers.length
@@ -77,16 +83,16 @@ function initialSetup() {
         timeLimitVar = questionContainers.length * 2
         totalMinuteCounters[i].innerHTML = timeLimitVar
     }
-    //determine the number of points per question as 100 (total points) divided by number of questions
+    //determine the number of points per question as total points divided by number of questions
     //number of points is an integer
-    let ptPerQuestion = Math.floor(100 / questionContainers.length)
-    remainder = 100 % questionContainers.length
+    let ptPerQuestion = Math.floor(numOfPointsAvailable / questionContainers.length)
+    remainder = numOfPointsAvailable % questionContainers.length
     //set the number of points per question
     for (let i = 0; i < ptsPerQuestionInstances.length; i++) {
         ptsPerQuestionInstances[i].innerHTML = ptPerQuestion
         arrayOfPoints[i] = ptPerQuestion
     }
-    //add the remainder of points to reach 100 to the final question
+    //add the remainder of points to reach the total points to the final question
     ptsPerQuestionInstances[ptsPerQuestionInstances.length - 1].innerHTML = ptPerQuestion + remainder
     arrayOfPoints[ptsPerQuestionInstances.length - 1] = ptPerQuestion + remainder
     //hide the previous, next, submit buttons, the quick-link box, and the results
@@ -347,5 +353,5 @@ function onSubmission() {
             }
         }
     }
-    document.getElementById("ptsResults").innerHTML = totalEarnedPoints + " out of 100"
+    document.getElementById("ptsResults").innerHTML = totalEarnedPoints + " out of " + numOfPointsAvailable
 }

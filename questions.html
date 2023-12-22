@@ -53,7 +53,7 @@
 				<!--Quiz Points, Questions, Time Limit aligned using a Bootstrap row so that they are evenly spaced within the quiz box-->
 				<div class="row align-items-start">
 					<div class="col-4">
-						<strong>Points:</strong> 100
+						<strong>Points:</strong> <span class="numOfPoints">100</span>
 					</div>
 					<div class="col-4">
 						<strong>Questions:</strong> <span class="numOfQuestions">4</span>
@@ -69,7 +69,7 @@
 					<div class="col-12">
 						<p>You will have <span class="numOfMins">8</span> minutes to answer <span class="numOfQuestions">4</span> questions. The quiz will be auto-submitted after <span class="numOfMins">8</span> minutes.</p>
 						<p><a href="./index.html">This link will take you back to the Home page.</a> </p>
-						<p>The header above this text will always display 100 points but the number of questions and the time limit will dynamically vary based on the number of questions. Two minutes will be given for each question. The 100 points will be evenly divided between the questions with the remainder being assigned to the final question. The possible question types are true-false, multiple-choice, and multiple-image-choice.</p>
+						<p>In the header above this text, the number of questions and the time limit will dynamically vary based on the number of questions. Two minutes will be given for each question. The available points will be evenly divided between the questions with the remainder being assigned to the final question. The possible question types are true-false, multiple-choice, and multiple-image-choice.</p>
 						<p>The javascript code will automatically handle the number of questions. To remove a question, simply delete a div with the class of "questionContainer". However, this div must be the final one. If there are 4 questions, you can only delete the fourth question, not the other three. To add a question, copy a div with the class of "questionContainer", and then you will need change all of the names, labels, fors, ids, classes, and the question name to alter the question's number. Make sure that all of these have the correct question number.</p>
 						<p>Press the "Take the Quiz" button to start the quiz.</p>
 						<p>During the quiz, please select the radio button that best answers the question. Use the "Previous" and "Next" buttons to navigate through the questions. You can also use the links in the aside to the right of the screen to go directly to a question. Toggle the yellow button on each question to flag it in the right aside. During the quiz, the timer will issue a warning at 30 minutes, 5 minutes, and 1 minute remaining.</p>
