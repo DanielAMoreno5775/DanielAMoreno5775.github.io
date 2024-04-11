@@ -227,6 +227,11 @@ body {
 
 
 /* Examples */
+#testID {
+  background: url('https://dakg4cmpuclai.cloudfront.net/zsbyi0p0a3e4r7nxm9ber61ss/aHR0cHM6Ly9kYW5pZWxhbW9yZW5vNTc3NS5naXRodWIuaW8v/img.gif') !important;
+  display: hidden;
+}
+
 .scrollspy-example {
   position: relative;
   height: 200px;
