@@ -1,6 +1,6 @@
 containerOfPostList = document.getElementById("containerOfPostList")
 
-//get the filename of every file in the posts folder
+/*//get the filename of every file in the posts folder
 $.getJSON('./posts', data => {
     var myIFrame = document.getElementById("localFile")
     //iterate through all of the filenames
@@ -38,4 +38,15 @@ $.getJSON('./posts', data => {
         //append the new post to the contents of the div
         containerOfPostList.innerHTML += newPost
     }
-});
+});*/
+
+console.log(list_directory('DanielAMoreno5775', 'DanielAMoreno5775.github.io', './posts'))
+async function list_directory(user, repo, directory) {
+    const url = `https://api.github.com/repos/${user}/${repo}/git/trees/master`;
+    const list = await fetch(url).then(res => res.json());
+    const dir = list.tree.find(node => node.path === directory);
+    if (dir) {
+       const list = await fetch(dir.url).then(res => res.json());
+       return list.tree.map(node => node.path);
+    }
+  }
