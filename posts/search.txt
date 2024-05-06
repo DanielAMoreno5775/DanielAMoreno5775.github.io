@@ -1,0 +1,18 @@
+gbl_text=`
+# Test Blog
+###### By Daniel Moreno
+###### Category · 3 min read · May 6, 2024
+---
+![image alt ><](./assets/Red-Binary-CPU.png)
+ *Caption* 
+
+In this article, we do something with Javascript. ¯\_(ツ)_/¯
+
+### Introduction
+test
+---
+
+Lorem Ipsum
+
+This links back to the [home page](./index.html). Nice isn't it?
+`

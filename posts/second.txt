@@ -1,0 +1,18 @@
+gbl_text=`
+# Second Post
+###### By Not Daniel
+###### Random · 10 min read · May 0, 2024
+---
+![image alt ><](./assets/info-comm-net-endpoint-cyber-app-info.png)
+ *Caption* 
+
+...contents of my text file... ...more contents... ...and so on.... 
+
+### lesser header
+test
+---
+
+Lorem Ipsum
+
+This links back to the [home page](./index.html). Nice isn't it?
+`

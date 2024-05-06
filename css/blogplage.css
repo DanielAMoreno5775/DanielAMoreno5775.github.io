@@ -1,0 +1,117 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    scroll-behavior: smooth;
+    height: 100%;
+    box-sizing: border-box; 
+}
+
+hr {
+    margin: 1em 0;
+    border: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+blockquote {
+    margin-left: 0;
+    padding: 0.5em 0 0.5em 2em;
+    border-left: 3px solid rgb(211, 218, 234);
+}
+
+li, code {
+    margin: 0.4em 0;
+}
+
+p {
+    margin: 1.2em 0;
+}
+p:has(img) {
+    text-align: center;
+}
+
+code {
+    background: rgba(211, 218, 234, 0.25);
+}
+pre > code {
+    display: block;
+    padding: 0.5em 4em;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+td {
+    padding: 4px 8px;
+}
+tr:nth-child(2n) {
+    background: #f3f3f3;
+}
+th {
+    border-bottom: 1px solid #aaa;
+}
+
+img {
+    height: 96px;
+}
+/*Triggers if alt text ends with these symbols*/
+img[alt$=">"] {
+    float: right;
+}
+img[alt$="<"] {
+    float: left;
+}
+img[alt$="><"] {
+    display: block;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 15%;
+    max-height: 15%;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+
+.markdown {
+    padding: 0 0 0 12px;
+    overflow: auto;
+    font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+    line-height: 1.3;
+}
+
+#theme {
+	width: 130px;
+	position:absolute;
+	right: 30px;
+	top: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: Georgia,Times,Times New Roman,serif;
+	color: #58a1b8;
+}
+
+h1 {
+    text-align: center;
+}
+
+hr {
+    border: 1px solid grey;
+}
+
+.featuredPost {
+    margin-top: 50px;
+}
+
+#localFile {
+    display: none;
+    opacity: 0;
+    max-height: 0;
+    height: 0;
+    max-width: 0;
+    width: 0;
+    /*height: 1000;
+    width: 1000;*/
+}

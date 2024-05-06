@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="google" content="notranslate"/>
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+	<meta name="author" content="Daniel Moreno">
+    <title>Daniel's Website</title>
+	<link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+
+	<!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Custom styles for this template -->
+    <link href="./css/blogplage.css" rel="stylesheet">
+</head>
+<body class="bg-light" id="bodyTag">
+	<!--Header that controls color mode and links this page to the rest of the website-->
+    <header class="bd-header py-3 d-flex align-items-stretch border-bottom border-dark" id="navbarTag">
+		<div class="container-fluid d-flex align-items-center">
+			<h1 class="d-flex align-items-center fs-4 mb-0">
+				<img src="assets/favicon.ico" width="38" height="30" class="me-3 img-thumbnail" alt="My image">
+				Daniel's Portfolio
+			</h1>
+			<select id="theme" class="form-select form-select-sm sticky-xl-top"></select>
+		</div>
+	</header>
+
+	<div class="container" id="containerOfPage">
+		<div class="row align-items-start">
+			<!--These columns ensure that the quiz text is always centered on the page-->
+			<!--Gapping to the left for the quiz box-->
+			<div class="col-2"> </div>
+			<div class="col-8">
+				<div class="text-left">
+					<div class="markdown"></div>
+				</div>
+			</div>
+			<div class="col-2"> </div>
+		</div>
+	</div>
+
+
+
+	
+
+	<!--Custom javascript files-->
+	<script type="text/javascript" src="./js/blogThemeSetter.js"></script>
+	<!--Uses Drawdown code from github.com/adamvleggett/drawdown to display markdown text from the file-->
+	<script type="text/javascript" src="./js/drawdown.js"></script>
+	<script type="text/javascript">
+		//get the parameters passed in the URL
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		//get the output box and check to make sure that the right parameter was passed
+		var ouputBox = document.querySelector(".markdown");
+		if (urlParams.has('page')) {
+			//store the value passed in the URL parameter
+			const fileName = urlParams.get('page')
+			//check if passed page exists
+			if (checkFileExists('./posts/' + fileName + '.txt')) {
+				//import the text file based on the value passed in the URL
+				//all text files must follow the pattern of gbl_text=`Lorem Ipsum`
+				var dynamicPostTextScript = document.createElement('script');
+				dynamicPostTextScript.setAttribute('src', './posts/' + fileName + '.txt');
+				document.body.appendChild(dynamicPostTextScript);
+				//import the JS necessary to display the imported markdown after the text file has been imported
+				var dynamicDisplayScript = document.createElement('script');
+				dynamicDisplayScript.setAttribute('src', './js/blogPage.js');
+				document.body.appendChild(dynamicDisplayScript);
+			}
+			ouputBox.innerHTML = `
+				<h1>Invalid Blog Post</h1>
+				<h6> By Daniel Moreno</h6>
+				<h6> 1 min read · May 6, 2024</h6>
+				<hr>
+				<p>
+					<img src="./assets/Red-Binary-CPU.png" alt="image alt ><">
+				</p>
+				<p>Sorry about this, looks like an invalid page was passed. Why don't you head back to <a href="./blogroot.html">the main page</a> and select a valid blog post. Alternatively, head back to the <a href="./index.html">home page</a>.</p>
+			`;
+		} else {
+			ouputBox.innerHTML = `
+				<h1>Blog Not Set</h1>
+				<h6> By Daniel Moreno</h6>
+				<h6> 1 min read · May 6, 2024</h6>
+				<hr>
+				<p>
+					<img src="./assets/Red-Binary-CPU.png" alt="image alt ><">
+				</p>
+				<p>Sorry about this, looks like a page wasn't passed. Why don't you head back to <a href="./blogroot.html">the main page</a> and select a valid blog post. Alternatively, head back to the <a href="./index.html">home page</a>.</p>
+			`;
+		}
+		//basic function to check if a file exists; triggers CORS error if not on a server so may need alt+L & alt+O
+		function checkFileExists(file_path) {
+			var http = new XMLHttpRequest()
+			http.open('HEAD', file_path, false)
+			http.send()
+			if (http.status === 200) {
+				return true
+			} else {
+				return false
+			}
+		}
+	</script>
+</body>
+</html>
