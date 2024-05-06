@@ -40,7 +40,7 @@ $.getJSON('./posts', data => {
     }
 });*/
 
-console.log(list_directory('DanielAMoreno5775', 'DanielAMoreno5775.github.io', './posts'))
+console.log(list_directory('DanielAMoreno5775', 'DanielAMoreno5775.github.io', 'posts'))
 async function list_directory(user, repo, directory) {
     const url = `https://api.github.com/repos/${user}/${repo}/git/trees/master`;
     const list = await fetch(url).then(res => res.json());
