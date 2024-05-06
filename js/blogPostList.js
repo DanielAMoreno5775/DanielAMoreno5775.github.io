@@ -7,7 +7,7 @@ $.getJSON('./posts', data => {
     for (filename of data){
         //get the contents of each file by messing with an iframe
         myIFrame.src = "./posts/" + filename
-        //alert(filename)
+        alert(filename)
         let fileContents = myIFrame.contentWindow.document.body.innerText
         let title = (fileContents.split("`")[1]).split("#")[1]
         let authorName = (fileContents.split("#")[7])
