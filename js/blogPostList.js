@@ -40,13 +40,21 @@ $.getJSON('./posts', data => {
     }
 });*/
 
-console.log(list_directory('DanielAMoreno5775', 'DanielAMoreno5775.github.io', 'posts'))
-async function list_directory(user, repo, directory) {
-    const url = `https://api.github.com/repos/${user}/${repo}/git/trees/master`;
-    const list = await fetch(url).then(res => res.json());
-    const dir = list.tree.find(node => node.path === directory);
-    if (dir) {
-       const list = await fetch(dir.url).then(res => res.json());
-       return list.tree.map(node => node.path);
-    }
-  }
+// Octokit.js
+// https://github.com/octokit/core.js#readme
+key = "TCLObOoyy8lC7Ude5k0YT4gaIco7444IF2Uh"
+const octokit = new Octokit({
+    auth: "ghp" + key
+})
+  
+async function listDirectory() {
+    list = await octokit.request('GET /repos/{owner}/{repo}/git/trees/{tree_sha}', {
+        owner: 'DanielAMoreno5775',
+        repo: 'DanielAMoreno5775.github.io',
+        tree_sha: '143e28f',
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+    }).then(res => res.json())
+    console.log(list)
+}
