@@ -1,18 +1,622 @@
 gbl_text=`
-# Test Blog
+# Building a Fuzzy Search Mechanism for React Native
 ###### By Daniel Moreno
-###### Category · 3 min read · May 6, 2024
+###### Capstone · 12 min read · May 7, 2024
 ---
-![image alt ><](./assets/Red-Binary-CPU.png)
- *Caption* 
+![image alt ><](https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/10/2020-10-12-19_15_20-Window-1.png)
+ *Source: medium.com/@paularun.prasath/implementing-fuzzy-search-in-c-with-net-dbe215e55404* 
 
-In this article, we do something with Javascript. ¯\_(ツ)_/¯
+Greetings and permutations everyone. In this article, I'm going to explain how I built a fuzzy search mechanism for a mobile application written in React Native. Since I found blog posts to be the most useful resources during my research, I want to pass on what I learned in the hopes of helping someone else with a similar problem.
 
-### Introduction
-test
 ---
 
-Lorem Ipsum
+### Background Information
+Before I go into the technical implementation, I want to briefly touch on my specific use case as it may help to explain some of the choices that I made. I created this search bar for my Capstone I course at the University of North Texas. In this course, the only external client, a certified SAFe Product Owner and SM, offered an interesting project. She wanted a mobile app that would communicate with her elastic Azure MySQL database, allowing users to track data for their farm. She wanted to ensure that we understood her specific needs so she also invited us to visit her farm. The intended audience was people that own 5 to 30 acres where they have a sizable amount of land but are not professional farmers. Currently, the app will be a commercial product with a freemium payment plan. Each crop has many attributes, but I want to briefly focus on two of them. The client wanted to have a number assigned to each of a person's crops, allowing them simply put a sign on that field with the corresponding number. Besides not permitting repetition, the table's primary key would be universal across all users. As such, a user with only two crops could have the numbers 3 and 75, which would be extremely confusing. To solve these difficulties, we created the human-readable format number or HRFNum as a separate field in the table. Secondly, we created an attribute called Visibility as the client wanted the app to aggregate certain details from all publicly shared crops, a point I will return to in a moment. Finally, she wanted the app written in a language based on Python or JavaScript, the languages she was most familiar with, as she wanted to maintain and even expand the app in the future.
 
-This links back to the [home page](./index.html). Nice isn't it?
+The home page can communicate with a national weather API and the user's personal sensors from Ambient Weather. In addition, the home page would offer a carousel to quickly access the crops that were recently planted. The crops page allows users to create, view, edit, and delete specific crops. Each crop has various attributes including its name, HRF number, image, variety, source, date planted, location, whether it is active, yield, visibility, and a few others. The notebook page permits users to create a to-do list and keep a journal entry, allowing them to track their activity on a given day. The data hub page aggregates all of a user's crops and all public crops in the region, specifically for active, current, and past crops. The profile page is where users can customize their profile, configure their settings, manage their account, and log out.
+
+In several places throughout the app, a search bar is necessary. A user should be able to search for a specific crop by its name or HRFNum. The user will be typing on a mobile keyboard, possibly while wearing gloves. As such, the search bar needs to provide error correction or possible matches for the user's input. This is where fuzzy searching comes into the equation. As you probably know if you found this post, fuzzy searching is the usage of one or more algorithms to find strings in the database and suggest it to the user, boosting the relevance of search options. For most classes, substring matches are sufficient where you just check whether the input is present within any database strings. However, this does not allow for error correction, a necessity for my use case. Many companies prefer machine learning approaches because pre-existing solutions can be quickly bought and used. Since this is for school, I needed to write all of it myself, and machine learning is too complex for my use case. Another approach to fuzzy searching is synonym, grammar, and dictionary-based approaches, but those do not work well when searching numbers and names. As such, this left me with partial word matching, edit distances, similarity coefficients or indices, and n-gram matching.
+
+### Search Bar Component
+
+Before I can discuss how I wrote the search code, I need to briefly cover how React Native works and how I created the search bar component. Technically, React Native is an open-source, client-side UI framework for TypeScript that can be translated into code which works on most mobile devices. Basically, React Native allows you to combine HTML-like tags or components, CSS-like styling, and JavaScript-like functionality. If you want, you can create custom components with either arrow functions or classes that extend React.Component. Each component has props or properties which can be edited like an HTML attribute.
+
+In accordance with object-oriented principles, I wanted to create a separate component for the search bar that the other group members could import. Depending on their page, they either needed the search results to display in a dropdown below the search bar or on a separate page. I chose to implement the separate page option as a modal that opens and covers the view. However, I will leave that discussion here as it is not the primary focus of this post. Also, some of them were using ScrollView which prevented me from using the premade solutions for display, like FlatList. I ended up using the .slice() function.
+
+~~~
+class SearchInput extends Component { 
+	constructor(props) { 
+		super(props); 
+		this.state = { 
+			loading: false, 
+			data: CROPS, 
+			error: null, 
+			searchValue: "", 
+			isModalVisible: false,
+		}; 
+		this.arrayholder = CROPS; //right now, this is some JSON text being imported from a local file
+		this.props.resultDisplayMode = "dropdown";
+	} 
+
+	render() {
+		if  (this.props.resultDisplayMode === "modal") {
+			const { isModalVisible } = this.state;
+			const setIsModalVisible = isModalVisible => this.setState({ isModalVisible });
+			return ( 
+				<View style={styles.container}> 
+          {/*This is a disabled search bar wrapped in an invisible button which opens the modal when pressed*/}
+					<TouchableOpacity activeOpacity={0.8} onPress={() => setIsModalVisible(true)}> 
+						<SearchBar 
+							placeholder="Search Crops..."
+							round 
+							editable={false}
+							readOnly
+							keyboardType='default'
+							style={{ //stylize the text within the search bar; affects placeholder text which is why the disabled version still has it
+								color: 'black',
+								fontSize: 16,
+							}}
+							containerStyle={{ //make the container box around the search bar disappear
+								backgroundColor: 'none',
+								borderColor: 'rgba(0, 0, 0, 0)',
+								borderRadius: 50,
+								marginBottom: 0,
+							}}
+							inputContainerStyle={{ //round off the edges of search bar and make the input field white
+								backgroundColor: 'white',
+								borderRadius: 50,
+								marginBottom: 0,
+							}}
+							placeholderTextColor={Colors.CHARCOAL}
+						/>
+					</TouchableOpacity>
+					<SearchModal modalVisible={isModalVisible} 
+            onBackPress={() => setIsModalVisible(false)} //disappear if user clicks outside of the modal
+						searchValue={this.state.searchValue}
+						searchFunction={(text) => this.searchFunction(text)}
+						originalData={this.state.data}
+          />
+				</View> 
+			); 
+		}
+		//if it isn't a modal, assume that the user wants the dropdown format
+		else { 
+			return ( 
+				<View style={styles.container}> 
+        {/*The SearchBar component comes from the React Native Elements library as it decreased the amount of styling that I needed to do*/}
+					<SearchBar 
+						placeholder="Search Crops..."
+						showCancel
+						round 
+						value={this.state.searchValue} 
+						onChangeText={(text) => this.searchFunction(text)} 
+						autoCorrect={true} 
+						keyboardType='default'
+						style={{ //stylize the text within the search bar
+							color: 'black',
+							fontSize: 16,
+						}}
+						containerStyle={{ //make the container box around the search bar disappear
+							backgroundColor: 'none',
+							borderColor: 'rgba(0, 0, 0, 0)',
+							borderRadius: 50,
+							marginBottom: 0,
+						}}
+						inputContainerStyle={{ //round off the edges of search bar and make the input field white
+							backgroundColor: 'white',
+							borderRadius: 50,
+							marginBottom: 0,
+						}}
+						placeholderTextColor={Colors.CHARCOAL} //To ensure standardized colors, I created a separate file for our color palatte that we imported as needed. That is the source of this CHARCOAL color.
+					/> 
+					{/*I use a slice and map function instead of a FlatList so that it will work on pages with ScrollView; Only possible because I only ever want the top 3 options*/}
+					{/*The ANDs here allow for conditional rendering where the View component is only displayed if the first condition is true, allowing me to only display the dropdown after a value has been typed into the search bar.*/}
+					{this.state.searchValue && <View style={styles.unfoldedlistStyle}> 
+						{this.state.data.slice(0,3).map((item, key) => (
+              //This Link component functions like a button which will send the user to a page to view the specific crop and passes the crop to that page, allowing the page to display it. For page management, we chose expo-router which uses a stack to handle the pages. In this case, we are pushing the page on to the stack, allowing us to implement a back arrow which pops the top of the stack.
+							<Link key={key} href={{ pathname: "/cropspage", params: { param: JSON.stringify(item) } }} push style={styles.item}>
+								<View >
+									<Text>Name: {item.name} | Crop Number: {item.hrfNum}</Text> 
+								</View>
+							</Link>
+						))}
+					</View>}
+					{!this.state.searchValue && <View style={styles.foldedlistStyle}>
+					</View>}
+				</View> 
+			); 
+		}
+	} 
+} 
+~~~
+
+All of that code allowed my other group members to simply enter \`<SearchInput resultDisplayMode={"dropdown"}/>\` in their own code.
+
+Before moving on, I do want to briefly mention a few details about the above code. The value prop is extremely important. If it is not updated, the search bar will allow the user to enter text but will wipe it away the moment that they stop typing. Secondly, the onChangeText prop is passed the search function which takes the contents of the search bar as a string and is called every time that the text is changed in any way.
+
+---
+
+### Search Function
+
+This was my first version of the searchFunction and is the reason why I needed to use a class component.
+
+~~~
+searchFunction = (text) => { 
+	//clean up the text based on whether or not it is a number
+	var cleanedTxt = ""
+	if (isNumeric(text)) {
+		cleanedTxt = text.cleanNumForSearch();
+	} else {
+		cleanedTxt = text.cleanTextForSearch();
+	}
+
+	//sort array in ascending order to place the lowest value at the top
+	const updatedData = this.arrayholder.sort(function(a,b){ 
+		//if number, check against HRFNumber, otherwise look at name
+		if (isNumeric(text)) {
+			//sort the array in ascending order based on the crop's HRFNumber
+			return compareStrings(a.hrfNum,cleanedTxt) - compareStrings(b.hrfNum,cleanedTxt); 
+		} else {
+			//sort the array in ascending order based on the crop's name
+			return compareStrings(a.name,cleanedTxt) - compareStrings(b.name,cleanedTxt); 
+		}
+	});
+	this.setState({ data: updatedData, searchValue: text }); 
+}; 
+~~~
+
+Looking back, I can see a lot of issues with this function. However, I want to show my progress along the way rather than simply the final product. In this version, the function checks if the text is primarily numeric before cleaning it and determining whether the user wants to look at the HRFNumber or the crop's name. Then, searchFunction uses a custom comparator to sort the array of crops, placing the crop with the lowest value at the top.
+
+### Initial String Comparison
+
+Let's take a look at the initial version of the compareStrings function.
+
+~~~
+function compareStrings(s, t) {
+	//get the Sorensen-Dice Coefficient value
+	sdc = sorensenDiceCoefficient(s.toUpperCase(),t.toUpperCase())
+	//if the SDC is high enough, just return that and skip DLED
+	if (sdc >= 0.45) {
+		return 1
+	}
+	//get the Damerau-Levenshtein Edit Distance value
+	dled = damerauLevenshteinDistance(s.toUpperCase(),t.toUpperCase(), 10) + 0.1 //add 0.1 to ensure that it is always going to be bigger than the SDC
+	return dled
+}
+~~~
+
+At these early stages, the Sorensen-Dice Coefficient was being calculated, providing a mathematical value that reflects the string's similarity on an inclusive range between 0 and 1. If the coefficient is high enough indicating a good match, compareStrings just returns a 1. Otherwise, the function will calculate the Damerau-Levenshtein Edit Distance and returns that. My research had led me to [Aaron Hammond's article for August Schools](https://www.augustschools.com/blog/needles-in-a-haystack-dice-and-levenshtein/) which is what inspired this implementation, though I later realized that I had misunderstood the article.
+
+---
+
+### Testing the Search Function
+
+Initially, I was using a JSON file with 8 entries. My first version of compareStrings managed 100% accuracy for this small sample, but I decided that it was insufficiently representative of the final product. Earlier in the semester, a different professor mentioned that he used Go or Python to quickly generate test cases.
+
+Based on that, I decided to create my own test cases. First, I found a list of crops grown in Texas on the Department of Agriculture's website. Then, I created basic Python program to generate JSON entries for each crop and export them to a usable file. Afterwards, I set up some simple code to randomly assign plausible values for the other fields. Also, I used a function that creates the plural form of a word as the database could have "Blackberry" and "Blackberries". I would like to credit it, but I found the function years ago and have been using it for some time. The pluralizer may not be perfect, but it has always met my needs.
+
+Since this semester kept me very busy and the program didn't need to be perfect, I just threw it together in about 30 minutes. In case it might be useful to someone, here it is.
+
+~~~
+import json
+import random
+from datetime import datetime, timedelta
+from re import search, sub
+from types import SimpleNamespace
+
+# Read input file of crop names
+with open('croplist.txt', 'r') as f:
+    lines = f.readlines()
+
+# Initialize crops list
+CROPS = []
+
+# Function to generate random date between 2015 and 2025
+def random_date():
+    start_date = datetime(2015, 1, 1)
+    end_date = datetime(2025, 12, 31)
+    days = (end_date - start_date).days
+    random_days = random.randint(0, days)
+    #properly format it into 08/22/2024 or MM/DD/YYYY
+    return (start_date + timedelta(days=random_days)).strftime('%m/%d/%Y')
+
+# Function to pluralize a word
+def pluralize(word):
+    # store some common words that don't change or change in a unique way
+    IRREGULARS = {
+        "child": "children",
+        "foot": "feet",
+        "goose": "geese",
+        "man": "men",
+        "louse": "lice",
+        "mouse": "mice",
+        "die": "dice",
+        "ox": "oxen",
+        "person": "people",
+        "tooth": "teeth",
+        "woman": "women",
+    }
+    SAME_FORM = [
+        "bison",
+        "buffalo",
+        "deer",
+        "fish",
+        "moose",
+        "pike",
+        "plankton",
+        "salmon",
+        "shrimp",
+        "sheep",
+        "swine",
+        "trout",
+        "tuna",
+    ]
+    # store the common endings for plural worlds
+    ENDINGS = SimpleNamespace(
+        **{
+            "DEFAULT": "s",
+            "SPECIAL": "es",
+            "SUPERSPECIAL": "i",
+        }
+    )
+    #store example words for:
+    #words that end in 'o' and must be pluralized to 'oes'
+    ES_OS = ["potato", "tomato", "hero", "echo", "torpedo", "veto"]
+    #words that end in 'f' and must be pluralized to 'ves'
+    F_V_WORDS = ["wolf", "elf", "loaf", "thief", "leaf", "knife", "life", "wife", "calf"]
+    #words that end in 'z' and must be pluralized to 'zes'
+    L_REPEATERS = ["buzz", "fizz", "fuzz", "jazz", "quiz"]
+
+    #make the word lowercase to prevent issues
+    word = word.lower()
+
+    #check for special case words defined above
+    if word in IRREGULARS:
+        return IRREGULARS[word]
+
+    if word in SAME_FORM:
+        return word
+
+    # Some words repeat the last letter in their plural form
+    if word in L_REPEATERS:
+        word += word[-1]
+
+    # Words ending in us -> change us to i
+    if search(r"us$", word):
+        return word[:-2] + ENDINGS.SUPERSPECIAL
+
+    # Words ending in is -> change is to es
+    if search(r"is$", word):
+        return word[:-2] + ENDINGS.SPECIAL
+
+    # Words ending in x, s, z, ch, sh -> add es
+    if search(r"[xsxz]$", word) or search(r"[cs]h$", word):
+        return word + ENDINGS.SPECIAL
+
+    # Words ending in y with a consonant before it -> change y to i and add es
+    if search(r"[^aeiou]y$", word):
+        return word[:-1] + "i" + ENDINGS.SPECIAL
+
+    # Words ending in y with a vowel before it -> add s
+    if search(r"[aeiou]y$", word):
+        return word + ENDINGS.DEFAULT
+
+    # Words ending in o -> add s generally, but add es for ES_OS words
+    if search(r"o$", word):
+        if word in ES_OS:
+            return word + ENDINGS.SPECIAL
+        return word + ENDINGS.DEFAULT
+
+    # Words ending in fe -> change fe to v and add es
+    if search(r"fe$", word):
+        return word[:-2] + "v" + ENDINGS.SPECIAL
+
+    # Words ending in f or ff -> add S, but change f to v for F_V_WORDS
+    if search(r"ff?$", word):
+        if word in F_V_WORDS:
+            return word[:-1] + "v" + ENDINGS.SPECIAL
+        return word + ENDINGS.DEFAULT
+
+    # If all else fails, just add s
+    return word + ENDINGS.DEFAULT
+
+# Generate random media from list of values on the client's farm
+def random_media():
+    return random.choice(["in ground", "hugel mound", "raised bed", "container", "aquaponic"])
+
+# Generate random location from list of values on the client's farm
+def random_location():
+    hugel_mounds = ['Hugel Mound #1', 'Hugel Mound #2']
+    greenhouses = ['Greenhouse #1', 'Greenhouse #2', 'Greenhouse #3', 'Greenhouse #4']
+    fields = ['Field #1', 'Field #2', 'Field #3', 'Field #4', 'Field #5']
+    orchards = ['Orchard #1', 'Orchard #2', 'Orchard #3']
+    return random.choice(hugel_mounds + greenhouses + fields + orchards + ['Garden patch', 'Yard', 'Cold frame', 'Indoor'])
+
+# Generate random variety from list of plausible values
+def random_variety():
+    return random.choice(["standard", "beefsteak", "little finger", "green", "black", "tall", "heirloom"])
+
+# Generate random source from list of plausible values
+def random_source():
+    return random.choice(["personal cutting", "cutting from friend", "burpee", "johnny's selected seeds", "ferry-morse", "walmart", "home depot"])
+
+# Generate random yield number between 0 and 5 (2 decimal places)
+def random_yield():
+    return round(random.uniform(0, 5), 2)
+    
+# Function to generate random comments from an array of sentences
+def generate_comments():
+    sentences = [
+        "None.",
+        "Nothing for now.",
+        "This crop is doing exceptionally well.",
+        "I've noticed some pests on a few plants, but overall it's healthy.",
+        "The weather has been rough on this crop lately.",
+        "I'm experimenting with a new fertilizer on this batch.",
+        "The growth rate seems slower than expected.",
+        "I'm considering trying a different planting method next season.",
+        "There's a lot of potential for improvement in this area.",
+        "I'm excited to see how this crop develops over time.",
+        "The soil quality needs some attention for better results.",
+        "I've been closely monitoring the watering schedule for optimal growth.",
+        "The harvest from this crop was quite bountiful.",
+        "I've had some success with companion planting techniques here.",
+        "The color and texture of the leaves are vibrant and healthy.",
+        "I'm planning to expand this crop in the near future.",
+        "There are signs of nutrient deficiencies in some plants.",
+        "I've been experimenting with different pruning techniques to promote growth.",
+        "The plants seem to be responding well to the recent increase in sunlight.",
+        "There's been some signs of disease, so I've been applying organic treatments.",
+        "I've been documenting the development stages of this crop for research purposes.",
+        "The aroma from the flowers is delightful and attracts beneficial insects.",
+        "I'm considering introducing some companion plants to improve soil fertility.",
+        "Despite some initial setbacks, the crop is showing signs of resilience.",
+        "I've been closely monitoring the pH levels of the soil to ensure optimal conditions."
+    ]
+    
+    #Randomly join 1 to 4 of the above sentences together for the comment.
+    num_sentences = random.randint(1, 4)
+    return ' '.join(random.sample(sentences, num_sentences))
+
+# Iterate through each line in the input file
+for line in lines:
+    # Strip whitespace and split by spaces
+    words = line.strip().split()
+
+    # Generate random values
+    label = ' '.join(words)
+    name = label
+    hrfNum = str(random.randint(1, 999)).zfill(3) #generate 3 digit number with prepended 0s
+    media = random_media()
+    location = random_location()
+    variety = random_variety()
+    source = random_source()
+    yield_amount = f"{random_yield()} kg/ha" #appends the units of kilograms per hectares
+    crop_type = random.choice(['annual', 'perennial', 'biennial'])
+    active = random.choice(['Y', 'N'])
+    indoors = random.choice(['Yes', 'No'])
+    date = random_date()
+    comment = generate_comments()
+
+    # Create crop dictionary for singular form
+    crop_singular = {
+        'label': label,
+        'name': name,
+        'hrfNum': hrfNum,
+        'active': active,
+        'location': location,
+        'variety': variety,
+        'source': source,
+        'date': date,
+        'comments': comment,
+        'indoors': indoors,
+        'type': crop_type,
+        'media': media,
+        'yield': yield_amount
+    }
+
+    # Append singular crop to CROPS list
+    CROPS.append(crop_singular)
+
+    # Generate plural label
+    plural_label = ' '.join(words[:-1])
+    plural_label = plural_label + ' ' + pluralize(words[-1]).capitalize()
+    plural_label = plural_label.strip()
+
+    # Create crop dictionary for plural form
+    crop_plural = {
+        'label': plural_label,
+        'name': plural_label,
+        'hrfNum': hrfNum,
+        'active': active,
+        'location': location,
+        'variety': variety,
+        'source': source,
+        'date': date,
+        'comments': comment,
+        'indoors': indoors,
+        'type': crop_type,
+        'media': media,
+        'yield': yield_amount
+    }
+
+    # Append plural crop to CROPS list
+    CROPS.append(crop_plural)
+
+# Write output JSON to file
+with open('testCropData.json', 'w') as f:
+    json.dump(CROPS, f, indent=4)
+~~~
+
+When I ran this program, I got 584 JSON entries in the following format; more than enough for my needs.
+
+~~~
+[
+    {
+        "label": "Abaca",
+        "name": "Abaca",
+        "hrfNum": "935",
+        "active": "Y",
+        "location": "Greenhouse #4",
+        "variety": "heirloom",
+        "source": "home depot",
+        "date": "08/22/2024",
+        "comments": "I'm considering trying a different planting method next season.",
+        "indoors": "Yes",
+        "type": "perennial",
+        "media": "in ground",
+        "yield": "3.74 kg/ha"
+    }
+]
+~~~
+
+With this done, I could finally test my search bar properly. While decently fast, I discovered that the search bar was only achieving about 60% accuracy. The most common issue was with plurals where a user input of "carrots" would always return "carrot" above "carrots". Another issue that I remember is "abaca" being considered a better match than "cabbage" for a user input of "cabba". As such, I began more extensively researching fuzzy searching and approximate string matching.
+
+---
+
+### The New String Comparison
+
+At this point, I discovered an [article on ForrestTheWoods' blog](https://www.forrestthewoods.com/blog/reverse_engineering_sublime_texts_fuzzy_match/) about Sublime Text's fuzzy search algorithm. Sublime Text uses their algorithm to suggest keywords to programmers as they type. According to him, Sublime Text tries to match each character in the user's input and assigns a bonus to the match score for specific characters that are worth more points. Then, the algorithm returns the match with the highest final score. Based on some other blogs I found, I decided that it was still a good idea to combine multiple algorithms but as part of a weighted fuzzy search. All of this led to the current version of compareStrings and a change to searchFunction to place the strings with the highest score at the top of the list.
+
+~~~
+function compareStrings (s, t) {
+	//PROFILING: Preprocessing section
+	//remove diacretics and other unicodes by turning them into ASCII-equivalent
+	sASCII = unidecode(s)
+	tASCII = unidecode(t)
+	//ignore case
+	sUpper = sASCII.toUpperCase()
+	tUpper = tASCII.toUpperCase()
+
+	//if exact match, return highest possible score
+	if (matchExact(sUpper,tUpper)) {
+		return 500
+	}
+
+	//store the length of each passed string
+	sL = sUpper.length
+	tL = tUpper.length
+
+	//get the SDC value and multiply by 100 to get score and round to nearest whole number to eliminate decimals; high number is good
+	//PROFILING: SDC section
+	matchScore = customRound(sorensenDiceCoefficient(sUpper,tUpper) * 100)	
+
+	//give bonus score if first letters match as least likely letter to be wrong
+	//PROFILING: First and Last Letter section
+	if (sUpper.charAt(0) === tUpper.charAt(0)) {
+		matchScore += 18
+	}
+	//give bonus score if last letters match as still less likely to be wrong
+	if (sUpper.charAt(sL - 1) === tUpper.charAt(tL - 1)) {
+		matchScore += 5
+	}
+	//check the first letter after each space for both words by getting all of them, merging them into one string, and sending them through DLED as they are less likely to be wrong
+	let sAcronym = sUpper.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')
+	let tAcronym = tUpper.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')
+	matchScore += customRound(5 / (damerauLevenshteinDistance(sAcronym,tAcronym) )) //add 1 so never dividing by 0, then divide 5 by distance to determine score so diminishing bonus with increasing distance
+
+	//give penalty if different length
+	//PROFILING: Length & Syllable section
+	if (sL !== tL) {
+		matchScore -= customAbs(sL - tL)
+	}
+	//give bonus if same number of syllables
+	if (syllableCount(sUpper) === syllableCount(tUpper)) {
+		matchScore += 5
+	}
+
+	//do a prefix match to assign a bonus if t starts with s
+	//PROFILING: Prefix Match section
+	if (tUpper.startsWith(sUpper)) {
+		matchScore += 20
+	}
+
+	//apply penalty to score equal to the DLED value times a constant
+	//PROFILING: DLED section
+	matchScore -= (damerauLevenshteinDistance(sUpper,tUpper) * 2)
+
+	//apply bonus from Jaro-Winkler Similarity which counts transpositions and matching characters with scaling bonus for prefix match
+	//PROFILING: JWS section
+	jws = jaroWinklerSimilarity(sUpper, tUpper)
+	matchScore += (jws * 15)
+
+	//apply a stemmer algorithm to extract the English stem (removes plurals, men vs. man, past tense, z vs. s, democracy vs democratic, etc.)
+	//uses a lemmatizer (Wink family of packages) rather than a stemmer to identify lemma using morphological analysis because a stemmer turns all operational/operative/operating into oper
+	//lemmatizer considers context and produces a valid word which works better with doubleMetaphone though it does turn better into good
+	//then send that through the Double Metaphone algorithm to receive 2 approximate phonetic encodings (PhonetEx strings) to account for pronunciations and accents (ensures smyth points to smith, not smash)
+	//PROFILING: Lemmatizer section
+	var lemmatize = require( 'wink-lemmatizer' )
+	sMetaphoneCodes = doubleMetaphone(lemmatize.noun(sUpper))
+	tMetaphoneCodes = doubleMetaphone(lemmatize.noun(sUpper))
+
+	//PROFILING: Double Metaphone Comparison section
+	//compare both primary codes; only give bonus if exact match
+	if (matchExact(sMetaphoneCodes[0],tMetaphoneCodes[0])) {
+		matchScore += 15
+	}
+	//compare s primary with t secondary; only give bonus if exact match
+	if (matchExact(sMetaphoneCodes[0],tMetaphoneCodes[1])) {
+		matchScore += 12
+	}
+	//compare s secondary with t primary; only give bonus if exact match
+	if (matchExact(sMetaphoneCodes[1],tMetaphoneCodes[0])) {
+		matchScore += 11
+	}
+	//compare s secondary with s secondary; only give bonus if exact match
+	if (matchExact(sMetaphoneCodes[1],tMetaphoneCodes[1])) {
+		matchScore += 10
+	}
+
+	return matchScore
+}
+~~~
+
+As denoted by the PROFILING comments, the function can now by broken up into general sections. Preprocessing removes Unicode characters with a transliteration library, changes all letters to uppercase, checks for an exact match which permits an early return, and stores each string's length. The Sorensen-Dice Coefficient (SDC) section calculates the coefficient, multiplies it by 100, rounds it to the nearest integer, and makes that the initial match score. The First and Last Letter section gives a bonus score if the first letter, last letter, or the letters after each space matches. The Length & Syllable section gives a bonus if the two strings are the same number of syllables and a penalty if a different length. The Prefix Match section provides a bonus if the second string starts with the first string. The Damerau-Levenshtein Edit Distance (DLED) section compares the two strings, though I also use it earlier in the First and Last Letter section. The Jaro-Winkler Similarity (JWS) section provides a bonus based on the strings' similarity with an extra bonus for matching prefixes. The final two sections lemmatize the two words, retrieve approximate phonetic encodings for the new words, and then provide a bonus if the encodings match.
+
+### Optimizations and Profiling
+
+If you know anything about these algorithms, you will be unsurprised to hear that this code generally took 5 or 6 seconds every time that the user's input changed and that time only grew as the user's input became longer. As such, I began making various optimizations throughout the code.
+
+Firstly, I took all of the conditionals out of the .sort() function in searchFunction. While this means that the code is less clean, it significantly decreases the number of operations and function calls. Then, I removed isNumeric and changed the conditional to check whether the first character is a number.
+
+Somewhere online, I read that TypeScript offers a more efficient version of function declarations. Despite my best efforts, I have been unable to find the article, but I decided to change all of my function declarations in case they were right. For example, the compareStrings function declaration now looks like \`this["compareStrings"] = function(s, t)\`.
+
+Next, I went looking for highly optimized versions of each algorithm rather than simply a working version. I'll go into a bit more detail in the section for each algorithm.
+
+Then, I created custom versions of any functions that I used from the Math library. From what I saw online, the compiler does a better job of optimizing local code rather than library functions. In addition, this offers the option of bitwise and ternary operators.
+
+~~~
+this["customMax"] = function(x, y) {
+	return x > y ? x : y
+}
+this["customMin"] = function(x, y) {
+	return x < y ? x : y
+}
+this["customRound"] = function(x) {
+	return (x + (x>0?0.5:-0.5)) << 0;
+}
+this["customAbs"] = function(x) {
+	return (x + (x >> 31)) ^ (x >> 31);
+}
+this["customSqrt"] = function(x) {
+	return x ** 0.5;
+}
+~~~
+
+After these optimizations, I checked the code again. Unfortunately, the code still takes an average of 3700ms. At this point, I ran some profiling to determine which sections are causing the most problems. Here's the percentages, though my rounding means that it adds up to slightly beyond 100%.
+
+| Section                             | Percentage   |
+| ----------------------------------- | ------------ |
+| Sort() Function                     | 24.2%        |
+| DLED section                        | 24.1%        |
+| Lemmatizer section                  | 11.5%        |
+| Double Metaphone Comparison section | 11.0%        |
+| First and Last Letter section       | 7.8%         |
+| Length & Syllable section           | 5.7%         |
+| JWS section                         | 5.3%         |
+| SDC section                         | 4.2%         |
+| Preprocessing section               | 3.8%         |
+| Prefix Match section                | 2.6%         |
+
+Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. If you want to read more about the algorithms themselves, I've created a separate post for that.
 `

@@ -29,6 +29,7 @@ p {
 }
 p:has(img) {
     text-align: center;
+    font-size: 14px;
 }
 
 code {
@@ -47,10 +48,17 @@ td {
     padding: 4px 8px;
 }
 tr:nth-child(2n) {
-    background: #f3f3f3;
+    background: #e6b8b7;
+    color: black;
+}
+tr:nth-child(2n+1) {
+    background: #f2dcdb;
+    color: black;
 }
 th {
-    border-bottom: 1px solid #aaa;
+    border-bottom: 2px solid #000000;
+    background: #c0504d;
+    color: white;
 }
 
 img {
@@ -105,13 +113,14 @@ hr {
     margin-top: 50px;
 }
 
-#localFile {
-    display: none;
-    opacity: 0;
-    max-height: 0;
-    height: 0;
-    max-width: 0;
-    width: 0;
-    /*height: 1000;
-    width: 1000;*/
+#progress{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 1%;
+    background: #c21e42b0;
+    transition: 0.1s linear;
+    z-index: 99999;
+    border-radius: 12;
 }

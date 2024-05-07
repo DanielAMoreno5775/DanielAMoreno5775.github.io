@@ -36,6 +36,7 @@
 			<div class="col-2"> </div>
 			<div class="col-8">
 				<div class="text-left">
+					<!--Calculate page reading time with https://thereadtime.com/ -->
 					<div class="markdown"></div>
 				</div>
 			</div>
@@ -43,6 +44,7 @@
 		</div>
 	</div>
 
+	<div id="progress"></div>
 
 
 	
@@ -105,6 +107,27 @@
 				return false
 			}
 		}
+
+
+
+		//implement the scroll bar
+		const progress = document.getElementById("progress");
+		function setReadProgress() {
+			let body = document.body,
+    			html = document.documentElement;
+			let height = Math.max(
+				body.scrollHeight,
+				body.offsetHeight,
+				html.clientHeight,
+				html.scrollHeight,
+				html.offsetHeight
+			);
+			let scrollFromTop = (html.scrollTop || body.scrollTop) + html.clientHeight;
+			let progressWidth = Math.floor((scrollFromTop / height) * 100);
+			progress.style.width = `${progressWidth}%`;
+		}
+		window.addEventListener ("scroll", setReadProgress);
+		
 	</script>
 </body>
 </html>
