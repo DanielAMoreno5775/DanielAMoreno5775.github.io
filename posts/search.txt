@@ -618,5 +618,5 @@ After these optimizations, I checked the code again. Unfortunately, the code sti
 | Preprocessing section               | 3.8%         |
 | Prefix Match section                | 2.6%         |
 
-Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. Trust me, I have all sorts of ideas for this. If you want to read more about the algorithms themselves, I've created a [separate post](./blogpage.html?page=searchalgorithms) for that.
+Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. Trust me, I have all sorts of ideas for this. If you want to read more about the algorithms and techniques that I used, I've created a [separate post](./blogpage.html?page=searchalgorithms) for that.
 `
