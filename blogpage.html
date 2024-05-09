@@ -23,7 +23,7 @@
 		<div class="container-fluid d-flex align-items-center">
 			<h1 class="d-flex align-items-center fs-4 mb-0">
 				<img src="assets/favicon.ico" width="38" height="30" class="me-3 img-thumbnail" alt="My image">
-				Daniel's Portfolio
+				<a href="./blogroot.html" class="topbarLink">Daniel's Portfolio</a>
 			</h1>
 			<select id="theme" class="form-select form-select-sm sticky-xl-top"></select>
 		</div>
@@ -53,6 +53,8 @@
 	<script type="text/javascript" src="./js/blogThemeSetter.js"></script>
 	<!--Uses Drawdown code from github.com/adamvleggett/drawdown to display markdown text from the file-->
 	<script type="text/javascript" src="./js/drawdown.js"></script>
+	<script type="text/javascript" src="./posts/search.txt"></script>
+	<script type="text/javascript" src="./posts/searchalgorithms.txt"></script>
 	<script type="text/javascript">
 		//get the parameters passed in the URL
 		const queryString = window.location.search;
@@ -62,28 +64,25 @@
 		if (urlParams.has('page')) {
 			//store the value passed in the URL parameter
 			const fileName = urlParams.get('page')
-			//check if passed page exists
-			if (checkFileExists('./posts/' + fileName + '.txt')) {
-				//import the text file based on the value passed in the URL
-				//all text files must follow the pattern of gbl_text=`Lorem Ipsum`
-				var dynamicPostTextScript = document.createElement('script');
-				dynamicPostTextScript.setAttribute('src', './posts/' + fileName + '.txt');
-				document.body.appendChild(dynamicPostTextScript);
-				//import the JS necessary to display the imported markdown after the text file has been imported
-				var dynamicDisplayScript = document.createElement('script');
-				dynamicDisplayScript.setAttribute('src', './js/blogPage.js');
-				document.body.appendChild(dynamicDisplayScript);
+			//check whether the passed file exists
+			var fileExists = false
+			eval('typeof(' + fileName + '_text) !== "undefined" ? fileExists = true : fileExists = false')
+			if (fileExists) {
+				eval('ouputBox.innerHTML = markdown(' + fileName + '_text)')
+			} 
+			//since the file wasn't found, print the invalid blog post message
+			else {
+				ouputBox.innerHTML = `
+					<h1>Invalid Blog Post</h1>
+					<h6> By Daniel Moreno</h6>
+					<h6> 1 min read · May 6, 2024</h6>
+					<hr>
+					<p>
+						<img src="./assets/Red-Binary-CPU.png" alt="image alt ><">
+					</p>
+					<p>Sorry about this, looks like an invalid page was passed. Why don't you head back to <a href="./blogroot.html">the main page</a> and select a valid blog post. Alternatively, head back to the <a href="./index.html">home page</a>.</p>
+				`;
 			}
-			ouputBox.innerHTML = `
-				<h1>Invalid Blog Post</h1>
-				<h6> By Daniel Moreno</h6>
-				<h6> 1 min read · May 6, 2024</h6>
-				<hr>
-				<p>
-					<img src="./assets/Red-Binary-CPU.png" alt="image alt ><">
-				</p>
-				<p>Sorry about this, looks like an invalid page was passed. Why don't you head back to <a href="./blogroot.html">the main page</a> and select a valid blog post. Alternatively, head back to the <a href="./index.html">home page</a>.</p>
-			`;
 		} else {
 			ouputBox.innerHTML = `
 				<h1>Blog Not Set</h1>
@@ -96,18 +95,6 @@
 				<p>Sorry about this, looks like a page wasn't passed. Why don't you head back to <a href="./blogroot.html">the main page</a> and select a valid blog post. Alternatively, head back to the <a href="./index.html">home page</a>.</p>
 			`;
 		}
-		//basic function to check if a file exists; triggers CORS error if not on a server so may need alt+L & alt+O
-		function checkFileExists(file_path) {
-			var http = new XMLHttpRequest()
-			http.open('HEAD', file_path, false)
-			http.send()
-			if (http.status === 200) {
-				return true
-			} else {
-				return false
-			}
-		}
-
 
 
 		//implement the scroll bar

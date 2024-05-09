@@ -1,7 +1,7 @@
-gbl_text=`
+search_text=`
 # Building a Fuzzy Search Mechanism for React Native
 ###### By Daniel Moreno
-###### Capstone · 12 min read · May 7, 2024
+###### Capstone · 10 min read · May 7, 2024
 ---
 ![image alt ><](https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/10/2020-10-12-19_15_20-Window-1.png)
  *Source: medium.com/@paularun.prasath/implementing-fuzzy-search-in-c-with-net-dbe215e55404* 
@@ -173,7 +173,7 @@ Let's take a look at the initial version of the compareStrings function.
 
 ~~~
 function compareStrings(s, t) {
-	//get the Sorensen-Dice Coefficient value
+	//get the Sørensen-Dice Coefficient value
 	sdc = sorensenDiceCoefficient(s.toUpperCase(),t.toUpperCase())
 	//if the SDC is high enough, just return that and skip DLED
 	if (sdc >= 0.45) {
@@ -185,7 +185,7 @@ function compareStrings(s, t) {
 }
 ~~~
 
-At these early stages, the Sorensen-Dice Coefficient was being calculated, providing a mathematical value that reflects the string's similarity on an inclusive range between 0 and 1. If the coefficient is high enough indicating a good match, compareStrings just returns a 1. Otherwise, the function will calculate the Damerau-Levenshtein Edit Distance and returns that. My research had led me to [Aaron Hammond's article for August Schools](https://www.augustschools.com/blog/needles-in-a-haystack-dice-and-levenshtein/) which is what inspired this implementation, though I later realized that I had misunderstood the article.
+At these early stages, the Sørensen-Dice Coefficient was being calculated, providing a mathematical value that reflects the string's similarity on an inclusive range between 0 and 1. If the coefficient is high enough indicating a good match, compareStrings just returns a 1. Otherwise, the function will calculate the Damerau-Levenshtein Edit Distance and returns that. My research had led me to [Aaron Hammond's article for August Schools](https://www.augustschools.com/blog/needles-in-a-haystack-dice-and-levenshtein/) which is what inspired this implementation, though as you'll see I later realized that I had misunderstood the article. My final implementation with weighted fuzzy searching is closer to what he was talking about.
 
 ---
 
@@ -476,7 +476,7 @@ With this done, I could finally test my search bar properly. While decently fast
 
 ### The New String Comparison
 
-At this point, I discovered an [article on ForrestTheWoods' blog](https://www.forrestthewoods.com/blog/reverse_engineering_sublime_texts_fuzzy_match/) about Sublime Text's fuzzy search algorithm. Sublime Text uses their algorithm to suggest keywords to programmers as they type. According to him, Sublime Text tries to match each character in the user's input and assigns a bonus to the match score for specific characters that are worth more points. Then, the algorithm returns the match with the highest final score. Based on some other blogs I found, I decided that it was still a good idea to combine multiple algorithms but as part of a weighted fuzzy search. All of this led to the current version of compareStrings and a change to searchFunction to place the strings with the highest score at the top of the list.
+At this point, I discovered an [article on ForrestTheWoods' blog](https://www.forrestthewoods.com/blog/reverse_engineering_sublime_texts_fuzzy_match/) about Sublime Text's fuzzy search algorithm. Sublime Text uses their algorithm to suggest keywords to programmers as they type. According to him, Sublime Text tries to match each character in the user's input and assigns a bonus to the match score for specific characters that are worth more points. Then, the algorithm returns the match with the highest final score. Based on some other blogs I found, I decided that it was still a good idea to combine multiple algorithms but as part of a weighted fuzzy search. Also, I found that multiple algorithms would decrease the likelihood of encountering the [birthday paradox](https://pudding.cool/2018/04/birthday-paradox/), though my use case helped to further reduce this potential problem. All of this led to the current version of compareStrings and a change to searchFunction to place the strings with the highest score at the top of the list.
 
 ~~~
 function compareStrings (s, t) {
@@ -571,7 +571,7 @@ function compareStrings (s, t) {
 }
 ~~~
 
-As denoted by the PROFILING comments, the function can now by broken up into general sections. Preprocessing removes Unicode characters with a transliteration library, changes all letters to uppercase, checks for an exact match which permits an early return, and stores each string's length. The Sorensen-Dice Coefficient (SDC) section calculates the coefficient, multiplies it by 100, rounds it to the nearest integer, and makes that the initial match score. The First and Last Letter section gives a bonus score if the first letter, last letter, or the letters after each space matches. The Length & Syllable section gives a bonus if the two strings are the same number of syllables and a penalty if a different length. The Prefix Match section provides a bonus if the second string starts with the first string. The Damerau-Levenshtein Edit Distance (DLED) section compares the two strings, though I also use it earlier in the First and Last Letter section. The Jaro-Winkler Similarity (JWS) section provides a bonus based on the strings' similarity with an extra bonus for matching prefixes. The final two sections lemmatize the two words, retrieve approximate phonetic encodings for the new words, and then provide a bonus if the encodings match.
+As denoted by the PROFILING comments, the function can now by broken up into general sections. Preprocessing removes Unicode characters with a transliteration library, changes all letters to uppercase, checks for an exact match which permits an early return, and stores each string's length. The Sørensen-Dice Coefficient (SDC) section calculates the coefficient, multiplies it by 100, rounds it to the nearest integer, and makes that the initial match score. The First and Last Letter section gives a bonus score if the first letter, last letter, or the letters after each space matches. The Length & Syllable section gives a bonus if the two strings are the same number of syllables and a penalty if a different length. The Prefix Match section provides a bonus if the second string starts with the first string. The Damerau-Levenshtein Edit Distance (DLED) section compares the two strings, though I also use it earlier in the First and Last Letter section. The Jaro-Winkler Similarity (JWS) section provides a bonus based on the strings' similarity with an extra bonus for matching prefixes. The final two sections lemmatize the two words, retrieve approximate phonetic encodings for the new words, and then provide a bonus if the encodings match.
 
 ### Optimizations and Profiling
 
@@ -581,7 +581,7 @@ Firstly, I took all of the conditionals out of the .sort() function in searchFun
 
 Somewhere online, I read that TypeScript offers a more efficient version of function declarations. Despite my best efforts, I have been unable to find the article, but I decided to change all of my function declarations in case they were right. For example, the compareStrings function declaration now looks like \`this["compareStrings"] = function(s, t)\`.
 
-Next, I went looking for highly optimized versions of each algorithm rather than simply a working version. I'll go into a bit more detail in the section for each algorithm.
+Next, I went looking for highly optimized versions of each algorithm rather than simply a working version. I'll go into a bit more detail in the section for each algorithm. Of note, I added a maximum edit distance to the DLED algorithm which adds an early cutoff.
 
 Then, I created custom versions of any functions that I used from the Math library. From what I saw online, the compiler does a better job of optimizing local code rather than library functions. In addition, this offers the option of bitwise and ternary operators.
 
@@ -618,5 +618,5 @@ After these optimizations, I checked the code again. Unfortunately, the code sti
 | Preprocessing section               | 3.8%         |
 | Prefix Match section                | 2.6%         |
 
-Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. If you want to read more about the algorithms themselves, I've created a separate post for that.
+Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. If you want to read more about the algorithms themselves, I've created a [separate post](./blogpage.html?page=searchalgorithms) for that.
 `

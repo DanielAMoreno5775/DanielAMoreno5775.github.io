@@ -248,3 +248,9 @@ aside {
 .questionAnswers, .form-check-input, .form-check-label {
   opacity: 1 !important;
 }
+
+.topbarLink {
+  color: #58a1b8;
+  text-decoration: none;
+  font-family: Georgia,Times,Times New Roman,serif;
+}

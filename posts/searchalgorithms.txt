@@ -1,0 +1,437 @@
+searchalgorithms_text=`
+# Fuzzy Search Algorithms & Techniques in TypeScript
+###### By Daniel Moreno
+###### Algorithms · 17 min read · May 8, 2024
+---
+![image alt ><](https://www.pewresearch.org/wp-content/uploads/2019/02/FT_19.02.08_Algorithms_feature.jpg)
+ *Source: www.pewresearch.org/short-reads/2019/02/13/7-things-weve-learned-about-computer-algorithms/* 
+
+Greetings and permutations everyone. In this article, I'm going to cover the specific details of the algorithms and techniques that you saw in the [post about building a fuzzy search mechanism](./blogpage.html?page=search). As I mentioned there, I have found blog posts to be invaluable resources, and I want to provide the same service to someone else.
+
+---
+
+### Sørensen-Dice Coefficient (SDC)
+
+Let's hop straight into this with the Sørensen-Dice Coefficient. The technical definition is the quotient of similarity over sets or twice the intersection of two discrete sets (the intersection of two) divided by the sum of the number of elements in each set. A result of 1 indicates a perfect match while a 0 indicates a failed match. Also, it is a distance semimetric as it does not satisfy a triangle inequality, rendering 1 minus the coefficient mostly meaningless.
+
+![image alt laTex](https://latex.codecogs.com/svg.image?%20SDC=%5Cfrac%7B2%7CX%5Cbigcap%20Y%7C%7D%7B%7CX%7C&plus;%7CY%7C%7D)
+
+For our purposes, I prefer to define it as the percentage of identical n-grams between two strings, displayed as a floating point number between 0 and 1. The n-grams are overlapping substrings or character blocks into which the strings are divided. Basically, n-gram algorithms, like SDC, break strings down into tokens of a specific length, allowing it to index several characters in a larger string. With regard to the above equation, the array of n-grams for string s is set X, and the array of n-grams for string t is set Y. A smaller n-gram length will focus on the two strings having the same letters while a larger n-gram length shifts the focus to the order of the characters. I found that an n-gram length of 2 (or a bigram) is ideal for my purposes. As an example, the string of "MMRV" has 3 bigrams which are "MM", "MR", and "RV".
+
+I ended up using an implementation called [Fast Dice Coefficient by Ka-weihe](https://github.com/ka-weihe/fast-dice-coefficient). Unlike most implementations, this one has a time complexity of O(N) or specifically O(len(s) + len(t)) with s and t being the strings passed to the function. When I added it to my file, I made some minor changes to handle specific edge cases that I encountered and to add comments.
+
+~~~
+this["sorensenDiceCoefficient"] = function(s, t) {
+	//if a variable is undefined, just return 0
+	if (typeof(s) === 'undefined' || typeof(t) === 'undefined') {
+		return 0;
+	}
+	
+	//define variables
+	var i, j, k, map, match, ref, ref1, sub;
+	sL = s.length;
+	tL = t.length;
+	//if either string is too short for an n-gram of length 2 to be collected, just return 0
+	if (sL < 2 || tL < 2) {
+		return 0.11;
+	}
+	//define map after conditional returns to save space and time
+	map = new Map;
+	//create a map of bigrams (n-grams with a length of 2)
+	for (i = j = 0, ref = sL - 2; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
+		sub = s.substr(i, 2);
+		if (map.has(sub)) {
+			map.set(sub, map.get(sub) + 1);
+		} else {
+			map.set(sub, 1);
+		}
+	}
+	//find the number of bigrams in common between the two strings based on set theory
+	match = 0;
+	for (i = k = 0, ref1 = tL - 2; (0 <= ref1 ? k <= ref1 : k >= ref1); i = 0 <= ref1 ? ++k : --k) {
+		sub = t.substr(i, 2);
+		if (map.get(sub) > 0) {
+			match++;
+			map.set(sub, map.get(sub) - 1);
+		}
+	}
+	//divide the number of elements in common by the average size of sets (mostly)
+	//multiple by two because otherwise you're only getting a half
+	return 2.0 * match / (sL + tL - 2);
+};
+~~~
+
+First, the algorithm goes through some conditional early returns which help to handle edge cases and speed up execution. According to the formula, the function should return 1 if it cannot evaluate the strings. For my use case, I decided to instead return a 0 or 0.11. Then, I store each string's length which also helps to decrease the execution time as the length does not need to be repeatedly retrieved from the string variables. Next, I define a map to store various key-value pairs of 2-character n-grams or bigrams. Then, a second for loop counts the number of bigrams in common between the two strings, relying on basic set theory principles. Finally, it calculates two times the number of matches divided by the sum of the lengths minus two. Without multiplying by 2, the function would divide the number of elements in common by the average size of the sets resulting in half of the value that it should return. An example of needing the multiplication factor would be when the two sets were identical as this would otherwise return a 0.5. Subtracting 2 is unique to this implementation to account for n-gram length and the fact that it slightly overcounts.
+
+The resulting coefficient is multiplied by 100 before being used as the base match score.
+
+### Damerau-Levenshtein Edit Distance (DLED)
+
+Damerau-Levenshtein Edit Distance is a string metric that conveys the minimum number of operations necessary to transform string s into string t. Standard Levenshtein Edit Distance considers the number of deletions, insertions, and substitutions necessary. The Damerau component adds the potential for transpositions, allowing it to consider the possibility of two neighboring characters being entered in the wrong order. Due to the performance savings, I am using the restricted version where there is a maximum edit distance after which the algorithm should stop. This decreases the time complexity from O(len(s)²) to O(len(s)*maxDistance) where s is the first passed string. The math for all of this is fascinating so let's explore it a bit.
+
+![laTex of math for just levenshtein](./assets/recursive-led.svg)
+
+This is the math for a recursive version of Levenshtein Edit Distance. Basically, if either of the strings has a length of 0, the function returns the length of the other string. Tail(x) returns all but the first character of x while head(x) returns only the first character of x. As such, the third line means that if the first character of each string matches, the function should be recursively called on the rest of the strings. The fourth line is a piecewise function that returns a value of 1 plus the minimum of the next three recursive functions which handle deletion, insertion, and substitution in that order. However, recursive functions are terribly inefficient so I used the matrix-based version.
+
+![laTex of math for just levenshtein](./assets/matrix-led.svg)
+
+You can still recognize the length checks. However, the function definition for lev has changed a bit. The values 'a' and 'b' still represent the two strings while 'i' represents the terminal character position of a and 'j' represents the terminal character position of b. Since we are dealing with lengths, the position variables of i and j are 1-indexed rather than 0-indexed. There is a conditional on that final +1 which means that the edit number is only incremented if the character at position i in string a is not equal to the character at position j in string b. However, the math is a bit abstract so let's look at an example.
+
+![edit distance matrix 30](./assets/matrix.png)
+Here's the completed example matrix if a="kitten" and b="sitting"
+
+![edit distance matrix 30](./assets/1-1-kitten-sitting.svg)
+![edit distance matrix 50](./assets/1-1-kitten-sitting-math.svg)
+This is the piecewise function to calculate the red '1' in the green circle. I have substituted in i and j and marked the invalid conditions as red. The function calls lev(0,1) or lev(1,0) will return 1. When plugged into the equations and then sent through the min function, a result of 1 is returned and placed in the matrix.
+
+![edit distance matrix 30](./assets/1-2-kitten-sitting.svg)
+![edit distance matrix 50](./assets/1-2-kitten-sitting-math.svg)
+This is the piecewise function to calculate the red '2' in the yellow circle. I have substituted in i and j and marked the invalid conditions as red. The function calls are color-coded with the circles in the matrix. The blue lev(0,2) returns the value in the blue circle which is 2. The green lev(1,1) returns the value in the green circle which is 1. The pink lev(0,1) returns the value in the pink circle which is 1. All of that is plugged into the values so that the minimum can be returned and stored in the matrix.
+
+![edit distance matrix 30](./assets/7-6-kitten-sitting.svg)
+![edit distance matrix 50](./assets/7-6-kitten-sitting-math.svg)
+This is the piecewise function to calculate the green '3' in the bottom right corner. I have substituted in i and j and marked the invalid conditions as red. Like the other functions, each function call returns the value at the specified location in the matrix so 2 for lev(6,6), 4 for lev(7,5), and 3 for lev(6,5). These retrieved values are incremented and sent through the min function to arrive at a final value of 3 which is stored in the bottom-right-most cell. This is the cell that will be returned as the final edit distance.
+
+Now, my optimizations have changed the original math a bit. Normally, the edit distance cannot be less than the absolute value of the difference between the length of the two strings, but my optimizations take it a bit further by establishing a maxDistance. Firstly, I can return the length of string a early if i = j and the cell at [i][j] is greater than 4. Secondly, I can ignore all cells in the matrix where |i-j| > maxDistance. This also saves me some space as I only need a matrix of len(a) by 2*maxDistance. Also, I want to note that the +1's would be replaced with my variable costs. Now that I've covered Levenshtein Edit Distance, let's add Damerau's portion.
+
+![laTex of math for just levenshtein 60](./assets/matrix-dled.svg)
+This looks the same as the LED piecewise with the length conditionals being followed by deletion, insertion, and substitution in that order. The new line with i-2 and j-2 describes the transposition of 2 neighboring characters.
+
+Importantly, I am using the optimal string alignment version of the DLED algorithm which means that the triangle inequality does not hold. I prefer this version as it does not permit multiple operations on the same substring. For example, it will return an edit distance of 3 for "CA" and "ABC" as a transposition of "CA" → "AC" would not permit a second operation of "AC" → "ABC". Instead, the shortest string of operations for equivalent costs of 1 is "CA" → "A" → "AB" → "ABC". Restricted edit distance is the alternative to optimal string alignment distance and does not have this restriction, but I felt that it was less useful for my purposes.
+
+Despite all of that math, you just need to know that the DLED algorithm calculates the number of changes necessary to transform one string into another. Since it does not depend on the presence of specific pairs like bigram SDC, DLED is more resilient to typos and overlapping patterns. As such, SDC tends to be more accurate with more substantial errors and for longer text while DLED is more accurate when there are fewer errors in shorter strings.
+
+~~~
+this["damerauLevenshteinDistance"] = function(s, t, maxDistance=50) {
+	//Step 0: test to see if it should exit prematurely
+	//if a variable is undefined, just return maxDistance
+	if (typeof(s) === 'undefined' || typeof(t) === 'undefined') {
+		return maxDistance
+	}
+
+    var d = []; //2d matrix
+
+    // Step 1: store string lengths
+    var n = s.length;
+    var m = t.length;
+	  //ensure that both strings contain characters based on principles of short-circuit evaluation
+    if (n == 0) return m;
+    if (m == 0) return n;
+
+    //Create an array of arrays in javascript with note that d is zero-indexed while n is one-indexed
+	  //A descending loop is quicker
+    for (var i = n; i >= 0; i--) d[i] = [];
+	
+    // Step 2: initialize the table
+    for (var i = n; i >= 0; i--) d[i][0] = i;
+    for (var j = (2*maxDistance); j >= 0; j--) d[0][j] = j;
+
+    // Step 3: populate the rows of the 2d table (row-major order)
+	  //remember that n and m are one-indexed as lengths
+    for (var i = 1; i <= n; i++) {
+        var s_i = s.charAt(i - 1);
+        // Step 4: populate the columns of the 2d table
+		    //optimize algorithm by ignoring all cells in original matrix where |i-j| > max_distance
+		    for (var j = customMax(0, i-maxDistance); j <= customMin(m, i+maxDistance); j++) {
+            //Check the jagged levenshtein distance total so far to see if the length of n can be returned as the edit distance early
+            if (i == j && d[i][j] > maxDistance) return n;
+
+			      // Step 5: store the costs based on distance on QWERTY keyboard
+            var t_j = t.charAt(j - 1);
+            var subCost = euclideanDistance(s_i, t_j) / 3; //divide by 3 so bring range down to [0,3]; also used for transposition (plus extra penalty) as still related to nearness on keyboard
+			      var insertCost = 2 //always less than distance between say 'q' and 'p' but still more than the deletion cost
+			      var deleteCost = 1
+			
+
+            //Calculate the values for Levenshtein distance
+            var mi = d[i - 1][j] + deleteCost; //deletion
+            var b = d[i][j - 1] + insertCost; //insertion; slight penalty to insertions so 2 rather than 1
+            var c = d[i - 1][j - 1] + subCost; //substitution
+			      //find the minimum
+            if (b < mi) mi = b;
+            if (c < mi) mi = c;
+
+			      // Step 6: store the minimum
+            d[i][j] = mi; 
+
+            //Damerau transposition check based on optimal string alignment distance (triangle inequality doesn't hold)
+            if (i > 1 && j > 1 && s_i == t.charAt(j - 2) && s.charAt(i - 2) == t_j) {
+                d[i][j] = customMin(d[i][j], d[i - 2][j - 2] + deleteCost + 0.5);
+            }
+        }
+    }
+
+    // Step 7: return the value in the final cell of the table
+    return d[n][m];
+};
+~~~
+
+Normally, subCost, insertCost, and deleteCost would all equal 1. In some implementations, this is tuned to favor deletions with a cost of 1, then substitutions and transpositions with costs of 1.5, and finally insertions with a cost of 2. I decided to take a different approach. Insertions, deletions, and transpositions are unconnected to any other characters. However, the substitution costs are dependent on the distance between the two keys where one character is replaced with another. As such, I defined a JSON structure where I assigned coordinates to each key based on a 2d Cartesian coordinate system. Then, I calculated the Euclidean Distance between those two coordinates, provided each passed string is a capital letter and only one character. Since the Euclidean Distance will inclusively range between 0 and 9, I divide it by 3 which ensures that the substitution cost is never too big. In addition, it minimizes the difference between the distance between 'Q' and 'E' versus 'Q' and 'Z' while retaining the difference as one is horizontal while the other is diagonal.
+
+~~~
+//map of cartesian coordinates for all letters on a QWERTY keyboard
+keyboardCartesianCoords = {
+    'Q': {'y': 0, 'x': 0},
+    'W': {'y': 0, 'x': 1},
+    'E': {'y': 0, 'x': 2},
+    'R': {'y': 0, 'x': 3},
+    'T': {'y': 0, 'x': 4},
+    'Y': {'y': 0, 'x': 5},
+    'U': {'y': 0, 'x': 6},
+    'I': {'y': 0, 'x': 7},
+    'O': {'y': 0, 'x': 8},
+    'P': {'y': 0, 'x': 9},
+	  //0.25 x stagger from top row
+    'A': {'y': 1, 'x': 0.25},
+    'S': {'y': 1, 'x': 1.25},
+    'D': {'y': 1, 'x': 2.25},
+    'F': {'y': 1, 'x': 3.25},
+    'G': {'y': 1, 'x': 4.25},
+    'H': {'y': 1, 'x': 5.25},
+    'J': {'y': 1, 'x': 6.25},
+    'K': {'y': 1, 'x': 7.25},
+    'L': {'y': 1, 'x': 8.25},
+	  //0.75 x stagger from top row
+    'Z': {'y': 2, 'x': 0.75},
+    'X': {'y': 2, 'x': 1.75},
+    'C': {'y': 2, 'x': 2.75},
+    'V': {'y': 2, 'x': 3.75},
+    'B': {'y': 2, 'x': 4.75},
+    'N': {'y': 2, 'x': 5.75},
+    'M': {'y': 2, 'x': 6.75},
+}
+//based the keyboardCartesianCoords, it will output a value of 0 or a decimal between 1 and 9 (inclusive)
+this["euclideanDistance"] = function(a, b, maxDistance=50) {
+	if (typeof(a) === 'undefined' || typeof(b) === 'undefined') {
+		return maxDistance
+	}
+	if (a.length === 1 && a.match(/[A-Z]/i) && b.length === 1 && b.match(/[A-Z]/i)) {
+		s = (keyboardCartesianCoords[a]['x']-keyboardCartesianCoords[b]['x'])**2
+		t = (keyboardCartesianCoords[a]['y']-keyboardCartesianCoords[b]['y'])**2
+		return customSqrt(s+t)
+	} else {
+		return maxDistance
+	}	
+}
+~~~
+
+### Jaro-Winkler Similarity (JWS)
+
+Jaro-Winkler Similarity is a string metric that uses a normalized value between 0 and 1 to measure the edit distance between two strings. Jaro-Winkler Similarity does not obey the triangle inequality which invalidates it as a mathematical metric. Despite the name, Jaro-Winkler Distance (1 - JWS) is also not a metric since it does not obey the triangle inequality and does not satisfy the identity axiom d(x,y) = 0 ↔ x = y.
+
+![edit distance matrix 50](./assets/jaro.svg)
+The variables 'a' and 'b' represent the strings being compared while 'm' represents the number of matches and 't' represents the number of transpositions.
+
+The number of transpositions is the number of matching characters that are in the wrong order, divided by two. Two characters are considered matching only if they are the same and not farther than a certain number of characters apart. This maximum distance is calculated using the following equation.
+
+![edit distance matrix 30](./assets/jarodist.svg)
+This is the length of the two strings sent through the max function before being divided by 2 and sent through a floor function. Finally, 1 is subtracted from it.
+
+Examples make everything clearer so let's calculate the Jaro Similarity for "FAREMVIEL" and "FARMVILLE". The maximum distance for the matches would be max(9,9)=9 as both are 9 characters long before being divided by 2 for 4.5. The floor of 4.5 is 4, and the final result for the maximum matching distance is 3 after 1 is subtracted from it. Three characters ('F', 'A', 'R') are in the same position in both strings and 5 characters ('M','V','I','E','L') are within 3 characters of each other. The 'E' and 'L' in "FAREMVIEL" are matching characters that are in the wrong order so the number of transpositions is 1.
+
+![edit distance matrix 50](./assets/jarodist-example.svg)
+
+The Winkler portion uses a prefix scale (p) to provide more favorable ratings to strings that match from the beginning for a common prefix length up to a maximum of 4 characters. The maximum will be 'L' and the actual length of the common prefix will be 'l'. To prevent the normalized similarity from exceeding 1, the prefix scale should not exceed 0.25 or 1 divided by the maximum allowed prefix length (L) which is generally 4. The standard p-value is 0.1, but I found that 0.16 is the best scaling factor for my purposes. The JWS score can be calculated with the following equation.
+
+![edit distance matrix 40](./assets/jws.svg)
+
+Let's continue our example from before. I'll be using 0.16 for my p value and 3 for my l value since both strings start with the same 3 characters.
+
+![edit distance matrix 50](./assets/jws-example.svg)
+
+Now that I've explained how it works, let's look at the actual code. I heavily optimized the function based on [Miguel Serrano's C-based implementation](https://github.com/miguelvps/c) and [Lars Garshol's Java-based implementation](https://github.com/larsga/Duke) which was based on William E. Yancey's paper called "Evaluating String Comparator Performance for Record Linkage". The final time complexity is O(len(s)*len(a)) where s and a are the strings passed to the function.
+
+~~~
+this["jaroWinklerSimilarity"] = function(s, a) {
+	//return early if either are undefined
+	if (typeof(s) === 'undefined' || typeof(a) === 'undefined') {
+		return 0.0
+	}	
+	//return early if either of the strings is empty
+	if (!(s.length) || !(a.length)) {
+		return 0.0
+	}
+	//return early if they are an exact match
+	if (s === a) {
+    	return 1.0;
+    }
+
+	//initialize all of these variables to 0
+	//i,j,l are indices
+	//m is count of matching characters
+	//t is count of transpositions
+	i = j = l = m = t = 0
+	dw = 0.0
+	//store the length of the strings
+	sL = s.length
+	aL = a.length
+	//store the viable range so that it isn't recalculated
+	range = aL / 2
+	//initialize the flag arrays
+	flags = Array(aL).fill(0)
+
+	//calculate matching characters and transpositions simultaneously, decreasing number of loops
+	prevpos = -1
+	for (i = 0; i < sL; i++) {
+		ch = s.charAt(i) //store the character so that it isn't recalculated
+		for (j = customMax(i - range, 0), l = customMin(i + range, aL); j < l; j++) {
+			if (ch == a.charAt(j) && !flags[j]) {
+				m++ //matching char found
+				flags[j] = true
+				if (prevpos != -1 && j < prevpos) {
+					t++ //transposition found
+				}
+				prevpos = j
+				break
+			}
+		}
+  	}
+
+	//return early if no matches were found
+	if (!m || m === 0) {
+		return 0.0
+	}
+
+	//calculate Jaro Distance
+	dw = ((m / sL) + (m / aL) + ((m - t) / m)) / 3.0
+	
+	//only calculate Jaro-Winkler distance if Jaro Similarity is above threshold
+	const JD_THRESHOLD = 0.5
+	if (dw > JD_THRESHOLD) {
+		//calculate common string prefix up to 4 chars
+		l = 0;
+		for (i = 0; i < customMin(customMin(sL, aL), 4); i++){
+		if (s.charAt(i) == a.charAt(i)) {
+			l++;
+		}
+		}
+	
+		//calculate Jaro-Winkler distance with scaling factor of 0.16
+		const SCALING_FACTOR = 0.16
+		dw = dw + (l * SCALING_FACTOR * (1 - dw));
+	}
+
+	return dw.toFixed(2)
+}
+~~~
+
+### Transliteration Library
+
+Before using any of the other techniques, I ran the text through a transliteration library called Unidecode which transforms Unicode into ASCII. For example, 'á' will become 'a', and '間' will become 'Jian'. Like most transliteration libraries, Unidecode conducts context-free character-by-character mapping which makes it very effective at simply stripping diacritics like accents or transliterating Latin-based languages like Cyrillic characters. While it can translate languages not derived from Latin, it does struggle with some of the details. For example, the common Japanese name of "洋子" can be pronounced as "Yoko" or "Hiroko", and the name of "الرشید عبد" can be accurately transliterated as "Abdal-Rachid" or "Ar-Rashid". Unidecode specifically does not detect the difference between Japanese and Chinese characters as the languages use the same characters to mean different things. Also, Unidecode simply strips the umlauts rather than translating 'ü' into 'ue' because that is only the proper transliteration for German, not Finnish or Turkish.
+
+Now that I've explained what a transliteration library and Unidecode are, I want to explain why I used them. Firstly, it can be considered an extension of cleaning the text before it is sent through any other algorithm, especially Double Metaphone which removes all non-ASCII characters. However, this affects all of the distance measurements which would treat a Unicode character as a different character from the ASCII equivalent. Secondly, such a library eliminates problems where the user accidentally changes their keyboard while wearing gloves or autocorrect causes an issue, a possibility if they frequently write in multiple languages. Thirdly, I wanted to future-proof as I do not know all of the client's future plans for this app.
+
+~~~
+import {unidecode} from 'unidecode'
+sASCII = unidecode(s)
+~~~
+
+### Lemmatizer
+
+Lemmatization is the process of grouping together the inflected forms of a word based on a word's lemma, allowing the forms to be analyzed as a single item. A lemma is the base form of a word like "walk" but is always a valid word in and of itself. As such, a lemmatizer will return "walk" regardless of whether it is passed "walk", "walked", "walks", and "walking". Generally, lemmatizers are good at handling unusual forms like "corpora" → "corpus" and "had" → "have" which cause problems for alternate solutions. A lemmatizer will also consider the context of neighboring words and synonyms. As such, "better" will become "good" as "good" is the root synonym. In addition, a lemmatizer can detect whether a word is being used as a noun or verb, allowing it to return the correct lemma. Due to all of this, a lemmatizer improves the accuracy of the next stage of text analysis and reduces the size of text.
+
+Lemmatizers generally take one of three approaches: rule-based, dictionary-based, and machine learning-based. The rule-based approach uses a set of predefined linguistic rules and patterns to derive the lemmas. While it does not cover every possible nuance, this approach is faster and more space-efficient which led me to choose it for my purposes. Specifically, I chose WinkJS' implementation as it was fast, well-tested, and easy to implement. The dictionary-based approach uses a massive series of dictionaries or lookup tables to map words to their lemmas. The machine learning-based approach relies on computational models and machine learning mechanisms to learn, generalize, and apply the rules.
+
+~~~
+var lemmatize = require( 'wink-lemmatizer' )
+lemma = lemmatize.noun(sUpper)
+~~~
+
+An alternative to lemmatization is stemming, a naive approach that algorithmically replaces affixes which reduces the derived word into the word stem. The stem does not need to be the morphological root or a real word so long as the algorithm returns the same stem for all related words. Most stemmers are based on recursive affix-stripping and lookup tables, where an affix refers to either a prefix or suffix. This approach leaves stemmers extremely fast but creates various issues. Words like "had" and "corpora" may not be transformed. Too many words will be transformed into the same stem like "operate", "operating", "operates", "operation", "operative", "operatives", and "operational" all becoming "oper" when the Porter stemming algorithm is applied, losing a large degree of precision. For my purposes, the biggest flaw with stemming is that it can return a made-up word like "beauti" from "beautiful" or "oper" from "operational".
+
+### Double Metaphone
+
+Developed by Lawrence Philips in 2000, Double Metaphone reduces a word to a combination of 12 sounds and uses that to generate 2 phonetic encodings which represent possible pronunciations of the word in several languages. The algorithm removes all non-alphabetic characters and then all vowels not at the start of the word. Afterwards, Double Metaphone uses a set of rules to process the consonants and the ways that they could combine. Soundex began the concept back in 1918 and is still used by some applications. However, I believe that it is too generalized and I dislike the fixed-length encodings. The original Metaphone fixed both of those problems by expanding the set of pronunciation rules and permitting variable-length keys. Double Metaphone improved on that with 2 possible encodings and the ability to handle foreign pronunciations, allowing it to detect similarities which Soundex overstates and Metaphone misses.
+
+Double Metaphone is very good at handling nouns. For example, "smythe" and "smote" both have an edit distance of 2 from "smith". However, "smythe" and "smith" have the same Double Metaphone code. People are more likely to get the pronunciation correct and the spelling wrong which makes Double Metaphone codes rather useful for words that have strange spellings, foreign pronunciations, or multiple acceptable spellings. All of that makes Double Metaphone perfect for my use case of searching crop names.
+
+I will note that various articles recommend using a stemmer with Double Metaphone. A stemmer does provide some benefits as it removes the impact of plural forms, past tense, and other various and sundry affixes. However, this creates one key issue that I mentioned in the section on lemmatizers. Namely, Double Metaphone only reliables works if it is fed real English words, preferably ones that do not end in vowels unless those vowels are silent. As such, I used a lemmatizer to prepare the words for Double Metaphone.
+
+~~~
+import { doubleMetaphone } from 'double-metaphone'
+sMetaphoneCodes = doubleMetaphone(lemma)
+~~~
+
+### Exact String Matching
+
+Before I used any of the other algorithms or techniques, I used the following code to check whether the strings were identical.
+
+~~~
+this["matchExact"] = function(s, t) {
+	//ensure that s and t are defined and the same length
+	if (typeof(s) === 'undefined' || typeof(t) === 'undefined') {
+		return false
+	}
+	if (s.length !== t.length) {
+		return false
+	}
+	//set up the regex to check for exact match
+	//Positive lookbehind to match group before main expression, main expression, and positive lookahead to match group after main expression
+	//Flags: global, case insensitive, and multiline
+	const re = new RegExp("(?<=^| )" + s + "(?=$| )", "gmi")
+	//match regex against t
+	var match = t.match(re);
+	//does match exist AND does t equal the first value returned in match
+	return match && t === match[0];
+}
+~~~
+
+If either string is undefined or their lengths differ, I automatically return a false. Using some regex, I look for the string s in the string t. If "test" is passed as s, the regex would find a match for "This is a test" or "This is a TEST if regex is working" but not "This is a -test+". The array of matches would be stored in the match variable. Then, the function returns true if the match variable contains anything and if the entire string t equals the first match that was found by the regex.
+
+### First and Last Letter Section
+
+After calculating the initial match score, I check specific letters to see if I should give a bonus score. I quickly check the first and last letters in the string using the charAt function as it is faster than bracket notation.
+
+More interestingly, I use a simple algorithm to construct the acronym of each string by concatenating a new string from the first letter of each word separated by a space. Then, I compare the two acronyms with the Damerau-Levenshtein Edit Distance algorithm.
+
+~~~
+let sAcronym = sUpper.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')
+let tAcronym = tUpper.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')
+matchScore += customRound(6 / (damerauLevenshteinDistance(sAcronym,tAcronym, 4) + 1 ))
+~~~
+
+In this bit of code, I split the string into an array of tokens on the space character. The reduce function takes a function and an initial value, though I set the initial value to an empty string. The function within reduce will define two variables: response which is supposed to be the total and word which is initialized to the current value of the array. These values are then passed to an equation where the first character of the word variable is retrieved and concatenated to the end of the response variable.
+
+Afterwards, I calculate the DLED value between the acronyms. I divide 6 by that distance to determine the score bonus, meaning that the bonus approaches 0 as the distance increases and is large when the distance is small. I must add 1 to the distance, ensuring that I never divide by 0.
+
+![edit distance matrix 60](./assets/6-x-functioncurve.png)
+
+### Syllable Counting
+
+When providing bonuses to the match score, I consider both the length and the number of syllables in the two strings. Since the length checking is relatively simple, I want to focus on the syllable counting function.
+
+Like my other algorithms, this function quickly ensures that the passed variable is defined and has a length. Then, I use several regex-based functions to remove specific characters at the end of the word. First, I remove the last character of a string if it is not a vowel or 'L'. Alternatively, I remove the last two characters in the case of "ed" or any word that ends in 'E'. For example, "lore" becomes "lo" while "lorem" becomes "lore". The words "testy", "able", and "anvil" will not be changed. Secondly, I remove the first instance of the letter 'Y' from any word which starts with it. For example, "yay" will become "ay" while this line will not affect most other words, including "hay". Thirdly, I remove any instances of a 'U' that is following a 'Q' or a vowel pair. Without it, the words "acquaintance" and "beautiful" count as 4 syllables because the code incorrectly believes "UA" and "AU" are a syllable's vowel pair, leading to a miscount.
+
+With the words cleaned up, I can finally count the number of syllables using a regex-based match. Due to the global or 'g' flag, the variable "syl" will store an array of every match found by the regex, allowing me to return the number of matches as the number of syllables. The regex statement is looking for vowels on their own or vowel pairs with two neighboring vowels.
+
+Unfortunately, the algorithm struggles with silent E's in the center of a word. Based on my initial testing, this problem was only noticeable for compound words containing "some" such as "somewhere" or "someone". Even this only came up once since I am using these algorithms to assess crop names. If you are handling general English words, you may need to tweak the algorithm beyond my stopgap method of counting it as one syllable and then removing the word "some".
+
+~~~
+this["syllableCount"] = function(s) {
+	//ensure that s is defined
+	if (typeof(s) === 'undefined' || s.length === 0) {
+		return 0
+	}
+    var someCount = 0;
+    if(s.length>3) {
+      if(s.substring(0,4)=="SOME") { //accounts for the fact that "somewhere" is two syllables
+        s = s.replace("SOME","") 
+        someCount++
+      }
+    }
+    s = s.replace(/(?:[^LAEIOUY]|ED|[^LAEIOUY]E)$/, '');   
+    s = s.replace(/^Y/, '');
+    s = s.replace(/(?<=Q)U|(?<=[AEIOUY]{2,2})U/, '');                          
+    var syl = s.match(/[AEIOUY]{1,2}/g);
+    if(syl) {
+        return syl.length + someCount;
+    } else {
+        return 0
+    }
+}
+~~~
+
+---
+
+Hopefully, all of this will help you as you select and code the algorithms and techniques for your own fuzzy search mechanisms.
+`

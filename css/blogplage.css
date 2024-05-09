@@ -27,6 +27,7 @@ li, code {
 p {
     margin: 1.2em 0;
 }
+/*Stylizes image caption where paragraph contains image and text*/
 p:has(img) {
     text-align: center;
     font-size: 14px;
@@ -64,6 +65,10 @@ th {
 img {
     height: 96px;
 }
+/*recolor the background of svg images when in dark mode*/
+.bg-dark > div > div > div > div > div > p > img[src$=".svg"] {
+    background: #bdbdbd;
+}
 /*Triggers if alt text ends with these symbols*/
 img[alt$=">"] {
     float: right;
@@ -76,11 +81,62 @@ img[alt$="><"] {
     min-width: 100%;
     max-width: 100%;
     min-height: 15%;
-    max-height: 15%;
+    max-height: 300px;
     height: auto;
     margin: auto;
     float: none!important;
 }
+img[alt$="laTex"] {
+    display: block;
+    min-width: 20%;
+    max-width: 20%;
+    min-height: 20px;
+    max-height: 100px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="30"] {
+    display: block;
+    min-width: 30%;
+    max-width: 30%;
+    min-height: 20px;
+    max-height: 200px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="40"] {
+    display: block;
+    min-width: 40%;
+    max-width: 40%;
+    min-height: 50px;
+    max-height: 200px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="50"] {
+    display: block;
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 100px;
+    max-height: 200px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="60"] {
+    display: block;
+    min-width: 60%;
+    max-width: 60%;
+    min-height: 100px;
+    max-height: 200px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+
 
 .markdown {
     padding: 0 0 0 12px;
@@ -123,4 +179,10 @@ hr {
     transition: 0.1s linear;
     z-index: 99999;
     border-radius: 12;
+}
+
+.topbarLink {
+    color: #58a1b8;
+    text-decoration: none;
+    font-family: Georgia,Times,Times New Roman,serif;
 }
