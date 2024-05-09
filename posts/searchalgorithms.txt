@@ -14,7 +14,7 @@ Greetings and permutations everyone. In this article, I'm going to cover the spe
 
 Let's hop straight into this with the Sørensen-Dice Coefficient. The technical definition is the quotient of similarity over sets or twice the intersection of two discrete sets (the intersection of two) divided by the sum of the number of elements in each set. A result of 1 indicates a perfect match while a 0 indicates a failed match. Also, it is a distance semimetric as it does not satisfy a triangle inequality, rendering 1 minus the coefficient mostly meaningless.
 
-![image alt laTex](./assets/sdc.svg)
+![SDC=2 times the size of set intersection of X and Y divided by size of set X plus size of set Y laTex](./assets/sdc.svg)
 
 For our purposes, I prefer to define it as the percentage of identical n-grams between two strings, displayed as a floating point number between 0 and 1. The n-grams are overlapping substrings or character blocks into which the strings are divided. Basically, n-gram algorithms, like SDC, break strings down into tokens of a specific length, allowing it to index several characters in a larger string. With regard to the above equation, the array of n-grams for string s is set X, and the array of n-grams for string t is set Y. A smaller n-gram length will focus on the two strings having the same letters while a larger n-gram length shifts the focus to the order of the characters. I found that an n-gram length of 2 (or a bigram) is ideal for my purposes. As an example, the string of "MMRV" has 3 bigrams which are "MM", "MR", and "RV".
 
@@ -69,32 +69,32 @@ The resulting coefficient is multiplied by 100 before being used as the base mat
 
 Damerau-Levenshtein Edit Distance is a string metric that conveys the minimum number of operations necessary to transform string s into string t. Standard Levenshtein Edit Distance considers the number of deletions, insertions, and substitutions necessary. The Damerau component adds the potential for transpositions, allowing it to consider the possibility of two neighboring characters being entered in the wrong order. Due to the performance savings, I am using the restricted version where there is a maximum edit distance after which the algorithm should stop. This decreases the time complexity from O(len(s)²) to O(len(s)*maxDistance) where s is the first passed string. The math for all of this is fascinating so let's explore it a bit.
 
-![laTex of math for just levenshtein](./assets/recursive-led.svg)
+![recursive levenshtein edit distance math with nested piecewise functions 50](./assets/recursive-led.svg)
 
 This is the math for a recursive version of Levenshtein Edit Distance. Basically, if either of the strings has a length of 0, the function returns the length of the other string. Tail(x) returns all but the first character of x while head(x) returns only the first character of x. As such, the third line means that if the first character of each string matches, the function should be recursively called on the rest of the strings. The fourth line is a piecewise function that returns a value of 1 plus the minimum of the next three recursive functions which handle deletion, insertion, and substitution in that order. However, recursive functions are terribly inefficient so I used the matrix-based version.
 
-![laTex of math for just levenshtein](./assets/matrix-led.svg)
+![matrix-based levenshtein edit distance with nested piecewise functions 50](./assets/matrix-led.svg)
 
 You can still recognize the length checks. However, the function definition for lev has changed a bit. The values 'a' and 'b' still represent the two strings while 'i' represents the terminal character position of a and 'j' represents the terminal character position of b. Since we are dealing with lengths, the position variables of i and j are 1-indexed rather than 0-indexed. There is a conditional on that final +1 which means that the edit number is only incremented if the character at position i in string a is not equal to the character at position j in string b. However, the math is a bit abstract so let's look at an example.
 
-![edit distance matrix 30](./assets/matrix.png)
-Here's the completed example matrix if a="kitten" and b="sitting"
+![example edit distance matrix with 8 columns (x 1-indexed) and 9 rows (y 1-indexed). A '1' in a pink circle at (3,2). A '2' in a blue circle at (4,2). A red '1' in a green circle at (3,3). A red '2' in a yellow circle at (4,3). A green '3' at (8,9). 30](./assets/matrix.png)
+Here's the completed example matrix if a="sitting" and b="kitten"
 
-![edit distance matrix 30](./assets/1-1-kitten-sitting.svg)
-![edit distance matrix 50](./assets/1-1-kitten-sitting-math.svg)
+![example variable values a=sitting b=kitten i=1 j=1 30](./assets/1-1-kitten-sitting.svg)
+![matrix-based function with values filled in for i=1 j=1, equals 1 50](./assets/1-1-kitten-sitting-math.svg)
 This is the piecewise function to calculate the red '1' in the green circle. I have substituted in i and j and marked the invalid conditions as red. The function calls lev(0,1) or lev(1,0) will return 1. When plugged into the equations and then sent through the min function, a result of 1 is returned and placed in the matrix.
 
-![edit distance matrix 30](./assets/1-2-kitten-sitting.svg)
-![edit distance matrix 50](./assets/1-2-kitten-sitting-math.svg)
+![example variable values a=sitting b=kitten i=1 j=2 30](./assets/1-2-kitten-sitting.svg)
+![matrix-based function with values filled in for i=1 j=2, equals 2 50](./assets/1-2-kitten-sitting-math.svg)
 This is the piecewise function to calculate the red '2' in the yellow circle. I have substituted in i and j and marked the invalid conditions as red. The function calls are color-coded with the circles in the matrix. The blue lev(0,2) returns the value in the blue circle which is 2. The green lev(1,1) returns the value in the green circle which is 1. The pink lev(0,1) returns the value in the pink circle which is 1. All of that is plugged into the values so that the minimum can be returned and stored in the matrix.
 
-![edit distance matrix 30](./assets/7-6-kitten-sitting.svg)
-![edit distance matrix 50](./assets/7-6-kitten-sitting-math.svg)
+![example variable values a=sitting b=kitten i=7 j=6 30](./assets/7-6-kitten-sitting.svg)
+![matrix-based function with values filled in for i=7 j=6, equals 3 50](./assets/7-6-kitten-sitting-math.svg)
 This is the piecewise function to calculate the green '3' in the bottom right corner. I have substituted in i and j and marked the invalid conditions as red. Like the other functions, each function call returns the value at the specified location in the matrix so 2 for lev(6,6), 4 for lev(7,5), and 3 for lev(6,5). These retrieved values are incremented and sent through the min function to arrive at a final value of 3 which is stored in the bottom-right-most cell. This is the cell that will be returned as the final edit distance.
 
 Now, my optimizations have changed the original math a bit. Normally, the edit distance cannot be less than the absolute value of the difference between the length of the two strings, but my optimizations take it a bit further by establishing a maxDistance. Firstly, I can return the length of string a early if i = j and the cell at [i][j] is greater than 4. Secondly, I can ignore all cells in the matrix where |i-j| > maxDistance. This also saves me some space as I only need a matrix of len(a) by 2*maxDistance. Also, I want to note that the +1's would be replaced with my variable costs. Now that I've covered Levenshtein Edit Distance, let's add Damerau's portion.
 
-![laTex of math for just levenshtein 60](./assets/matrix-dled.svg)
+![matrix-based damerau-levenshtein edit distance with nested piecewise functions 60](./assets/matrix-dled.svg)
 This looks the same as the LED piecewise with the length conditionals being followed by deletion, insertion, and substitution in that order. The new line with i-2 and j-2 describes the transposition of 2 neighboring characters.
 
 Importantly, I am using the optimal string alignment version of the DLED algorithm which means that the triangle inequality does not hold. I prefer this version as it does not permit multiple operations on the same substring. For example, it will return an edit distance of 3 for "CA" and "ABC" as a transposition of "CA" → "AC" would not permit a second operation of "AC" → "ABC". Instead, the shortest string of operations for equivalent costs of 1 is "CA" → "A" → "AB" → "ABC". Restricted edit distance is the alternative to optimal string alignment distance and does not have this restriction, but I felt that it was less useful for my purposes.
@@ -219,25 +219,25 @@ this["euclideanDistance"] = function(a, b, maxDistance=50) {
 
 Jaro-Winkler Similarity is a string metric that uses a normalized value between 0 and 1 to measure the edit distance between two strings. Jaro-Winkler Similarity does not obey the triangle inequality which invalidates it as a mathematical metric. Despite the name, Jaro-Winkler Distance (1 - JWS) is also not a metric since it does not obey the triangle inequality and does not satisfy the identity axiom d(x,y) = 0 ↔ x = y.
 
-![edit distance matrix 50](./assets/jaro.svg)
+![math for jaro similarity where it is 0 or m over size of a plus m over size of b plus m minus t over m all times one-third 50](./assets/jaro.svg)
 The variables 'a' and 'b' represent the strings being compared while 'm' represents the number of matches and 't' represents the number of transpositions.
 
 The number of transpositions is the number of matching characters that are in the wrong order, divided by two. Two characters are considered matching only if they are the same and not farther than a certain number of characters apart. This maximum distance is calculated using the following equation.
 
-![edit distance matrix 30](./assets/jarodist.svg)
+![equation for max match distance which is the floor of max(size of a, size of b) divided by 2 all minus 1 30](./assets/jarodist.svg)
 This is the length of the two strings sent through the max function before being divided by 2 and sent through a floor function. Finally, 1 is subtracted from it.
 
 Examples make everything clearer so let's calculate the Jaro Similarity for "FAREMVIEL" and "FARMVILLE". The maximum distance for the matches would be max(9,9)=9 as both are 9 characters long before being divided by 2 for 4.5. The floor of 4.5 is 4, and the final result for the maximum matching distance is 3 after 1 is subtracted from it. Three characters ('F', 'A', 'R') are in the same position in both strings and 5 characters ('M','V','I','E','L') are within 3 characters of each other. The 'E' and 'L' in "FAREMVIEL" are matching characters that are in the wrong order so the number of transpositions is 1.
 
-![edit distance matrix 50](./assets/jarodist-example.svg)
+![example of jaro similarity where m=8 t=1, equals 0.88 50](./assets/jarodist-example.svg)
 
 The Winkler portion uses a prefix scale (p) to provide more favorable ratings to strings that match from the beginning for a common prefix length up to a maximum of 4 characters. The maximum will be 'L' and the actual length of the common prefix will be 'l'. To prevent the normalized similarity from exceeding 1, the prefix scale should not exceed 0.25 or 1 divided by the maximum allowed prefix length (L) which is generally 4. The standard p-value is 0.1, but I found that 0.16 is the best scaling factor for my purposes. The JWS score can be calculated with the following equation.
 
-![edit distance matrix 40](./assets/jws.svg)
+![math for jaro-winkler similarity which alters jaro similarity score based on prefix scaling factor 40](./assets/jws.svg)
 
 Let's continue our example from before. I'll be using 0.16 for my p value and 3 for my l value since both strings start with the same 3 characters.
 
-![edit distance matrix 50](./assets/jws-example.svg)
+![expand previous example for jaro-winkler, equals 0.94 50](./assets/jws-example.svg)
 
 Now that I've explained how it works, let's look at the actual code. I heavily optimized the function based on [Miguel Serrano's C-based implementation](https://github.com/miguelvps/c) and [Lars Garshol's Java-based implementation](https://github.com/larsga/Duke) which was based on William E. Yancey's paper called "Evaluating String Comparator Performance for Record Linkage". The final time complexity is O(len(s)*len(a)) where s and a are the strings passed to the function.
 
@@ -394,7 +394,7 @@ In this bit of code, I split the string into an array of tokens on the space cha
 
 Afterwards, I calculate the DLED value between the acronyms. I divide 6 by that distance to determine the score bonus, meaning that the bonus approaches 0 as the distance increases and is large when the distance is small. I must add 1 to the distance, ensuring that I never divide by 0.
 
-![edit distance matrix 60](./assets/6-x-functioncurve.png)
+![graph of curve formed by 6 over x+1 to show diminishing bonus with higher edit distance 60](./assets/6-x-functioncurve.png)
 
 ### Syllable Counting
 

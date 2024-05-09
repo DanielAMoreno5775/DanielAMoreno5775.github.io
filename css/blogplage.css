@@ -14,12 +14,37 @@ hr {
     border-bottom: 1px solid #ccc;
 }
 
+/*Code and blockquote formatting*/
 blockquote {
     margin-left: 0;
     padding: 0.5em 0 0.5em 2em;
     border-left: 3px solid rgb(211, 218, 234);
 }
-
+code {
+    background: rgba(211, 218, 234, 0.25);
+}
+pre > code {
+    display: block;
+    padding: 0.5em 4em;
+    flex-direction: column;
+}
+pre {
+    white-space: pre-wrap;
+    word-wrap: keep-all;
+    text-align: justify;
+    flex-direction: column;
+    overflow: auto;
+    max-width: 80%;
+}
+@media all and (orientation:landscape) {
+    pre {
+        white-space: pre-wrap;
+        word-wrap: keep-all;
+        text-align: justify;
+        flex-direction: column;
+        overflow: auto;
+    }
+}
 li, code {
     margin: 0.4em 0;
 }
@@ -31,14 +56,6 @@ p {
 p:has(img) {
     text-align: center;
     font-size: 14px;
-}
-
-code {
-    background: rgba(211, 218, 234, 0.25);
-}
-pre > code {
-    display: block;
-    padding: 0.5em 4em;
 }
 
 table {
@@ -80,7 +97,6 @@ img[alt$="><"] {
     display: block;
     min-width: 100%;
     max-width: 100%;
-    min-height: 15%;
     max-height: 300px;
     height: auto;
     margin: auto;
@@ -90,7 +106,6 @@ img[alt$="laTex"] {
     display: block;
     min-width: 20%;
     max-width: 20%;
-    min-height: 20px;
     max-height: 100px;
     height: auto;
     margin: auto;
@@ -100,7 +115,6 @@ img[alt$="30"] {
     display: block;
     min-width: 30%;
     max-width: 30%;
-    min-height: 20px;
     max-height: 200px;
     height: auto;
     margin: auto;
@@ -110,7 +124,6 @@ img[alt$="40"] {
     display: block;
     min-width: 40%;
     max-width: 40%;
-    min-height: 50px;
     max-height: 200px;
     height: auto;
     margin: auto;
@@ -120,7 +133,6 @@ img[alt$="50"] {
     display: block;
     min-width: 50%;
     max-width: 50%;
-    min-height: 100px;
     max-height: 200px;
     height: auto;
     margin: auto;
@@ -128,9 +140,8 @@ img[alt$="50"] {
 }
 img[alt$="60"] {
     display: block;
-    min-width: 60%;
+    min-width: 30%;
     max-width: 60%;
-    min-height: 100px;
     max-height: 200px;
     height: auto;
     margin: auto;
