@@ -14,7 +14,7 @@ Greetings and permutations everyone. In this article, I'm going to cover the spe
 
 Let's hop straight into this with the Sørensen-Dice Coefficient. The technical definition is the quotient of similarity over sets or twice the intersection of two discrete sets (the intersection of two) divided by the sum of the number of elements in each set. A result of 1 indicates a perfect match while a 0 indicates a failed match. Also, it is a distance semimetric as it does not satisfy a triangle inequality, rendering 1 minus the coefficient mostly meaningless.
 
-![image alt laTex](https://latex.codecogs.com/svg.image?%20SDC=%5Cfrac%7B2%7CX%5Cbigcap%20Y%7C%7D%7B%7CX%7C&plus;%7CY%7C%7D)
+![image alt laTex](./assets/sdc.svg)
 
 For our purposes, I prefer to define it as the percentage of identical n-grams between two strings, displayed as a floating point number between 0 and 1. The n-grams are overlapping substrings or character blocks into which the strings are divided. Basically, n-gram algorithms, like SDC, break strings down into tokens of a specific length, allowing it to index several characters in a larger string. With regard to the above equation, the array of n-grams for string s is set X, and the array of n-grams for string t is set Y. A smaller n-gram length will focus on the two strings having the same letters while a larger n-gram length shifts the focus to the order of the characters. I found that an n-gram length of 2 (or a bigram) is ideal for my purposes. As an example, the string of "MMRV" has 3 bigrams which are "MM", "MR", and "RV".
 
