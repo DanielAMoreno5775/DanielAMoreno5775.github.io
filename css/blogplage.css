@@ -64,6 +64,7 @@ table {
 }
 td {
     padding: 4px 8px;
+    border-left: 2px solid white;
 }
 tr:nth-child(2n) {
     background: #e6b8b7;
@@ -77,6 +78,7 @@ th {
     border-bottom: 2px solid #000000;
     background: #c0504d;
     color: white;
+    border-left: 2px solid black;
 }
 
 img {
