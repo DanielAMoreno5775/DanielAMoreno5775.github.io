@@ -1,0 +1,350 @@
+optimizedsearch_text=`
+# Fuzzy Search Algorithms & Techniques in TypeScript
+###### By Daniel Moreno
+###### Algorithms · _ min read · Dec 6, 2024
+---
+![image alt ><](https://media.licdn.com/dms/image/v2/D4E12AQF-mlbR1jN0KQ/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1702033454321?e=1738800000&v=beta&t=ng0Hw5zMlbC7p1Hfbd2zofkQvDALW4oPK0DQXZkwDKE)
+ *Source: https://www.linkedin.com/pulse/systems-performance-optimization-netopia-solutions-okmse* 
+
+Greetings and permutations everyone. In this article, I'm going to cover the specific details of optimizing the algorithms that you saw in the [post about designing fuzzy search algorithms](./blogpage.html?page=searchalgorithms). As I mentioned there, I have found blog posts to be invaluable resources, and I want to provide the same service to someone else. This post will be broken up into several stages based on the order in which I tried different optimization techniques.
+
+---
+
+### Stage 1: Skip Unnecessary checks
+
+During this stage, I focused on improving two specific aspects of the program. Firstly, I did not want searchFunction to be called every time that I cleared the search bar. Secondly, the firstLastLetterTime portion of searchFunction was taking an inordinate amount of time. To address the first problem, I only call the sorting algorithm if the user's input changed from the last time and is not empty.  
+
+The second problem required a bit more effort. I added some parameters to change the n-gram length in SDC and the p-value for JWS. Due to how slow DLED is in comparison, I swapped out DLED for SDC when checking the acronyms with an n-gram length of 2. Also, I only perform the acronym check if there is a space in both the user's input and the crop name being considered.
+
+Stage 1 provided 2 benefits. When I clear the search bar, it responded instantly. Also, the firstLastLetterTime portion of searchFunction took 34.2% of the original time.
+
+### Stage 2: Initially Improving DLED
+
+As I mentioned previously, the DLED algorithm was taking an absurd amount of time. As such, I started looking up different ways to improve and optimize it. I based my optimizations on [Robert Jackson's MySQL implementation](https://github.com/rljacobson/Levenshtein/blob/master/damlevlim.cpp) and [the Ka-weihe version of Levenshtein Distance](https://github.com/ka-weihe/fastest-levenshtein/blob/master/test.ts).
+
+If one string is the prefix of another, I would return the length difference rather than calculating the Edit Distance. Since the first string has a larger impact on the runtime, I checked the length of both strings and swapped them so that the first string was always shorter. If the two characters at the current I and J positions in the strings are identical, then I use the jagged distance rather than calculating a new distance. Finally, I added an early exist if the currently discovered minimum edit distance exceeds the maximum distance.
+
+These changes slightly improved my runtime. When the user has only entered 1 character, the new runtime was 65% of the original. Otherwise, the new runtime was 91% of the original runtime. While not perfect, this was good progress.
+
+### Stage 3: Further DLED Improvements
+
+I knew that the DLED algorithm needed further optimizations and went looking for more information. I reread [Robert Jackson's MySQL implementation](https://github.com/rljacobson/Levenshtein/blob/master/damlevlim.cpp) which gave me some more ideas. Also, I found a fascinating series of blog posts from James Turner that explain how to optimize just about everything. Some of the optimizations were not possible in JavaScript or simply unnecessary so I found [this post](https://turnerj.com/blog/levenshtein-distance-part-2-gotta-go-fast) to be the most useful.
+
+I reduced the max distance for DLED, making use of the changes in Stages 2. I quickly check if the two strings are equivalent and return 0 if they are. Also, those sources recommended that I remove any shared prefixes or suffixes between the strings before performing the DLED calculation. While slightly modified, my code for it came from [this post](https://stackoverflow.com/questions/68702774/longest-common-prefix-in-javascript) and [this post](https://stackoverflow.com/questions/77281756/longest-common-suffix-of-two-strings-in-javascript). I decided to also use this code to perform my checks for matching common prefixes or suffixes so this function will affect that section's runtime. You may notice that I am no longer using the old format for defining functions. Basically, that method did not render properly when executed by the test suite library which was mandated in an assignment. As such, I had to swap over all of the definitions to a more traditional method.
+
+~~~
+//Here's the code for the prefixMatch section in searchFunction
+corrected_strings = removeCommonPrefixAndSuffix(sUpper, tUpper)
+sShortened = corrected_strings[0]
+tShortened = corrected_strings[1]
+//Example: 3 chars removed from both so boost score by 30+30=60 total
+if (sShortened.length > 0) {
+    matchScore += ((sL - sShortened.length)*10)
+}
+if (tShortened.length > 0) {
+    matchScore += ((tL - tShortened.length)*10)
+}
+
+
+
+//Here's the function itself
+function removeCommonPrefixAndSuffix(first, last) {
+	cacheKey = genCacheKey("removeCommonPrefixAndSuffix", first, last)
+	if (cacheKey in removeCommonPrefixAndSuffix_cache) {
+		return removeCommonPrefixAndSuffix_cache[cacheKey]
+	}
+	else {
+		let prefix_len = getCommonPrefix(first, last)
+
+		let suffix_len = getCommonSuffix(first, last)
+
+		results = [first.slice(prefix_len, suffix_len), last.slice(prefix_len, suffix_len)]
+		removeCommonPrefixAndSuffix_cache[cacheKey] = results
+		return results
+	}
+}
+~~~
+
+Beyond the changes to DLED, I also made a few tiny changes to other sections. I set up early returns after the SDC, DLED, and JWS functions if the match score every drops below a certain level. Due to this change, I also decided to reorder a few of the checks and calculations.
+
+All of these changes made the DLED portion take about 4% of the original time (from before Stage 2) and the prefix matching portion take about 15% of the original time. The new total runtime for 5-character user input was always 900 to 2000ms. Here's a table of the percentage of the overall runtime taken up by each portion. The first column provides the average for 3-character user input while the second column provides the average for 7-character user input with a space in it to match 2-word entries in the crop database. Since the second column was the basis of future optimizations, I sorted the table by that column.
+
+| Section                             | Percentage for 3 chars | Percentage for 7 chars |
+| ----------------------------------- | ---------------------- | ---------------------- |
+| Other/Sort() Function               | 40.7%                  | 28.5%                  |
+| Lemmatizer section                  | 6.5%                   | 14.1%                  |
+| Double Metaphone Comparison section | 5.0%                   | 13.0%                  |
+| JWS section                         | 2.5%                   | 10.4%                  |
+| Length & Syllable section           | 14.6%                  | 9.1%                   |
+| DLED section                        | 3.2%                   | 6.5%                   |
+| SDC section                         | 6.3%                   | 5.5%                   |
+| Preprocessing section               | 7.9%                   | 5.1%                   |
+| Prefix Match section                | 7.0%                   | 4.2%                   |
+| First and Last Letter section       | 6.4%                   | 3.6%                   |
+
+### Stage 4: Improved JWS & Memoization
+
+Considering the time spent in the lemmatizer and Double Metaphone sections, I decided to perform some more granualar profile. Honestly, just swapping matchExact out for === massively decreased the runtime for the Double Metaphone section and brought it back within acceptable levels.
+
+While most of those runtimes made sense, the JWS runtime seemed unnecessarily high which led me to start researching its optimizations. [Dominik Bousquet's implementation](https://github.com/dbousque/batch_jaro_winkler) gave me the idea to add a minimum score to the JWS function. Basically, the minimum score will require a minimum number of matches for it to be possible. If that number of matches exceeds the length of the second string, then the function will return early.
+
+~~~
+function jaroWinklerSimilarity(s, a, p_val=0.16, min_score=0.7) {
+	//return early if either are undefined
+	if (typeof(s) === 'undefined' || typeof(a) === 'undefined') {
+		return 0.0
+	}
+
+	cacheKey = genCacheKey("jaroWinklerSimilarity", s, a, p_val, min_score)
+	if (cacheKey in jaroWinklerSimilarity_cache) {
+		return jaroWinklerSimilarity_cache[cacheKey]
+	}
+
+	sL = s.length
+	aL = a.length
+	//return early if either of the strings is empty
+	if (!(sL) || !(aL)) {
+		jaroWinklerSimilarity_cache[cacheKey] = 0
+		return 0.0
+	}
+	//return early if they are an exact match
+	if (s === a) {
+		jaroWinklerSimilarity_cache[cacheKey] = 1
+    	return 1.0;
+    }
+
+	//check if min_score is even possible
+	min_matches_for_score = Math.ceil((3.0 * min_score * sL * aL - (sL * aL)) / (sL + aL))
+	if (min_matches_for_score > aL) {
+		jaroWinklerSimilarity_cache[cacheKey] = 0
+		return 0.0
+	}
+
+	//initialize all of these variables to 0
+	//i,j,l are indices
+	//m is count of matching characters
+	//t is count of transpositions
+	i = j = l = m = t = 0
+	dw = 0.0
+	//store the viable range so that it isn't recalculated
+	range = aL / 2
+	//initialize the flag arrays
+	flags = Array(aL).fill(0)
+
+	//calculate matching characters and transpositions simultaneously, decreasing number of loops
+	prevpos = -1
+	for (i = 0; i < sL; i++) {
+		ch = s.charAt(i) //store the character so that it isn't recalculated
+		for (j = customMax(i - range, 0), l = customMin(i + range, aL); j < l; j++) {
+			if (ch == a.charAt(j) && !flags[j]) {
+				m++ //matching char found
+				flags[j] = true
+				if (prevpos != -1 && j < prevpos) {
+					t++ //transposition found
+				}
+				prevpos = j
+				break
+			}
+		}
+  	}
+
+	//return early if no matches were found
+	if (!m || m === 0) {
+		jaroWinklerSimilarity_cache[cacheKey] = 0
+		return 0.0
+	}
+
+	//calculate Jaro Distance
+	dw = ((m / sL) + (m / aL) + ((m - t) / m)) / 3.0
+	
+	//only calculate Jaro-Winkler distance if Jaro Similarity is above threshold
+	const JD_THRESHOLD = 0.4
+	if (dw > JD_THRESHOLD) {
+		//calculate common string prefix length
+		l = getCommonPrefix(s, a)
+		//calculate Jaro-Winkler distance with scaling factor
+		dw = dw + (l * p_val * (1 - dw));
+	}
+
+	jaroWinklerSimilarity_cache[cacheKey] = dw.toFixed(2)
+	return dw.toFixed(2)
+}
+~~~
+
+In that code, you probably noticed a cache reference and a call to the genCacheKey function. That idea has a slight story to it. During my internship at Goldman Sachs, my code was taking several hours to finish running. While well with acceptable tolerances, I wanted improve it by some amount and settled on memoization after researching the problem. Memoization basically means that I cache the result of really slow functions and return the cached values rather than recalculating them if the same parameters are passed. Borrowing from techniques I researched and implemented during my internship, I created a function which generated cache keys based on the function's name and its arguments. Also, I defined a separate cache for each function to prevent any overlap issues. While unlikely, I don't believe that it caused any major slowdowns or wastes of memory. The caches are defined in a global scope within the file, meaning that they are only reset when the search bar component is remounted. Since the mobile app uses Expo Router, the search bar component is only remounted when replace is called rather than the page stack. Here's the genCacheKey function in case you're curious. It isn't perfect but may give you some ideas.
+
+~~~
+function genCacheKey(funcName, firstArg, ...args) {
+	cacheKey = `${funcName}:${firstArg}:`
+	for (const arg of args) {
+		cacheKey += String(arg)
+      	cacheKey += ":"
+	}
+	return cacheKey;
+}
+~~~
+
+Besides reducing the average runtime to 267ms, caching introduced an unintended but beneficial side effect. Namely, caching introduced a slight preference towards crops previously searched for by the user since it was mounted. Here's the relative runtimes after this stage.
+
+| Section                             | Percentage  |
+| ----------------------------------- | ----------- |
+| Other/Sort() Function               | 62.16%      |
+| DLED section                        | 11.67%      |
+| JWS section                         | 6.03%       |
+| SDC section                         | 3.76%       |
+| Prefix Match section                | 3.69%       |
+| Preprocessing section               | 3.54%       |
+| Length & Syllable section           | 2.70%       |
+| Lemmatizer section                  | 2.39%       |
+| Double Metaphone Comparison section | 2.03%       |
+| First and Last Letter section       | 2.03%       |
+
+### Stage 5: The Sorting Algorithm
+
+For my use case, a runtime of 267ms was still too much. Since I had already optimized DLED, I focused my attention on the sorting function. Previously, I was using the default sorting function provided by JavaScript. JavaScript in the Hermes engine, the version used by my capstone project, uses a stable quicksort when presented with contiguous arrays of non-numeric items and a custom comparator. The quicksort is already optimized with median-of-three being used to pick better pivots and insertion sort being applied once the list is mostly sorted. Also, the Hermes engine will bail out to heapsort if it detects an issue.
+
+While I could not find any complexity information about Hermes' specific implementation, this particular style of sorting algorithm is generally O(n log n) with a relatively small deviation from that average case. However, I do not need the full list of crops to be sorted; the 3 or 8 items with the highest scores just need to be at the top. Based on this, I began researching sorting algorithms that focus on the Kth biggest items, and I ended up reading a lot of articles and websites. Here's a list of some that I consider particularly interesting.
+
+* [Jim Mischel's blog comparing Quickselect and Heapselect for different data types](https://blog.mischel.com/2011/10/25/when-theory-meets-practice/)
+* [Cody Schafer's Rust-based implementation of Quickselect](https://github.com/codyps/kth/blob/master/src/quickselect.rs)
+* [Krzysztof Kiwiel's paper on the Floyd-Rivest algorithm which is mandatory reading for the topic according to the Internet](https://core.ac.uk/download/pdf/82672439.pdf)
+* [A StackOverflow comparison of Floyd-Rivest and Introselect, especially Azmisov's reply](https://stackoverflow.com/questions/29592546/floyd-rivest-vs-introselect-algorithm-performance)
+* [Danila Kutenin's blog discussing Quickselect, BFPRT/median-of-medians, Heapselect, Introselect, PDQSelect, Alexandrescu/Median-of-ninthers, and Floyd-Rivest](https://danlark.org/2020/11/11/miniselect-practical-and-generic-selection-algorithms/)
+* [A Reddit post on a Rust implementation of Floyd-Rivest called turboselect](https://www.reddit.com/r/rust/comments/145xn00/turboselect_faster_than_quickselect/)
+* [A StackOverflow discussion of implementing Quickselect, Floyd-Rivest, median-of-3, and Floyd-Wirth, specifically Andy Dansby's answer](https://softwareengineering.stackexchange.com/questions/284767/kth-selection-routine-floyd-algorithm-489/284858)
+* [Volodymyr Agafonkin's implementation of Floyd-Rivest cross with Quickselect](https://github.com/mourner/quickselect)
+* [Floyd and Rivest's original paper](https://people.csail.mit.edu/rivest/pubs/FR75b.pdf)
+
+When selecting a sorting algorithm, I wanted one with a good runtime complexity. Quickselect offers an average runtime of O(n) and a worst case of O(n^2), though median-of-3 helps to decrease the frequency of the worst case. The BFPRT/median-of-medians algorithm has a worst and best case complexity of O(n). Heapselect has an average and worst case complexity of O(n log k) which degrades to worst very quickly as k grows. Introselect is interesting because it combines Quickselect and median-of-medians with an average complexity of O(n) and a worst case of O(n log n). PDQsort offers an average complexity of O(nk) and a worst case complexity of O(n log n). The Alexandrescu/Median-of-ninthers algorithm has a complexity of O(n) and outperforms most other Kth selection algorithms.
+
+Most importantly, I needed to minimize the number of comparisons since that was the biggest time sink for my case. Out of Quickselect, BFPRT/median-of-medians, Heapselect, Introselect, PDQSelect, and Alexandrescu/Median-of-ninthers, the minimum number of comparisons is 2n. Despite its great performance, the BFPRT/median-of-medians algorithm generally requires 18n comparisons, even after heavy optimizations.
+
+Eventually, I settled on the Floyd-Rivest algorithm. While it has a worst case complexity of O(n^2) and an average complexity of O(n), this algorithm requires n + k + O(n) comparisons in the worst case and an average case of 1 - 2n^(-1/2) comparisons. However, I did not simply implement Floyd-Rivest as I tested it against several other algorithms I mentioned above to determine the best one for my use case.
+
+~~~
+//The Floyd-Rivest sorting algorithm which sorts [left,right] so generally the kth smallest/largest values are in the range of [left,k]
+function quickselect(arr, k, right = arr.length, compare = defaultCompare) {
+    let left = 0
+    let i = 0
+    right = right - 1 //allows user to just provide the list's length rather than forcing them to remember subtracting 1
+  
+    //The left and right variables get updated at the end of each loop iteration so the loop lasts until the left index equals or exceeds right index
+    while (right > left) {
+        //This section is based on the median-of-3 approach used to optimize Quickselect
+        //if kth element is smaller than the left element, swap them
+        if (compare(arr[k], arr[left]) < 0) { 
+          swap(arr, left, k)
+        }
+        //if the right element is smaller than the left element, swap them
+        if (compare(arr[right], arr[left]) < 0) {
+          swap(arr, left, right)
+        }
+        //if the right element is still smaller than the left element, swap the kth and right elements
+        if (compare(arr[right], arr[left]) < 0) {
+          swap(arr, k, right)
+        }
+
+        //There used to be a recursive check here to shrink left and right over time which used arbitrary constants, square roots, natural logarithms, and exponential powers.
+        //It all got removed as I moved towards an iterative version because those mathematical operations are SLOW
+
+        //Partition elements from arr[left : right] around t (which is set to the kth element)
+        //If k is smaller than half of the number of elements in the list, then the remaining elements should be compared to the jth element and only to the ith element if smaller than the jth element
+        //basically a faster version of traditional partition function or subscript range fetching as subscript range checking on i and j has been removed
+        const t = arr[k];
+        i = left;
+        let j = right;
+
+        swap(arr, left, k);
+        //if the right element is larger than the kth element, swap the right and left elements
+        if (compare(arr[right], t) > 0) {
+            swap(arr, right, left)
+        }
+
+        //This entire section moves up the left index (i) and down the right index (j)
+        //Similar to the outer loop, keep looping until i is no longer smaller than j
+        while (i < j) {
+            swap(arr, i, j);
+            i++;
+            j--;
+            while (compare(arr[i], t) < 0) {
+                i++
+            }
+            while (compare(arr[j], t) > 0) {
+                j--
+            }
+        }
+
+        if (compare(arr[left], t) === 0) {
+            swap(arr, left, j)
+        }
+        else {
+            j++;
+            swap(arr, j, right);
+        }
+
+        if (j <= k) {
+            left = j + 1
+        };
+        if (k <= j) {
+            right = j - 1
+        };
+    }
+}
+function swap(arr, i, j) {
+    const tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+}
+function defaultCompare(a, b) {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
+
+//Here's what part of searchFunction looks like now
+cleanStartTime = performance.now()
+cleanedTxt = cleanText(text, noStopwords=true, noSQL=true, textOnly=true)
+cleanEndTime = performance.now()
+console.log("Cleaning time   : " + (cleanEndTime - cleanStartTime) + "ms")
+//early return if no change post-cleaning
+if (cleanedTxt === cleanText(this.state.searchValue, noStopwords=true, noSQL=true, textOnly=true)) {
+    this.setState({ searchValue: text }); 
+    let searchEndTime = performance.now()
+    console.log("Sort Time       : " + (searchEndTime - searchStartTime) + "ms")
+    searchStartTime = searchEndTime = 0
+    return
+}
+//sort array in descending order (find highest value) with the custom comparator
+quickselect(this.arrayholder, 3, this.arrayholder.length, function(a,b){ 
+    difference = compareStrings(b.name, cleanedTxt) - compareStrings(a.name,cleanedTxt)
+    if (difference > 0) {
+        return 1
+    }
+    if (difference < 0) {
+        return -1
+    }
+    return 0
+})
+updatedData = this.arrayholder.slice(0,3)
+~~~
+
+My implementation did face an interesting and unexpected challenge. My chosen version of Floyd-Rivest sorts the list such that the k-th element will have the (k + 1)-th smallest value in the list. However, there is a chance that the sublist of [0,k] MAY NOT contain the Kth biggest elements. Since I could not find an issue in my implementation, I solved the issue by expanding the gap between any two match scores, something done by increasing all bonuses and negatives in the comparator.
+
+To show how effective this change was, I increased the number of crops in the test database from 600 to 875. The average runtime with such a large database and all of the different optimizations was **98ms**. Oh, the new Cleaning section reflected the section in searchFunction alters the Other category so that it now only contains the sorting algorithm rather than both the sorting algorithm and the text sanitizer for the user's input. The Preprocessing section still contains the unidecode library, the toUpperCase call, the initial caching check, the check if the two strings are equal, and storing the length of both strings.
+
+| Section                             | Percentage  |
+| ----------------------------------- | ----------- |
+| Other/Sort() Function               | 70.27%      |
+| Preprocessing section               | 7.24%       |
+| Prefix Match section                | 7.23%       |
+| Lemmatizer section                  | 4.07%       |
+| First and Last Letter section       | 3.99%       |
+| JWS section                         | 2.04%       |
+| SDC section                         | 1.75%       |
+| Length & Syllable section           | 1.63%       |
+| DLED section                        | 1.02%       |
+| Double Metaphone Comparison section | 0.54%       |
+| Cleaning section                    | 0.22%       |
+
+As you can see, all of those optimizations were extremely effective. Anyway, hopefully all of this information is useful for you as you work on your own fuzzy search mechanisms.
+
+`

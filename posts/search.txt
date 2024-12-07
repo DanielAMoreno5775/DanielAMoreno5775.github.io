@@ -619,4 +619,6 @@ After these optimizations, I checked the code again. Unfortunately, the code sti
 | Prefix Match section                | 2.6%         |
 
 Next semester, I plan to improve these algorithms to decrease the overall run time to something more tolerable. Trust me, I have all sorts of ideas for this. If you want to read more about the algorithms and techniques that I used, I've created a [separate post](./blogpage.html?page=searchalgorithms) for that.
+
+**Update**: Here is the [link](./blogpage.html?page=optimizedsearch) to the blog post on optimizing that run time down to an average of 98ms.
 `

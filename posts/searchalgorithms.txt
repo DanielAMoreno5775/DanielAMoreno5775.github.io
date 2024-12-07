@@ -434,4 +434,6 @@ this["syllableCount"] = function(s) {
 ---
 
 Hopefully, all of this will help you as you select and code the algorithms and techniques for your own fuzzy search mechanisms.
+
+**Update**: Here is the [link](./blogpage.html?page=optimizedsearch) to the blog post on optimizing all of these algorithms.
 `
