@@ -1,0 +1,500 @@
+nwsapi_text=`
+# Using the NWS' Weather API
+###### By Daniel Moreno
+###### Algorithms · 5 min read · Dec 9, 2024
+---
+![image alt >< 40](./assets/nwslogo.png)
+ *Source: the NWS' logo* 
+
+Greetings and permutations everyone. As I mentioned in [my first post about my capstone project](./blogpage.html?page=search), it was a rather complex app with a lot of different components.
+
+Among the other requirements that I worked on was the ability to display weather forecasts based on the user's zip code. Due to client needs, we settled on the NWS' API as the best option. If you are familiar with this API, then you probably know that they do not provide a keyable property with a standardized output. The forecast text itself is "dynamically composed and can contain millions of different variations based on coverage, intensity, and timing" per [this reply from a maintainer](https://github.com/weather-gov/api/discussions/453#discussioncomment-1224477). According to an archived GitHub feature request, I know that there was some discussion of using [WMO codes](https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM), but they never actually implemented it. Back in 2022, they used to provide several keyable properties that could be combined, but that no longer seems to be the case. Since I wanted 10 standard icons that I could display, I had to get rather creative in my approach.
+
+### The Weather Categories
+
+Before handling the API's output, I had to decide what I would be displaying to the user. I only needed to provide a general sense of the weather forecast, a sense of the probability, and for which day. As such, I settled on 10 general weather categories and then 4 ways to modify those categories based on probabilities.
+
+![image alt >< 10](./assets/weather_clear_gold.png)
+ *Category: Clear* 
+
+![image alt >< 10](./assets/weather_fewclouds_yellow.png)
+ *Category: A Few Clouds* 
+
+![image alt >< 10](./assets/weather_partlycloudy_yellowgray.png)
+ *Category: Partly Cloudy* 
+
+![image alt >< 10](./assets/weather_mostlycloudy_lightgray.png)
+ *Category: Mostly Cloudy* 
+
+![image alt >< 10](./assets/weather_overcast_gray.png)
+ *Category: Overcast* 
+
+![image alt >< 10](./assets/weather_rainy_blue.png)
+ *Category: Rainy* 
+
+![image alt >< 10](./assets/weather_stormy_bluegray.png)
+ *Category: Stormy* 
+
+![image alt >< 10](./assets/weather_snowy_gray.png)
+ *Category: Snowy* 
+
+![image alt >< 10](./assets/weather_misty_bluegray.png)
+ *Category: Misty* 
+
+![image alt >< 10](./assets/weather_dusty_darkbrown.png)
+ *Category: Dusty* 
+
+The page does a poor job of displaying them, but it gives you a sense of the 10 icons and categories. The probabilities were None, Slight Chance, Chance, and Likely with each category moving towards Likely having a higher opacity. Other categories except None had a small percentage sign displayed on top of the weather icon's corner.
+
+### Retrieving the Forecast
+
+As I mentioned at the beginning, I needed to fetch weather information based on the user's zip code. To provide a forecast, the API needs gridpoints. The API also provided a way to acquire gridpoints based on a pair of latitude and longitude coordinates. However, I did not have access to a free API for acquiring coordinates based on zip codes. Thankfully, I had discovered and bookmarked a website called GeoNames for a CTF competition. GeoNames provides a [set of tsv files](https://download.geonames.org/export/zip/) for many different countries. Each file contains a 2-character ISO code for the country, a postal/zip code, the place's name, the names of some administrative subdivisions associated with the postal/zip code, the latitude, the longitude, and the accuracy of those coordinates. Ironically, this was more information than I needed, and I wanted a fast way to access over 41000 zip codes. I settled on JavaScript dictionaries as I could access the latitute and longitude values by the zip code in an O(1) operation. After making those decisions, I threw together a Python script in about 10 minutes which read through the tsv files and inserted the necessary information into a dictionary.
+
+~~~
+def convert_to_js_dict(file_path, output_file_path):
+    js_dict = {}
+    
+    with open(file_path, 'r') as file:
+        for line in file:
+            data = line.strip().split('\t')
+            zip_code = data[1]
+            latitude = f"{float(data[9]):.4f}"
+            longitude = f"{float(data[10]):.4f}"
+            js_dict[zip_code] = [latitude, longitude]
+    
+    # Formatting the output as a JavaScript dictionary
+    with open(output_file_path, 'w') as output_file:
+        output_file.write("const ZipLookup = {\n")
+        for zip_code, coordinates in js_dict.items():
+            output_file.write(f"    '{zip_code}': ['{coordinates[0]}', '{coordinates[1]}'],\n")
+        output_file.write("};\n")
+
+# Example usage
+input_file_path = 'US.txt'  # Replace with the path to your text file
+output_file_path = 'output.js'  # Replace with the desired output file path
+
+convert_to_js_dict(input_file_path, output_file_path)
+
+
+
+// Example of the zip code dictionary; latitude, then longitude
+const ZipLookup = {
+    '99553': ['54.1430', '-165.7854'],
+    '99571': ['55.1858', '-162.7211'],
+    '99583': ['54.8542', '-163.4113'],
+};
+export default ZipLookup;
+~~~
+
+With that lookup table set up, I could convert zip codes into coordinates and use those coordinates to fetch gridpoints.
+
+~~~
+export async function getGridpoints(zipcode) {
+	if (!(zipcode in ZipLookup)) {
+		return {
+			status: 406, //invalid zip code
+			gridpoint: ''
+		};
+	}
+
+	let coords = ZipLookup[zipcode]
+	let lat = coords[0]
+	let long = coords[1]
+  
+	try {
+		const response = await fetch(
+			\`https://api.weather.gov/points/\${lat},\${long}\`
+		).then((res) => res.json());
+
+        //Returned field is actually a URL to view live data (not the forecast) for those gridpoints
+        //As such, I just extracted the gridpoints from the URL
+        //The gridpoints always follow the pattern of MLB/26,68
+		forecastURL = response.properties.forecast
+		urlParts = forecastURL.split('/')
+		gridpoint = urlParts[4] + '/' + urlParts[5]
+	
+		return {
+			status: 200,
+			gridpoint: gridpoint
+		};
+	} catch (error) {
+		return {
+			status: 500,
+			gridpoint: ''
+		};
+	}
+}
+~~~
+
+With those gridpoints, I could fetch the 7 day forecast from the NWS API. Based on client feedback, I could ignore the night-time forecast for all days. For most days, the API will actually return the name of the day as part of the forecast. However, for the current day, they return "This Afternoon" or "Tonight" so I created a simple lookup table which used tomorrow's name to figure out today's name. After that, I just stored the name of each day and its forecast in a series of state hooks.
+
+~~~
+const data = await getGridpoints(resultZipCode);
+// convert the data to json
+if (data.status == 200) {
+    const response = await fetch(
+        \`https://api.weather.gov/gridpoints/\${data.gridpoint}/forecast\`
+    ).then((res) => res.json());
+    forecast = response.properties.periods
+    //get the short weather forecast for today unless it is already night and then the next few days
+    //ignore the night-time forecast
+    if (forecast[0].name === "Tonight") {
+        //Based on tomorrow's name, figure out today's name
+        todayName = todayDayLookup[forecast[3].name]
+        setDayName1(todayName.substring(0,3))
+        setDayName2(forecast[3].name.substring(0,3))
+        setDayName3(forecast[5].name.substring(0,3))
+        setDayName4(forecast[7].name.substring(0,3))
+        setDayName5(forecast[9].name.substring(0,3))
+        setDayName6(forecast[11].name.substring(0,3))
+        setDayName7(forecast[13].name.substring(0,3))
+
+        setforecastDataDay1(forecast[1].shortForecast)
+        setforecastDataDay2(forecast[3].shortForecast)
+        setforecastDataDay3(forecast[5].shortForecast)
+        setforecastDataDay4(forecast[7].shortForecast)
+        setforecastDataDay5(forecast[9].shortForecast)
+        setforecastDataDay6(forecast[11].shortForecast)
+        setforecastDataDay7(forecast[13].shortForecast)
+    } else {
+        //Based on tomorrow's name, figure out today's name
+        todayName = todayDayLookup[forecast[2].name]
+        setDayName1(todayName.substring(0,3))
+        setDayName2(forecast[2].name.substring(0,3))
+        setDayName3(forecast[4].name.substring(0,3))
+        setDayName4(forecast[6].name.substring(0,3))
+        setDayName5(forecast[8].name.substring(0,3))
+        setDayName6(forecast[10].name.substring(0,3))
+        setDayName7(forecast[12].name.substring(0,3))
+
+        setforecastDataDay1(forecast[0].shortForecast)
+        setforecastDataDay2(forecast[2].shortForecast)
+        setforecastDataDay3(forecast[4].shortForecast)
+        setforecastDataDay4(forecast[6].shortForecast)
+        setforecastDataDay5(forecast[8].shortForecast)
+        setforecastDataDay6(forecast[10].shortForecast)
+        setforecastDataDay7(forecast[12].shortForecast)
+    }
+} else {
+    console.log("bad")
+    console.log(data.status)
+}
+
+
+
+
+const todayDayLookup = {
+	"Monday": "Sunday",
+	"Tuesday": "Monday",
+	"Wednesday": "Tuesday",
+	"Thursday": "Wednesday",
+	"Friday": "Thursday",
+	"Saturday": "Friday",
+	"Sunday": "Saturday",
+}
+~~~
+
+### Assigning a Forecast Category
+
+After acquiring the forecast information, I needed to assign it one of the 10 weather categories and one of the 4 probability categories. Taking inspiration from a project that I worked on at Goldman Sachs, I turned to the wonders of regex.
+
+Starting off with the getWeatherIcon function, I define some variables. Namely, I fetch the values (which is regex) and the keys (the category names) of two enums and save those values in some variables for later. Next, the function determines whether a forecast has been fetched yet which determines whether a loading icon will be displayed. If one is available, the function takes the short forecast string, ignores everything after the word "then", and makes it all lower case. Then, I loop through each of the entries in an enum called HighLvlWeatherTypes to see if any of the saved regex matches the text within the forecast. If a match is found, then the category/key's number from the enum is saved. Later, a switch statement checks the enum key name (based on the saved number) to see which icon will be assigned. Within the project, all icons were saved in an enum to simplify the passing between files and functions without messing with require too much, accomodating for inexperience on the team. A similar procedure is followed for the probabilities which are based on regex defined in an enum called Probabilities.
+
+~~~
+export function getWeatherIcon(forecastDesc) {
+    //define some variables
+    const valuesWeather = Object.values(HighLvlWeatherTypes)
+    const keysWeather = Object.keys(HighLvlWeatherTypes)
+    const valuesProb = Object.values(Probabilities)
+    const keysProb = Object.keys(Probabilities)
+    let regexPattern = null
+    let matchedKeyWeather = -1
+    let matchedKeyProb = -1
+
+    if (!forecastDesc) {
+        return [icons.hourglass_green, "None"]
+    }
+
+    //get just the stuff before 'then', and remove any spaces or capitals
+    let currentWeather = "" + forecastDesc.split("then")[0].trim().toLowerCase() + ""
+
+    //see if forecastDesc matches any of the weather types for each category in the enum
+    valuesWeather.forEach((value, index) =>{
+        regexPattern = new RegExp("(" + value + ")")
+        if (regexPattern.test(currentWeather)) {
+            matchedKeyWeather = index
+        }
+    })
+    //check probability level for the weather
+    valuesProb.forEach((value, index) =>{
+        regexPattern = new RegExp("(" + value + ")")
+        if (regexPattern.test(currentWeather)) {
+            matchedKeyProb = index
+        }
+    })
+
+    let image_url = ""
+    if (matchedKeyWeather < 0) {
+        image_url = icons.hourglass_green
+    }
+    else {
+        switch(keysWeather[matchedKeyWeather]) { 
+            case "Clear": { 
+                image_url = icons.weather_clear_gold
+                break; 
+            } 
+            case "FewClouds": { 
+                image_url = icons.weather_fewclouds_yellow
+                break; 
+            } 
+            case "PartlyCloudy": { 
+                image_url = icons.weather_partlycloudy_yellowgray
+                break; 
+            } 
+            case "MostlyCloudy": { 
+                image_url = icons.weather_mostlycloudy_lightgray
+                break; 
+            }
+            case "Overcast": { 
+                image_url = icons.weather_overcast_gray
+                break; 
+            }
+            case "Rainy": { 
+                image_url = icons.weather_rainy_blue
+                break; 
+            }
+            case "Stormy": { 
+                image_url = icons.weather_stormy_bluegray
+                break; 
+            }
+            case "Snowy": { 
+                image_url = icons.weather_snowy_gray
+                break; 
+            }
+            case "Misty": { 
+                image_url = icons.weather_misty_bluegray
+                break; 
+            }
+            case "Dusty": { 
+                image_url = icons.weather_dusty_darkbrown
+                break; 
+            }
+            default: { 
+                image_url = icons.hourglass_green
+                break; 
+            } 
+        } 
+    }    
+
+    let probability_val = ""
+    if (matchedKeyProb < 0) {
+        probability_val = "None"
+    }
+    else {
+        switch(keysProb[matchedKeyProb]) { 
+            case "SlightChance": { 
+                probability_val = "Slight"
+                break; 
+            } 
+            case "Chance": { 
+                probability_val = "Chance"
+                break; 
+            } 
+            case "Likely": { 
+                probability_val = "Likely"
+                break; 
+            } 
+            default: { 
+                probability_val = "None"
+                break; 
+            } 
+        } 
+    }
+
+    return [image_url, probability_val]
+}
+~~~
+
+The Probabilities enum is extremely simple as the NWS does utilize relatively standard terminology for them. There can still be a little variance so you will still see pipes serving as regex ORs. While these values were backed up by the sources that I will discuss in a moment, they were primarily determined by me experimenting with different zip codes and gridpoints to identify certain patterns.
+
+~~~
+enum Probabilities {
+    Likely = "likely|probable",
+    Chance = "chance|possible",
+    SlightChance = "slight chance",
+}
+~~~
+
+The HighLvlWeatherTypes actually represents the 10 categories that I discussed earlier. However, it does not contain any regex on its own, other than the pipe characters. Instead, HighLvlWeatherTypes combines 1 or more categories in the WeatherTypes enum. Before continuing, you will likely notice me prepending an empty string to every category in HighLvlWeatherTypes. This is an extremely easy and relatively problem-free way to force a type conversion in JavaScript.
+
+Moving on to WeatherTypes, all of these strings are derived from my own experiments with the API and several sources. They would be [the NWS' list of official weather icons](https://www.weather.gov/forecast-icons/), [the API's list of forecast icons](https://api.weather.gov/icons), [the NDFD Web Service's list of forecast icons and weather conditions](https://graphical.weather.gov/xml/xml_fields_icon_weather_conditions.php), [some values used by the NWS API in the past](https://github.com/weather-gov/api/discussions/453#discussioncomment-2768919), and [this PHP program which attempted something similar to me based on the icon names](https://github.com/ktrue/NWS-forecast/blob/ccdfc4b0acf2598a1d9c5d500267be6362b6e0d5/advforecast2.php#L1747). I combined about 300 different forecast strings into 28 categories. I am certain that the regex could be fleshed out further to account for more edge cases, but thus far, it has handled every variation provided by the API.
+
+~~~
+enum HighLvlWeatherTypes {
+    //0-10% cloud coverage
+    Clear = "" + WeatherTypes.Clear + "|" + WeatherTypes.Hot,
+    //10-30% cloud coverage
+    FewClouds = "" + WeatherTypes.FewClouds,
+    //30-60% cloud coverage
+    PartlyCloudy = "" + WeatherTypes.PartlyCloudy,
+    //60-90% cloud coverage
+    MostlyCloudy = "" + WeatherTypes.MostlyCloudy,
+    //90-100% cloud coverage
+    Overcast = "" + WeatherTypes.Overcast,
+    //Rain, Showers
+    Rainy = "" + WeatherTypes.RainSnow + "|" + WeatherTypes.RainIcePellets + "|" + WeatherTypes.Rain + "|" + WeatherTypes.RainShowers + "|" + WeatherTypes.VicinityShowers,
+    //Thunderstorms, Tornado, Blizzard
+    Stormy = "" + WeatherTypes.Thunderstorm + "|" + WeatherTypes.ThunderstormVicinityMostly + "|" + WeatherTypes.ThunderstormVicinityPartly + "|" + WeatherTypes.Tornado + "|" + WeatherTypes.Blizzard,
+    //Snow, Freezing Rain, Sleet, Haill
+    Snowy = "" + WeatherTypes.Snow + "|" + WeatherTypes.FreezingRain + "|" + WeatherTypes.FreezingRainRain + "|" + WeatherTypes.FreezingRainSnow + "|" + WeatherTypes.IcePellets + "|" + WeatherTypes.SnowIcePellets + "|" + WeatherTypes.Cold,
+    //Drizzle, Fog
+    Misty = "" + WeatherTypes.LightRain + "|" + WeatherTypes.Fog,
+    //Dust, Sand, Smoke, Haze
+    Dusty = "" + WeatherTypes.Dust + "|" + WeatherTypes.Smoke + "|" + WeatherTypes.Haze,
+}
+enum WeatherTypes {
+    //0-10% cloud coverage
+    Clear = 'fair|clear|sunny|fair with haze|clear with haze|sunny with haze|fair and breezy|sunny and breezy|clear and breezy|fair and windy|clear and windy',
+    //10-30% cloud coverage
+    FewClouds = 'a few clouds|a few clouds with haze|a few clouds and breezy|mostly sunny|mostly clear',
+    //30-60% cloud coverage
+    PartlyCloudy = 'partly cloudy|partly cloudy with haze|partly cloudy and breezy|partly sunny|partly clear',
+    //60-90% cloud coverage
+    MostlyCloudy = 'mostly cloudy|mostly cloudy with haze|mostly cloudy and breezy',
+    //90-100% cloud coverage
+    Overcast = 'overcast|overcast with haze|overcast and breezy',
+    Snow = 'snow|light snow|heavy snow|snow showers|light snow showers|heavy snow showers|showers snow|light showers snow|heavy showers snow|snow fog|snow mist|light snow fog|heavy snow fog|light snow mist|heavy snow mist|light snow showers fog|heavy snow showers fog|light snow showers mist|heavy snow showers mist|snow fog|light snow fog|heavy snow fog|snow showers fog|light snow showers fog|heavy snow showers fog|showers in vicinity snow|snow showers in vicinity|snow showers in vicinity fog|snow showers in vicinity mist|snow showers in vicinity fog|low drifting snow|blowing snow|snow low drifting snow|snow blowing snow|light snow low drifting snow|light snow blowing snow|light snow blowing snow fog|light snow blowing snow mist|heavy snow low drifting snow|heavy snow blowing snow|thunderstorm snow|light thunderstorm snow|heavy thunderstorm snow|snow grains|light snow grains|heavy snow grains|heavy blowing snow|blowing snow in vicinity',
+    RainSnow = 'rain snow|light rain snow|heavy rain snow|snow rain|light snow rain|heavy snow rain|drizzle snow|light drizzle snow|heavy drizzle snow|snow drizzle|light snow drizzle|heavy drizzle snow',
+    RainIcePellets = 'rain sleet|rain ice pellets|light rain ice pellets|heavy rain ice pellets|drizzle ice pellets|light drizzle ice pellets|heavy drizzle ice pellets|ice pellets rain|light ice pellets rain|heavy ice pellets rain|ice pellets drizzle|light ice pellets drizzle|heavy ice pellets drizzle',
+    FreezingRain = 'wintry mix|freezing rain|freezing drizzle|light freezing rain|light freezing drizzle|heavy freezing rain|heavy freezing drizzle|freezing rain in vicinity|freezing drizzle in vicinity',
+    FreezingRainRain = 'flurries|freezing fog|freezing rain rain|light freezing rain rain|heavy freezing rain rain|rain freezing rain|light rain freezing rain|heavy rain freezing rain|freezing drizzle rain|light freezing drizzle rain|heavy freezing drizzle rain|rain freezing drizzle|light rain freezing drizzle|heavy rain freezing drizzle',
+    FreezingRainSnow = 'frost|ice fog|freezing rain snow|light freezing rain snow|heavy freezing rain snow|freezing drizzle snow|light freezing drizzle snow|heavy freezing drizzle snow|snow freezing rain|light snow freezing rain|heavy snow freezing rain|snow freezing drizzle|light snow freezing drizzle|heavy snow freezing drizzle',
+    IcePellets = 'sleet|ice crystals|ice pellets|light ice pellets|heavy ice pellets|ice pellets in vicinity|showers ice pellets|thunderstorm ice pellets|ice crystals|hail|small hail|small snow pellets|light small hail|light small snow pellets|heavy small hail|heavy small snow pellets|showers hail|hail showers',
+    SnowIcePellets = 'snow sleet|snow ice pellets',
+    LightRain = 'light rain|drizzle|light drizzle|heavy drizzle|light rain fog|drizzle fog|light drizzle fog|heavy drizzle fog|light rain mist|drizzle mist|light drizzle mist|heavy drizzle mist|light rain fog|drizzle fog|light drizzle fog|heavy drizzle fog',
+    Rain = 'rain|heavy rain|rain fog|heavy rain fog|rain mist|heavy rain mist|rain fog|heavy rain hog',
+    RainShowers = 'rain showers|showers|light rain showers|light rain and breezy|heavy rain showers|rain showers in vicinity|light showers rain|heavy showers rain|showers rain|showers rain in vicinity|rain showers fog|light rain showers fog|heavy rain showers fog|rain showers in vicinity fog|light showers rain fog|heavy showers rain fog|showers rain fog|showers rain in vicinity fog|rain showers mist|light rain showers mist|heavy rain showers mist|rain showers in vicinity mist|light showers rain mist|heavy showers rain mist|showers rain mist|showers rain in vicinity mist',
+    //<60% cloud coverage
+    VicinityShowers = 'showers in vicinity|showers in vicinity fog|showers in vicinity mist|showers in vicinity fog|showers in vicinity haze',
+    //>75% cloud coverage
+    Thunderstorm = 'thunderstorm|showers and thunderstorms|thunderstorm rain|light thunderstorm rain|heavy thunderstorm rain|thunderstorm rain fog|light thunderstorm rain fog|heavy thunderstorm rain fog|thunderstorm rain mist|light thunderstorm rain mist|heavy thunderstorm rain mist|heavy thunderstorm rain fog and windy|thunderstorm showers in vicinity|light thunderstorm rain haze|heavy thunderstorm rain haze|thunderstorm fog|light thunderstorm rain fog|heavy thunderstorm rain fog|thunderstorm light rain|thunderstorm heavy rain|thunderstorm rain fog|thunderstorm light rain fog|thunderstorm heavy rain fog|thunderstorm rain mist|thunderstorm light rain mist|thunderstorm heavy rain mist|thunderstorm in vicinity fog|thunderstorm in vicinity mist|thunderstorm showers in vicinity|thunderstorm in vicinity haze|thunderstorm haze in vicinity|thunderstorm light rain haze|thunderstorm heavy rain haze|thunderstorm fog|thunderstorm light rain fog|thunderstorm heavy rain fog|thunderstorm hail|light thunderstorm rain hail|heavy thunderstorm rain hail|thunderstorm rain hail fog|thunderstorm rain hail mist|light thunderstorm rain hail fog|heavy thunderstorm rain hail fog|light thunderstorm rain hail mist|heavy thunderstorm rain hail hail|thunderstorm showers in vicinity hail|light thunderstorm rain hail haze|heavy thunderstorm rain hail haze|thunderstorm hail fog|light thunderstorm rain hail fog|heavy thunderstorm rain hail fog|thunderstorm light rain hail|thunderstorm heavy rain hail|thunderstorm rain hail fog|thunderstorm rain hail mist|thunderstorm light rain hail fog|thunderstorm heavy rain hail fog|thunderstorm light rain hail mist|thunderstorm heavy rain hail mist|thunderstorm in vicinity hail|thunderstorm in vicinity hail haze|thunderstorm haze in vicinity hail|thunderstorm light rain hail haze|thunderstorm heavy rain hail haze|thunderstorm hail fog|thunderstorm light rain hail fog|thunderstorm heavy rain hail fog|thunderstorm small hail|thunderstorm rain small hail|thunderstorm small snow pellets|thunderstorm rain small snow pellets|light thunderstorm rain small hail|heavy thunderstorm rain small hail|light thunderstorm rain small snow pellets|heavy thunderstorm rain small snow pellets',
+    //60-75% cloud coverage
+    ThunderstormVicinityMostly = 'thunderstorm in vicinity',
+    //<60% cloud coverage
+    ThunderstormVicinityPartly = 'thunderstorm in vicinity|thunderstorm in vicinity fog|thunderstorm in vicinity haze',
+    Tornado = 'tornado|funnel cloud|funnel cloud in vicinity|tornado|water spout',
+    Smoke = 'smoke|ash',
+    Dust = 'dust|low drifting dust|drifting dust|blowing dust|sand|blowing sand|low drifting sand|dust whirls|sand whirls|dust storm|heavy dust storm|dust storm in vicinity|sand storm|heavy sand storm|sand storm in vicinity',
+    Haze = 'haze',
+    Hot = 'hot',
+    Cold = 'cold',
+    Blizzard = 'blizzard',
+    Fog = 'fog|mist|freezing fog|shallow fog|partial fog|patches of fog|patchy fog|dense fog|fog in vicinity|freezing fog in vicinity|shallow fog in vicinity|partial fog in vicinity|patches of fog in vicinity|showers in vicinity fog|light freezing fog|heavy freezing fog',
+}
+~~~
+
+
+### Rendering the Forecasts
+
+All forecast information stored in those state hooks are then passed to 7 instances of a functional component called WeatherIcon.
+
+~~~
+export const WeatherIcon = ({ forecastVal="clear", day="Mon" , isDarkMode=false}) => {
+	//get the proper weather icon based on the forecast value
+	weatherIconDetails = getWeatherIcon(forecastVal)
+	image_url = weatherIconDetails[0]
+	prob_val = weatherIconDetails[1]
+
+	currentStyle = null
+	onlyPossible = false
+	if (prob_val == "None") {
+		currentStyle = styles.noneProb
+		onlyPossible = false
+	}
+	else if (prob_val == "Slight") {
+		currentStyle = styles.slightProb
+		onlyPossible = true
+	}
+	else if (prob_val == "Chance") {
+		currentStyle = styles.chanceProb
+		onlyPossible = true
+	}
+	else if (prob_val == "Likely") {
+		currentStyle = styles.likelyProb
+		onlyPossible = true
+	}
+
+	return (
+		<TouchableOpacity activeOpacity={1} style={styles.weatherIconContainer}>
+			<Image 
+				style={[styles.weatherIcon, currentStyle]}
+				source={image_url}
+			/>
+			{onlyPossible && <Image 
+				source={isDarkMode ? icons.percent_white : icons.percent_black}
+				style={styles.percentImg}
+			/> }
+			<Text style={[styles.weatherDayLabel, isDarkMode && styles.weatherDayLabelDark]}>{day}</Text>
+		</TouchableOpacity>
+	)
+}
+const styles = StyleSheet.create({
+	weatherIconContainer:{
+		height: 50,
+		flexDirection: 'column',
+		marginLeft: 11,
+		marginRight: 11,
+		marginTop: 8,
+		alignContent: 'flex-start',
+		justifyContent: 'center'
+	},
+	weatherIcon:{
+		justifyContent: 'center',
+		alignItems: 'center',
+		width: 30,
+		height: 25,
+		marginBottom: -20,
+	},
+	weatherDayLabel:{
+		fontFamily: 'Domine-Regular',
+		fontSize: 15,
+		alignSelf: 'center',
+		justifyContent: 'center',
+		marginTop: 25,
+		color: Colors.ALMOST_BLACK,
+	},
+	weatherDayLabelDark:{
+		color: Colors.WHITE_SMOKE,
+	},
+	noneProb: {
+		opacity: 1,
+	},
+	slightProb: {
+		opacity: 0.4,
+	},
+	chanceProb: {
+		opacity: 0.7,
+	},
+	likelyProb: {
+		opacity: 1,
+	},
+	percentImg: {
+		marginBottom:-22,
+		marginTop: 10,
+		marginLeft: 18,
+		height: 13,
+		width: 13,
+	},
+})
+~~~
+
+The WeatherIcon component receives the shortForecast value, the shortened form of the day of the week, and whether it is in dark mode. I will ignore the dark mode feature and the enum-based color palette as they are not particularly relevant to this post. 
+
+Once the component receives the forecast information, it calls the getWeatherIcon function which functions as discussed above to return the URL/URI for the appropriate image and the value for the probability. Depending on the returned probability value, I set a flag to true which will render the percentage sign and set the style to be applied, affecting the component's opacity.
+
+Before ending this article, I'll include 2 screenshots of what the weather forecast bar ended up looking like in light mode. Hopefully, this post helps you as you try to integrate the NWS weather forecast API into your own projects.
+
+![image alt >< 40](./assets/weather_bar.png)
+![image alt >< 40](./assets/weather_bar_with_chance_rain.png)
+
+`
