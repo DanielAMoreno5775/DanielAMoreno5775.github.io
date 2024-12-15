@@ -28,11 +28,11 @@ As the world continues to modernize and integrate technology into ever-increasin
 
 ### Table of Contents
 
-TODO
+[[{TOC}]]
 
 ### List of Figures & Tables
 
-TODO
+[[{FnT}]]
 
 ## Chapter 2: General Introduction
 
@@ -389,7 +389,7 @@ Various definitions have been proposed for cybersecurity, each offered by differ
 
 **Table 7.2.5.1**
 
-*Table of Different Standards and Their Definitions of Cybersecurity*
+*Different Standards and Their Definitions of Cybersecurity*
 
 | Source Standard | Definition of Cybersecurity |
 | --------------- | --------------------------- |

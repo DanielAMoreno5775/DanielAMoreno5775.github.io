@@ -2,7 +2,12 @@
  * drawdown.js
  * (c) Adam Leggett
  * 
- * I added ==lorem ipsum== for underlining
+ * List of features I added:
+ *      *   ==lorem ipsum== for underlining
+ *      *   [[{TOC}]] to auto-generate table of contents
+ *              - Nested, unordered lists with each list item being a heading between H2 and H5, inclusive
+ *      *   [[{FnT}]] to auto-generate list of figures and tables
+ *              - Unordered list with each list item being the bolded tag of an image which must start with "Figure" or "Table" with that capitalization
  */
 
 
@@ -27,6 +32,8 @@
     var rx_heading = /(?=^|>|\n)([>\s]*?)(#{1,6}) (.*?)( #*)? *(?=\n|$)/g;
     var rx_para = /(?=^|>|\n)\s*\n+([^<]+?)\n+\s*(?=\n|<|$)/g;
     var rx_stash = /-\d+\uf8ff/g;
+    var rx_toc = /\[\[\{TOC\}\]\]/g;
+    var rx_fnt = /\[\[\{FnT\}\]\]/g;
 
     function replace(rex, fn) {
         src = src.replace(rex, fn);
@@ -55,12 +62,22 @@
         });
     }
 
+    var figures_and_tables = ""
     function highlight(src) {
         return src
             .replace(rx_span, function(_, content) {
                 return element('span style="text-decoration:underline; font-style: italic;"', content);
             })
             .replace(rx_highlight, function(all, _, p1, emp, sub, sup, small, big, p2, content) {
+                /*(
+                    emp ? (console.log(content)) : ""
+                )*/
+                if (emp && (content.startsWith("Figure") || content.startsWith("Table"))) {
+                    figures_and_tables += "* "
+                    figures_and_tables += content
+                    figures_and_tables += "\n"
+                }
+
                 return _ + element(
                     emp ? (p2 ? 'strong' : 'em')
                     : sub ? (p2 ? 's' : 'sub')
@@ -124,13 +141,47 @@
     });
 
     // heading
-    replace(rx_heading, function(all, _, p1, p2) { return _ + element('h' + p1.length, unesc(highlight(p2))) });
+    var table_of_contents = ""
+    replace(rx_heading, function(all, _, p1, p2) { 
+        if (p1.length == 2) {
+            table_of_contents += "* "
+            table_of_contents += unesc(highlight(p2))
+            table_of_contents += "\n"
+        }
+        if (p1.length == 3) {
+            table_of_contents += "    "
+            table_of_contents += "* "
+            table_of_contents += unesc(highlight(p2))
+            table_of_contents += "\n"
+        }
+        if (p1.length == 4) {
+            table_of_contents += "        "
+            table_of_contents += "* "
+            table_of_contents += unesc(highlight(p2))
+            table_of_contents += "\n"
+        }
+        if (p1.length == 5) {
+            table_of_contents += "            "
+            table_of_contents += "* "
+            table_of_contents += unesc(highlight(p2))
+            table_of_contents += "\n"
+        }
+        return _ + element('h' + p1.length, unesc(highlight(p2))) 
+    });
+    toc_source = list("\n" + table_of_contents + "\n");
+    replace(rx_listjoin, '');
+    replace(rx_toc, toc_source);
+    
 
     // paragraph
     replace(rx_para, function(all, content) { return element('p', unesc(highlight(content))) });
 
     // stash
     replace(rx_stash, function(all) { return stash[parseInt(all)] });
+
+    fnt_source = list("\n" + figures_and_tables + "\n");
+    replace(rx_listjoin, '');
+    replace(rx_fnt, fnt_source);
 
     return src.trim();
 };
