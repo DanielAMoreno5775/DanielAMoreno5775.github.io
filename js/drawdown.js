@@ -1,6 +1,8 @@
 /**
  * drawdown.js
  * (c) Adam Leggett
+ * 
+ * I added ==lorem ipsum== for underlining
  */
 
 
@@ -14,6 +16,7 @@
     var rx_blockquote = /\n *&gt; *([^]*?)(?=(\n|$){2})/g;
     var rx_list = /\n( *)(?:[*\-+]|((\d+)|([a-z])|[A-Z])[.)]) +([^]*?)(?=(\n|$){2})/g;
     var rx_listjoin = /<\/(ol|ul)>\n\n<\1>/g;
+    var rx_span = /==([^_]+?)==/g;
     var rx_highlight = /(^|[^A-Za-z\d\\])(([*_])|(~)|(\^)|(--)|(\+\+)|`)(\2?)([^<]*?)\2\8(?!\2)(?=\W|_|$)/g;
     var rx_code = /\n((```|~~~).*\n?([^]*?)\n?\2|((    .*?\n)+))/g;
     var rx_link = /((!?)\[(.*?)\]\((.*?)( ".*")?\)|\\([\\`*_{}\[\]()#+\-.!~]))/g;
@@ -53,16 +56,20 @@
     }
 
     function highlight(src) {
-        return src.replace(rx_highlight, function(all, _, p1, emp, sub, sup, small, big, p2, content) {
-            return _ + element(
-                  emp ? (p2 ? 'strong' : 'em')
-                : sub ? (p2 ? 's' : 'sub')
-                : sup ? 'sup'
-                : small ? 'small'
-                : big ? 'big'
-                : 'code',
-                highlight(content));
-        });
+        return src
+            .replace(rx_span, function(_, content) {
+                return element('span style="text-decoration:underline; font-style: italic;"', content);
+            })
+            .replace(rx_highlight, function(all, _, p1, emp, sub, sup, small, big, p2, content) {
+                return _ + element(
+                    emp ? (p2 ? 'strong' : 'em')
+                    : sub ? (p2 ? 's' : 'sub')
+                    : sup ? 'sup'
+                    : small ? 'small'
+                    : big ? 'big'
+                    : 'code',
+                    highlight(content));
+            });
     }
 
     function unesc(str) {
