@@ -65,6 +65,8 @@ table {
 td {
     padding: 4px 8px;
     border-left: 2px solid white;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 tr:nth-child(2n) {
     background: #e6b8b7;
@@ -79,6 +81,9 @@ th {
     background: #c0504d;
     color: white;
     border-left: 2px solid black;
+    border-right: 2px solid black;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 img {
@@ -163,6 +168,25 @@ img[alt$="60"] {
     min-width: 30%;
     max-width: 60%;
     max-height: 200px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="80"] {
+    display: block;
+    min-width: 50%;
+    max-width: 80%;
+    max-height: 400px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
+img[alt$="80-tall"] {
+    display: block;
+    min-width: 50%;
+    max-width: 80%;
+    min-height: 400px;
+    max-height: 600px;
     height: auto;
     margin: auto;
     float: none!important;
