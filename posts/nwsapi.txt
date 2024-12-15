@@ -1,7 +1,7 @@
 nwsapi_text=`
 # Using the NWS' Weather API
 ###### By Daniel Moreno
-###### Algorithms · 5 min read · Dec 9, 2024
+###### API · 5 min read · Dec 9, 2024
 ---
 ![image alt >< 40](./assets/nwslogo.png)
  *Source: the NWS' logo* 
