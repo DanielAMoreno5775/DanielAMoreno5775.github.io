@@ -1,0 +1,1001 @@
+bridgingthegap_text=`
+# Bridging the Gap Between Compliance and Technical Execution in Network Defense
+###### By Daniel Moreno
+###### Security Research · 55 min read · Dec 14, 2024
+---
+![image alt >< 40](./assets/paper-pencil-clipart.png)
+ *Source: https://creazilla.com/media/clipart/3160732/paper* 
+
+Greetings and permutations everyone. In this post, I will be sharing a research paper that I wrote this semester. I am rather proud of the end result and believe some of my findings to be interesting. As such, I wanted to share it. Before the paper begins, I want to make a few notes.
+
+* I may expand this for my Master's thesis. As such, I would welcome any feedback which you can send to my LinkedIn or email.
+* I am aware that this paper has a few abnormalities such as slightly non-standard APA citations, an extremely specific case study and diagrams, and a certain layout. These abnormalities were assignment requirements and kept to maintain the paper's original form.
+
+## Chapter 1: Paper Information
+
+### Citation Information
+
+In case you are a student who came across this paper, I sympathize with how hard it can be to find the proper citation information. As such, here is everything you should need to cite this paper.
+* Author: Daniel A. Moreno
+* Professor: Dr. Ervin Frenzel
+* Publication Date: Dec. 14, 2024
+* Paper Name: Bridging the Gap Between Compliance and Technical Execution in Network Defense
+* Website Name: Daniel's Portfolio
+
+### Abstract
+
+As the world continues to modernize and integrate technology into ever-increasing parts of life, new laws are constantly being developed to regulate those technologies and mandate security measures to protect technology users. While lawmakers are trained in legal matters, those skills are not easily transferrable to the technical and computing fields. This problem is complicated by the interdisciplinary nature of cybersecurity and the lack of standardized terminology within the field. The issue remains when the positions are reversed. Legal terminology and the complexity of laws hamper efforts by security personnel to implement mandated controls for compliance purposes. In order to address the confusion of both lawmakers and security personnel, I propose a series of clearly delineated and stated definitions for critical terms such as cybersecurity, information security, and the computing disciplines. In addition, I will create a model mapping key concerns held by lawmakers to known frameworks and actionable controls for security personnel. In my definition, cybersecurity extends beyond information security to cover the entirety of cyberspace and associated socio-technical systems. After the mappings were created, they successfully identified gaps within the case study’s network and provided guidance on addressing those gaps.
+
+### Table of Contents
+
+TODO
+
+### List of Figures & Tables
+
+TODO
+
+## Chapter 2: General Introduction
+
+### 1. Problem Statement
+
+With the integration of technology into most aspects of modern life, the term cybersecurity has come to encapsulate an incredibly complex field covering multiple disciplines and interconnected concepts. To address this complexity, security personnel must be trained in multiple disciplines, or companies must hire personnel from sufficiently diverse backgrounds. Unsurprisingly, lawmakers and regulators have struggled to thoroughly understand and to properly legislate such a complex field.
+
+This blind spot is becoming untenable and must be resolved. Each data breach costs an average of 4.88 million USD with 1.3 million USD attributable to lost business (Sobers, 2024). A healthcare data breach faces far higher costs at 9.77 million USD (St. John, 2024). Proper cybersecurity measures can reduce breach costs by 1.76 million USD and lower the time required to mitigate a breach, further decreasing financial damages due to fines, lost business, or lost productivity (Sobers, 2024; St. John, 2024). However, most companies implement cybersecurity to comply with relevant laws and regulations rather than to prevent potential losses. As such, ensuring the effectiveness of laws and regulations is critical to protect the over 349 million people impacted by data breaches every year (St. John, 2024).
+
+This paper seeks to address these difficulties. Lawmakers and regulators require clearer, less technical definitions for significant terms to simplify their efforts and reduce confusion or inconsistencies between the various laws. Security personnel lack the time necessary to parse all relevant laws and regulations, requiring models and frameworks to summarize the legal requirements. While few of the over 3000 final rules created by the US government each year are relevant to cybersecurity, security personnel lack the time to read the required laws, especially with an average length of 16.7 pages each. In addition, the number of enacted bills with page counts in excess of 100 has sharply increased, with a 100 page bill taking almost an hour to read based on the assumption people read legal text as quickly as fictional novels (Rosenberg, 2009; GovTrack.us, 2014; Crews, 2023; McKinney, 2020).
+
+### 2. Research Questions
+To fulfill this paper’s objective, it will answer the following research questions:
+
+* **RQ-1**: How can I help lawmakers and regulators with limited security knowledge to understand the current state of security and its terminology?
+* **RQ-2**: How can I help security professionals without the time to review legal documentation to understand the concerns and requirements of lawmakers?
+* **RQ-3**: How can I simplify compliance assessments of networks, network devices, and tools with a focus on due diligence and satisfying lawmakers’ core concerns while addressing both abstract and concrete elements of network architecture?
+
+## Chapter 3: Background & Definitions
+
+### 3. Introduction
+
+Before working on a reference model, a shared understanding of certain terms must be established within the context of this paper. To achieve this, Chapter 2 was divided into 5 sections with the first four being the Computing Disciplines, the Engineering Background, the Legal & Administrative Background, and the Security Background. These sections should help developers, security personnel, and legal experts to establish a minimum common vocabulary as they seek to understand each other.
+
+### 4. Computing Disciplines
+
+The Association of Computing Machinery (ACM), Institute of Electrical and Electronics Engineers Computer Society (IEEE-CS), Association for Information Systems Special Interest Group on Information Security and Privacy (AIS SIGSEC), and International Federation for Information Processing Technical Committee on Information Security Education (IFIP WG 11.8) have cooperated to establish 5 core computing disciplines or fields. Computer science (CS) is the broadest and most common discipline. This discipline places higher emphasis on the theoretical science behind computational systems, development of algorithms, and creation of data structures. Computer engineering (CE) combines electrical engineering and computer science to focus on the development of computing hardware and their integration into larger systems. Information technology (IT) focuses on practical implementation, maintenance, and proper usage of software, networks, databases, and hardware. In addition, IT incorporates the training and handling of end-users interacting with and utilizing the computing systems managed by IT personnel. Information systems (IS) bridges the gap between technical, administrative, and regulatory stakeholders as they help to align everyone’s goals while still supporting the organization’s strategic goals and tactical objectives. Software engineering (SE) concentrates on practical design, development, testing, and maintenance of software to ensure functionality, efficiency, and reliability.
+
+These organizations also recognize the existence of multidisciplinary fields adjacent to the computing disciplines as computers have become more prevalent in society. Bioinformatics and biotechnology combine IS and IT, respectively, with biology, chemistry, and mathematics. Game design and computer animation merge art and marketing with computing disciplines and physics. Data science (DS), the most established field, focuses on extracting actionable information from large amounts of structured and unstructured data using statistical, machine learning, and CS techniques. While commonly associated with the 5 core computing disciplines, ACM and IEEE refer to DS as a multidisciplinary field which extends beyond pure computing. Each discipline approaches cybersecurity from different perspectives which must be considered when designing a holistic cybersecurity program and policy (*Computing Disciplines & Majors*, 2024, pp. 1-7; Burley et al., 2017, pp. 14, 18, 22; *Curricula Recommendations*, 2024).
+
+### 5. Engineering Background
+
+#### 5.1 PMLC & SDLC
+
+Software engineering literature recommends many different methods and processes to reflect the development of new software and the handling of projects. These models include the iterative model, waterfall model, spiral model, agile model, and many others. Despite this, the models share certain primary phases. In the project management lifecycle (PMLC), these phases would be initiation, planning, execution & control, and closure. For the software development lifecycle (SDLC), the major phases are requirements, design, implementation, testing, and maintenance which tie into the center two phases of the PMLC as illustrated in the below figure.
+
+**Figure 5.1.1**
+
+*PMLC and SDLC Phases*
+
+![image alt >< 80](./assets/pmlc-sdlc-phases.png)
+*Note*. Adapted from *The 4 Phases of the Project Management Life Cycle*, by Lucid Content, 2024 & *Management of Information Security*, by Whitman & Mattord, 2019, pp. 286-291 & *Security by Design: An Asset-Based Approach to Bridge the Gap Between Architects and Security Experts*, by Messe, 2021, pp. 27-30
+
+* PMLC
+    * *Initiation Phase*: This phase determines whether the product is necessary and feasible for the organization. Afterward, business analysts define the scope, deliverables, and stakeholders. Before the project can truly begin, all relevant stakeholders must approve a Statement of Work document which summarizes the various objectives, scope, and deliverables (Lucid Content, 2024; Whitman & Mattord, 2019, pp. 286-291).
+    * *Planning Phase*: This phase focuses on allocating resources and calculating the timeline necessary to achieve the desired milestones. Precise requirements are collected and transformed into clear deliverables. Risks regarding security, quality, cost, and reliability are identified, analyzed, evaluated, and mitigated. In addition, this phase encapsulates the logical and physical design of the final product (Lucid Content, 2024; Whitman & Mattord, 2019, pp. 286-291).
+    * *Execution & Control Phase*: During this phase, the product undergoes development, full implementation, and extensive testing. Throughout all of this, progress and quality are carefully monitored, and reports are written to keep stakeholders updated. This phase incorporates the completion of the project or software, along with the maintenance afterward (Lucid Content, 2024; Whitman & Mattord, 2019, pp. 286-291).
+    * *Closure Phase*: This phase is the sunset component of the project as the software is shut down, and the next project is initiated. During this time, the team’s and software’s performance are analyzed as part of a larger lessons learned session (Lucid Content, 2024; Whitman & Mattord, 2019, pp. 286-291).
+* SDLC
+    * *Requirements Phase*: Falling within the planning phase of the PMLC, the requirements phase of the SDLC gathers, analyzes, and documents the various requirements into a formal document called the Software Requirements Specification. The requirements can come from stakeholders and any relevant administrative regulations or laws. These requirements are used later to assess the project’s progress over time (Messe, 2021, pp. 27-30).
+    * *Design Phase*: During this phase, personnel create the plans and designs for the eventual implementation of hardware, software, databases, and interfaces while accounting for structural and behavioral portions of the human-computer system. Many models split this phase into several stages such as physical versus logical design, functional versus interface design, and high-level architecture versus low-level engineering (Messe, 2021, pp. 27-30).
+    * *Implementation Phase*: In this phase, the designs are turned into actual components within the system. The deliverable of this phase is a working system which fulfills all requirements detailed in the SRS (Messe, 2021, pp. 27-30).
+    * *Testing Phase*: Since problems and errors cost more to fix after deployment, the testing phase attempts to discover any such issues. At a high level, tests verify the system works as intended and ensure the stakeholders are satisfied. Tests can be further subdivided by the amount of the system they target and the degree to which they involve the end-user (Messe, 2021, pp. 27-30).
+    * *Maintenance Phase*: This phase incorporates the responsibilities of supporting the product, performing troubleshooting, fixing errors, optimizing performance, accounting for new requirements, and adapting to different operating environments. While a failure in the requirements phase leads to an unhelpful product, maintenance failures lead to an expensive product (Messe, 2021, pp. 27-30). On average, 60% of software’s cost comes from the maintenance phase, though they can easily reach 80% (Wood, 2009).
+
+#### 5.2 Technical Implementation of Laws & Regulations
+
+When laws and regulations are established, companies transform those instructions into internal policies, standards, procedures, practices, and guidelines. Each document enforces and applies the general instructions stated in those laws and regulations through varying approaches. Those internal documents are derived from each other and can be organized into a hierarchy. As illustrated below, policies are turned into standards which become guidelines and eventually procedures with industry best practices influencing all of them.
+
+**Figure 5.2.1**
+
+*Hierarchy of Documents*
+
+![image alt >< 80](./assets/hierachy-of-docs.png)
+*Note*. The abbreviation “leg.” refers to the legislature. The abbreviations “min. tech. requirements” refer to the minimum technical requirements. Adapted from *Management of Information Security*, by Whitman & Mattord, 2019, p. 177, Figure 4-3
+
+* *Laws/Acts*: In the Western world to be a civil law, it must be accepted by a nation’s legislature, enforced by the executive, and adjudicated by the court systems. In many countries, a member of the executive branch, such as the monarch or president, will sign the law to mark it as formally passed and accepted. These laws instruct the administrative agencies and the nation’s residents on how they should interact and operate (*Law and Policy*, 2024; Hridoy, 2023).
+* *Regulations*: While the nation’s legislature handles laws, regulations are established by administrative agencies within the executive branch. Regulations extend laws by providing more specific requirements and prohibitions to standardize compliance and enforcement (*Law and Policy*, 2024; Hridoy, 2023).
+    * *Technological Regulation*: The definition of technological regulation is complex, partially due to the lack of a clear legal definition for technology. Some authors focus on “bleeding” edge advancements or issues at the forefront of the public consciousness. However, the topics on these lists are constantly changing based on new theories, concerns, and developments. In addition, this approach ignores older fields and industries, even if they are experiencing substantial changes or heavily utilize technology. If the focus is placed on devices, then one must consider the distinction between mechanical, analog, and digital devices (Moses, 2013, p. 4). Other writers define technology as “the broad range of tools and crafts that people use to change or adapt to their environment,” which encapsulates both the “purposeful activity and results” of such efforts (Moses, 2013, p. 5). Technological regulation may target various aspects of technology based on those definitions, or it may seek to influence the designers and users of that technology and thereby indirectly affect the utilization and future development of technology. In this situation, the interacting people would be classified as actors, and technology would be objects; both are treated as nodes within a network, interacting with and affecting each other. This focus on socio-technical networks and cyberspace comes at the cost of confusing the distinction between general and technological regulations. Although, the emphasis helps to mitigate an unfortunate bias against technology, as opposed to societal or economic factors (Moses, 2013, pp. 5-6, 15-16). This paper will utilize the socio-technological network definition for technological regulation. Beyond the ability to more fully address the breadth of issues related to technology, this approach accounts for the constantly shifting environment and the fact technology still needs to be regulated even after it has become commonplace and mundane (Moses, 2013, p. 18).
+* *Policies*: Policies serve as formalized declarations by a company’s management regarding the organization’s philosophy and stance on particular topics, like cybersecurity. The policy documents guide the design, implementation, maintenance, and administration of other documents or programs through the establishment of coherent and precise rules (Whitman & Mattord, 2019, p. 176; Chałubińska-Jentkiewicz et al., 2022, p. 198).
+* *Standards*: While policies establish what is allowed and the penalties for internal noncompliance, standards clarify elements and provide additional details regarding the minimum requirements necessary to achieve compliance. For example, policies may prohibit inappropriate websites and mandate strong passwords. The associated standards would explicitly list banned websites and the minimum requirements for strong passwords, like a length of 12 characters (Whitman & Mattord, 2019, p. 176).
+* *Procedures*: Procedures provide detailed, step-by-step instructions employees must follow to achieve compliance with the relevant laws, regulations, policies, standards, and guidelines. To continue the password example, the procedures would explain how to change the password and verify its strength. Separate procedures are often used for standards, guidelines, and practices (Whitman & Mattord, 2019, p. 176).
+* *Guidelines*: Guidelines provide optional recommendations which help end-users to comply with the other documents. They often fill the role of reference documents where users can more easily consult them in contrast to the other documents. If a policy demands strong passwords, the guidelines suggest not using family or pet names in those passwords (Whitman & Mattord, 2019, p. 175).
+* *Practices*: Practices are established by the industry, certain governmental agencies, or QANGOs. They provide good examples of implementing various security controls and complying with relevant laws and regulations. Laws require strong passwords while best practices would recommend passwords to be at least 12 characters long and to expire every 90 days (Whitman & Mattord, 2019, p. 176).
+
+#### 5.3 Stakeholder Analysis
+
+When working on projects, one must consider the identity of stakeholders, their power over the project, the frequency in which they are involved in the decision-making process, and the degree to which the project will impact their work. The latter two factors can be assigned a semi-quantitative rating between 1 and 5 before being summed to determine the stakeholder’s interest level. Power over the project would be assigned a semi-quantitative rating between 1 and 10 based on their “possession of resources”, their “ability to dictate alternatives”, their “authority … to enforce obedience”, and their ability to influence internal or external governing bodies (Mendelow, 1981, pp. 408, 410, 415-416). When conducting stakeholder analysis, all of these factors can be combined to form two-dimensional matrices, with each quadrant providing general advice on how to handle stakeholders within that category (Broden, 2020, p. 64).
+
+**Figure 5.3.1**
+
+*Power-Interest Matrix for Stakeholder Analysis*
+
+![image alt >< 80](./assets/matrix-stakeholder-analysis.png)
+*Note*. This is an example stakeholder analysis matrix for a fictional software development project. Adapted from *Environmental Scanning: The Impact of the Stakeholder Concept*, by Mendelow, 1981, pp. 412, 415-416 & *Managing Information Security for Mobile Devices in Small and Medium-Sized Enterprises*, Broden, 2020, pp. 63-65 
+
+### 6. Legal & Administrative Background
+
+#### 6.1 Defining States and Nations
+
+A state can be defined as a permanent entity that has a permanent and clear border, population, and bureaucratic institutions. States also possess some degree of a monopoly on force, monetary matters, and laws, with sovereign states holding a complete monopoly. Nations can be defined as a coherent group of individuals that form a cohesive unit due to a commonality such as a shared history or culture which necessitates the existence of an outsider group. A nation-state describes a nation that also functions as a sovereign state that may be composed of multiple smaller nations or non-sovereign states (Rock, 2023; Rosenberg, 2020).
+
+#### 6.2 Defining Customary, Civil, and Common Law
+
+The USA utilizes civil law established by the legislature and common law which is derived from judicial precedent and the concept of state decisis. Customary or unofficial law describes the unwritten, moral, and cultural expectations and rules that influence the legal system, such as a society-wide decision to only sporadically enforce certain laws. Since customary law describes the implementation of law, all countries have some version of it. As the concept of common law is based in British history, most former British colonies established a separation of powers that balances the courts and legislature, allowing common and civil law to coexist. (Wex Definitions Team, 2023; Suh, 2024; Friedman & Hayden, 2017). Regulatory law expands those concepts by allowing administrative agencies, often within the executive branch, to establish laws within their jurisdiction (*Law and Policy*, 2024; Hridoy, 2023). The establishment of civil law and the role of regulatory law are further discussed in Section 5.2 (Technical Implementation of Laws & Regulations).
+
+#### 6.3. Addressing the History of Cybersecurity, Privacy, and Governments
+
+While later sections will address issues more directly relevant to this paper, this portion will briefly address some of the issues present in the way that governments have historically handled cybersecurity and privacy. In the early days of the Internet beginning in the 1960s, security and privacy were simply not implemented, though it was not due to an oversight. For some, security measures would have hampered the Internet’s growth by introducing governance. Others were dissuaded from introducing encryption by the NSA. Another cause was DARPA’s substantial influence over Arpanet. DARPA frequently tested and experimented with new technology in the civilian world before introducing security measures for government networks. They intentionally encouraged civilians to focus on designing, building, and maintaining networks while they created modular security mechanisms that could be added to their versions of those networks. DARPA exercised considerable influence, even over the academic researchers who were unlikely to care about defense purposes, with them coordinating the address space and routing aspects of any large network. While the NWG may draft protocols and policies, DARPA would approve them and ensure it was universally adopted. Even once authority was transferred to IANA, they still required DARPA’s approval to enforce their decisions. This established a precedent where small, technocratic institutions managed the networks and advised a governmental or military organization which established and enforced policy. In addition, security became a modular component added after the network was built. Once people began noticing the issues which occurred after the transition of authority to the IETF, civilians lacked the experience and knowledge to add or govern security measures which may not have been an issue if Arpanet had not surpassed every competitor to become the Internet. Now, the lack of security measures may have rendered Arpanet less controversial, easing its adoption in other countries (Fidler, 2017, pp. 449-451, 453-454, 457-459, 461; Sjouwerman, 2019; Mujović, 2021; Rainie & Anderson, 2017).
+
+After the end of the Cold War, the security landscape shifted as new threat actors rose up to attack networks which complicates efforts to stop or prosecute them. Even a single individual can disable massive corporations or nations. Taking advantage of globalization, massive terrorist networks and transnational crime rings have created nation-scale but non-military threats. Civil wars have replaced interstate wars as the primary source of conflict. A small civil war can have global repercussions due to the interconnectedness of all economies, encouraging both sides to attack the digital infrastructure of any trade partners to indirectly attack their opponents (Krahmann, 2005, pp. 16-17). To address these complications, state and non-state actors are attempting to improve cooperation with increasing responsibility being given to the non-state actors or international coalitions (Krahmann, 2005, pp. 21-23). However, these changes still struggle to handle jurisdiction problems and raises “questions of transparency, accountability and legitimacy” (Krahmann, 2005, p. 24).
+
+The cost of ignoring security is starting to become evident as trust in the Internet is declining sharply and trust in other countries. Some of that can be attributed to a general decline in trust for institutions such as the government, though that is exacerbated by the government’s mishandling of critical technologies, but most trust lost is tied to the lack of security. Due to the trust loss, people are less willing to purchase items and conduct online business (Goldberg, 2016; Rainie & Anderson, 2017; Margulies, 2017, pp. 1-2). This is problematic since the modern economy relies on ever-increasing consumer demand to prevent recessions and to remain stable (The Investopedia Team, 2024). Legislatures, like the US Congress, have been either reluctant to pass security and Internet-centric laws or have passed poorly-designed laws which encourages alternative measures such as “quasi-legal instruments” (Margulies, 2017, pp. 5-7). Such alternatives do not fix the lack of trust and are only marginally effective at correcting the original problems (Margulies, 2017, pp. 5-7). Some of these problems are self-correcting as expectations shift towards a new norm, but significant changes still need to occur for governments to restore confidence in online security (Margulies, 2017, pp. 24-26; Rainie & Anderson, 2017).
+
+##### 6.3.1 Surveillance and Privacy
+
+As discussed earlier, there has been a constant tension between surveillance, security, and privacy as the Internet developed (Fidler, 2017, p. 452; Sjouwerman, 2019). This section will address some of my opinions regarding the matter and the past issues in this arena as an illustration of the mishandling of cybersecurity and privacy matters by the government. To briefly summarize my opinion, domestic government surveillance of its citizens is not inherently bad. That power simply has to be exercised within limits and under oversight, which is why search warrants with specified targets exist and which is where most modern governments fail. After all, the greatest threat to privacy is presented by criminals stealing massive quantities of personal data; we simply need to ensure that criminal activity is curbed without replacing it as the greatest threat to privacy (Margulies, 2017, pp. 8-9). Also, I wish to specify that I am not criticizing specific countries as many if not most countries have violated the privacy of their citizens, and many privacy violations have been blown out of proportion to meet certain narratives, such as the unruliness and untrustworthiness of the USA. I am simply more familiar with US laws and court cases which made it an easier focus (Margulies, 2017, p. 14).
+
+Currently, online privacy exists as a far-off ideal with companies and governments across the world storing the 328.77 exabytes of data civilization generates daily. In exchange for ostensibly free services, people willingly release even the most private details of their lives through their searches, conversations, and posts (Duarte, 2023). Data brokers know the address of every place that you have lived, your body-mass index, the fact that you purchased an item at a physical store for $7.21, who you voted for, and that you are pregnant, even if you did not know it (Rightly, n.d.; Stern, 2022, 4:26-5:28; Hill, 2012). If we met on the street, would you tell me that information? Would you give that information to a government agent sitting in a random cubicle that you had never met? 
+
+Benjamin Franklin once wrote, “Those who would give up essential Liberty, to purchase a little temporary Safety, deserve neither Liberty nor Safety” (Franklin, 1840, pp. 99-100). While this quote is often used out of its original context and reflects a rather extreme view, there is value in considering it (Ferenstein, 2014). Giving the government open access to all private conversations exacts a high cost without providing measurable safety for the individual. With communication encryption, governments want companies to bypass encryption and create a backdoor, allowing them to obtain the access key or to have a universal access key (Roberts, 2007). However, a door that the government can use can be utilized by criminals (Margulies, 2017, p. 21). Similarly, collected data serves as a very tempting target for criminals that desire a one-stop-shop. Ironically, Snowden functions as a good example that, despite the government’s best efforts, their systems can still be hacked and massive amounts of data can be exfiltrated without them noticing. If a backdoor was legally mandated, many companies and consumers would look overseas, hurting the US economy and creating a brain drain (Howell, 2021). The massive number of false positives generated by any automated monitoring system is another concern, with book clubs and gaming groups often producing content flagged as suspicious. Those flagged messages would then be personally reviewed by government personnel, once again revealing very personal data to strangers. In addition, these systems flood the investigators with millions of irrelevant messages, wasting time and thereby negatively affecting national security (Šlekytė, 2023). Also, evidence indicates mass surveillance initiatives like Stellar Winds and PRISM have not stopped any terrorist plots (Laperruque, 2021; Chushing, 2015; Ackerman, 2019; Office of the Director of National Intelligence, 2015). Despite this ineffectiveness, residents of the U.S. are still more likely to drown in a bathtub than they are to die to a terrorist, meaning that they are sacrificing their privacy without any gain (Mueller & Steward, 2018). Society sacrifices the liberty and freedom of expression offered by privacy for convenience and security.
+
+Another common reaction to privacy concerns is “If you’re doing nothing wrong, you have nothing to hide.” Some variation of this has been said by Plato, Elizabeth I, Joseph Goebbels, Upton Sinclair, and others (The Socratic Method, 2023; [Rusty Tuba], 2014; McStay, 2017). However, many people would be upset if marketers or government agents broke into their bathroom while they were using it. Everyone knows how the bathroom is used, but they still desire privacy when they lock the door, not secrecy (Esteves, 2016). Secondly, privacy is integral to innovation and the advancement of a democratic society. Titled the Hawthorne effect and groupthink, behavior and thoughts are impacted by the observation of others (Spencer & Mahtani, 2017; Cherry, 2022). People require privacy and the absence of the potential for judgment to research controversial topics, critically examine concepts, and create rough ideas. Finally, the Internet offers a near-boundless knowledge regarding and understanding of an individual. As stated by Francis Bacon and Thomas Jefferson, knowledge is power (Monticello). By definition, a nation has a monopoly on violence which allows it to wield substantial power over its people, a power that must be balanced in a democratic society (Munro, 2013). When a society grants any government this degree of knowledge about themselves, they strip themselves of one of the few mechanisms that they can use to balance the government. In addition, democratic governments change frequently and easily, as evidenced by the fact that the U.S. is the oldest continuous democracy in recorded history (Smeltzer & Buyon, 2023; Desjardins, 2019). While a person may not have anything to hide from the current government, the collected data will still be there in 50 years, and the next regime may not be so tolerant (Greenberg, 2013; Grace, 2023). Even under the current laws, the average person commits three felonies each day without realizing it (Silvergate, 2011). Ultimately, everyone has something to hide, and even if they did not, they would still want and deserve privacy.
+
+As discussed in the above paragraphs, privacy matters, and many of the arguments for stripping it away lack merit. Importantly, I criticize programs like Stellar Winds partially because they were dragnets that targeted everyone rather than only individuals with probable cause (Kirk, 2014, 1:17:57-1:20:51). In addition, this surveillance was authorized under the president’s supposed wartime authority (Kirk, 2014, 22:57-23:17, 39:21-39:32). However, Congress issued an “Authorization for Use of Military Force,” not a declaration of war (Authorization for Use of Military Force, 2001; Bushatz, 2023). While 9/11 and subsequent events have caused a truly unfortunate number of deaths, war was never declared, and murders do not equate to war which means that this mass domestic surveillance lacks legal standing. Similarly, the case of the FBI forcing Apple to bypass iPhone privacy protections to identify the San Bernadino shooters is an arguable overreach as it was justified using a statue from 1789 rather than the more recent CALEA of 1994 which would have established more privacy protections and should have overridden the older, less comprehensive statue (Margulies, 2017, pp. 15-16). The 5, 9, and 14 Eye alliances allow a country to spy on their citizens by proxy, asking another country to conduct the spying and to share the gathered intelligence (Bahar, 2022). In addition, the third party rule in the founding 1961 General Security Agreement has been abused to block judicial and legislative oversight bodies by saying that the body would need “to seek consent from a foreign agency to access intelligence information shared with a domestic agency” (Kim, Lee, Lubin, & Perlin, 2018).
+
+Without sufficient privacy for citizens, governments possess too much power, criminals can easily acquire data, and democracy will stagnate. Companies need the freedom to develop tools that can ensure privacy by protecting data during collection, in motion, at rest, and in use (Frenzel & McAndrew, 2023). Similarly, people should have the right to ensure their privacy in both the physical and digital realms. However, such rights to privacy must be carefully balanced without compromising the ability to law enforcement to protect privacy from criminals. This intricate balance requires an in-depth understanding of the topic’s complexity held by the relevant lawmakers. While this paper does not focus on privacy-centric topics, it does seek to contribute to the discussion.
+
+#### 6.4. Cybersecurity Laws & Regulations
+
+Each country has multiple laws and regulations which establish various cybersecurity requirements for different fields and industries. Industry best practices can guide the implementation of those laws and regulations. However, in some instances, an industry practice can become equivalent to laws because it is backed by sufficiently powerful industry cooperatives which can enforce compliance. For the PCI DSS, compliance is enforced by the PCI SSC which levies fines for noncompliance and refusal of service until the fines are settled (Nath, 2024). Due to the sheer volume of laws, regulations, and enforced best practices, many of them establish overlapping requirements for companies.
+
+##### 6.4.1 Summary
+
+To simplify later analysis, each law or standard discussed will be broken down into a clear set of requirements with exact details, such as the type of information targeted, being ignored. The requirements will be broken down into various categories depending on their focus. Notably, laws which criminalize behavior or establish when the government can intercept communications will generally not be discussed in Section 6.4 as the goal of this paper is to explore laws which establish security or privacy requirements for systems. The exceptions are laws like the SOX Act which fall into both categories and in the gap analysis where criminal laws will be used as further examples of current issues.
+
+##### 6.4.2 List of Identified Requirements
+
+**Table 6.4.2.1**
+
+*Risk Management (RMGT) Requirements*
+
+| Risk Management | Keywords | Description |
+| --------------- | -------- | ----------- |
+| RMGT-1          | Risk Identification | Regularly identify all potential risks and vulnerabilities to the confidentiality, integrity, and availability of information |
+| RMGT-2          | Risk Analysis & Treatment | Prioritize and treat all identified risks and vulnerabilities based the likelihood of occurrence and severity of impact |
+| RMGT-3          | Maintain Treatments | Document and maintain all risk and vulnerability treatment measures, along with the justification for the treatment option |
+| RMGT-4          | Inventory | Create and maintain an inventory of all data at rest, in motion, at collection, and in use along with the systems that interact with it at any stage |
+| RMGT-5          | Supply Chain Security | Establish policies and procedures to ensure the traceability, auditability, and accessibility of items in your supply chains, thereby demonstrating proper ownership and responsibility controls |
+| RMGT-6          | Local Copies for International Business | Ensure the capability to transfer all functions necessary to operate and maintain all relevant services into a given country should international bearers fail or be blocked for diplomatic reasons |
+
+**Table 6.4.2.2**
+
+*Identification, Authentication, Authorization, and Accountability (IAAA) Requirements*
+
+| Identification, Authentication, Authorization, Accountability | Keywords | Description |
+| --------------- | -------- | ----------- |
+| IAAA-1          | Authentication | Implement controls to ensure that only authenticated users are capable of adding, accessing, modifying, disclosing, or deleting information |
+| IAAA-2          | POLP | Implement controls to ensure that users are only capable of accessing the bare minimum amount of information necessary to fulfill their role |
+| IAAA-3          | Termination | Implement controls to terminate access authorization when roles change or an individual’s employment is terminated |
+| IAAA-4          | Accountability | Implement controls to monitor and examine authentication, authorization, and access attempts to the system and data, both successful and unsuccessful |
+| IAAA-5          | Guards, Gates, & Guns | Implement physical controls to protect against unauthorized physical access |
+| IAAA-6          | MFA | Implement multi-factor authentication for anyone accessing information above a certain criticality or sensitivity |
+| IAAA-7          | Unique Credentials | Ensure all employees with access to data have unique IDs and authentication credentials such that they could not be shared by multiple users |
+| IAAA-8          | Credential Inventory | Establish an inventory of all roles, their descriptions, current and expected privilege levels, and data resources necessary to fulfill their duties |
+
+**Table 6.4.2.3**
+
+*Information Security (ISEC) Requirements*
+
+| Information Security | Keywords | Description |
+| --------------- | -------- | ----------- |
+| ISEC-1          | CIA Triad | Ensure the confidentiality, integrity, and availability of all information at rest, in motion, in use, and at collection |
+| ISEC-2          | Antivirus | Implement controls to actively detect, defend against, and report malicious software |
+| ISEC-3          | Passwords | Implement controls to mandate strong passwords that are securely stored and regularly changed |
+| ISEC-4          | Minimize Data | Request, collect, use, store, and disclose the minimum necessary amount of information to achieve a required task and document the justifications to indicate that they are adequate, relevant within a given timeframe, purposeful, limited, and accurate |
+| ISEC-5          | Physical Storage Media | Implement controls to ensure the secure transfer, removal, disposal, and re-use of electronic media which stores or has stored sensitive information |
+| ISEC-6          | Integrity | Implement controls to validate that information has not been incorrectly modified or destroyed |
+| ISEC-7          | Document Everything | Maintain records of all policies, procedures, standards, guidelines, incidents, assessments, activities, and/or actions for a specified amount of time and include all necessary details such as what was impacted or exposed and the time to identify or mitigate issues |
+| ISEC-8          | Contingency Planning | Establish and implement formal policies, procedures, and standards to determine the proper response to any incidents, disasters, and emergencies that may put information at risk or cause a service interruption |
+| ISEC-9          | Backups | Create, monitor, test, secure, and apply backups or alternate controls such that data is recoverable should it become lost, altered or destroyed |
+| ISEC-10         | Change Management | Establish and maintain baseline configuration details which supports a standardized configuration management system |
+| ISEC-11         | Physical Controls | Implement physical controls to protect against environmental hazards and natural disasters |
+| ISEC-12         | Firewalls & IDPSes | Monitor, control, filter, and protect communications and data in motion that passes through certain external boundaries and internal chokepoints through network architecture, network devices, and software applications |
+| ISEC-13         | Encryption | Encrypt and pseudonymize/anonymize all data in the network when it is at rest and in motion using, among other controls, secure and encrypted protocols and implement appropriate measures to store and protect the associated keys |
+| ISEC-14         | State of the Art | Consider the current state of technological development and attacker sophistication when selecting controls where cost may be an allowable consideration |
+| ISEC-15         | International Standards | Ensure and prove compliance with applicable widely-accepted national, international, or treaty organization standards such as ISO/IEC 27001 and ISO/IEC 22301 |
+| ISEC-16         | No Vendor Defaults | Implement and maintain custom values for passwords and other security-centric parameters instead of vendor-provided defaults |
+| ISEC-17         | Patch Management | Maintain and keep up-to-date all OS and applications through a formalized patch management process which is based on the vulnerability or patch's criticality and whether the device is internal or external facing |
+| ISEC-18         | Data Segmentation | Implement a means to segment data, establish trust domains, or otherwise tag the data to indicate management-, law-, and/or user-approved ways of accessing, using, and processing that data |
+| ISEC-19         | Security by Design | Implement security and/or privacy considerations at every stage of the PMLC and SDLC from design to system execution |
+| ISEC-20         | Incident Detection | Implement policies, procedures, and processes to ensure the timely and adequate awareness of irregular events, including the ability to estimate their severity as incidents or disasters |
+| ISEC-21         | Limited Containerization | Ensure that containerization is not used to implement data segmentation and that containers never interact with more than 1 trust domain |
+| ISEC-22         | DMZ & Other Zones | Configure the network into various zones with varying degrees of security, trust, and external access |
+| ISEC-23         | Management Plane Separation | Logically and physically separate the management plane, which includes all network management devices and workstations, with a browse-down architecture |
+| ISEC-24         | Secure Boot & VMs | Implement secure boot processes, secure virtualization fabric measures, hardware roots-of-trust, and app whitelists |
+| ISEC-25         | Whitelist Removable Drives | Block all removable media ports and devices except with documented authorization and justification |
+| ISEC-26         | Host-based Monitoring | Implement controls to monitor hosts, OSs, VMs, and apps for high-risk, administrative, or abnormal activity and then record it for later analysis |
+
+**Table 6.4.2.4**
+
+*Personnel Security (PSEC) Requirements*
+
+| Personnel Security | Keywords | Description |
+| --------------- | -------- | ----------- |
+| PSEC-1          | SETA Programs | Create, document, and maintain education, training, and awareness programs that instruct all personnel on relevant policies, procedures, standards, and guidelines which may include secure coding techniques |
+| PSEC-2          | Punishments | Create and enforce appropriate punishments for personnel that violate any policies, procedures, standards, and guidelines |
+| PSEC-3          | Security Policy Officers | Designate a security official that reports to senior management or the board, encourages a top-down approach to security, and is responsible for developing, implementing, enforcing, and maintaining all security policies and procedures |
+| PSEC-4          | Acceptable Use | Implement policies, procedures, standards, and guidelines that specify the authorized and allowed access and usage of information systems |
+| PSEC-5          | Segregation of Duties | Institute a hierarchy or chain where multiple people are required to accomplish any one task |
+| PSEC-6          | Security Policy | Establish a clear security policy that addresses the security responsibilities of all personnel |
+| PSEC-7          | Background Check | Conduct background checks on all potential employees which may cover previous employment history, criminal record, credit history, and reference checks |
+
+**Table 6.4.2.5**
+
+*Security Assessment (SECA) Requirements*
+
+| Security Assessment | Keywords | Description |
+| --------------- | -------- | ----------- |
+| SECA-1          | Assess Documents & Actions | Periodically assess the effectiveness of all policies, procedures, standards, guidelines, assessments, processes, activities, and actions at ensuring compliance with laws and regulations |
+| SECA-2          | Review Incident Records | Implement and regularly trigger procedures to review all records of activity and incidents on the system |
+| SECA-3          | Third-party Auditor | Audit the system and/or records by a third-party |
+| SECA-4          | Statement of Adequacy | Create a management-signed statement regarding all controls and their sufficiency to mitigate identified risks |
+| SECA-5          | Privileges Audit | Audit all access privileges to determine whether any are unnecessary or insufficiently justified |
+| SECA-6          | Penetration Testing | Regularly conduct vulnerability scans, penetration tests, and/or wireless network scans to determine the effectiveness of controls and to identify unauthorized devices on the network |
+| SECA-7          | No Old Data | Regularly review all held data and delete and/or anonymize any data which is no longer useful, relevant, and/or accurate |
+| SECA-8          | Audit Vendors | Regularly audit all systems, solutions, services, and supplies provided by a third-party, along with any access privileges they may have been granted |
+
+**Table 6.4.2.6**
+
+*Disclosures, Access, And Notification (DAAN) Requirements*
+
+| Disclosures, Access, And Notification | Keywords | Description |
+| --------------- | -------- | ----------- |
+| DAAN-1          | Privacy Policy Notice | Provide a privacy policy notice or notice of data usage or notice of data disclosure to all relevant users and attempt to receive an acknowledgement and/or opt-out receipt from those users |
+| DAAN-2          | Data Request | An individual or legal guardian can request and amend a copy of their data and/or an account of all disclosures of their data |
+| DAAN-3          | Notify Affected | Notify people affected by a data breach within a specified amount of time |
+| DAAN-4          | Notify Government | Notify the government that a data breach or service interruption has occurred within a specified amount of time |
+| DAAN-5          | Deletion Request | An individual or legal guardian can request the deletion of all copies of their data, the end of processing of their data, or the withdrawal of consent for data handling |
+| DAAN-6          | Data Portability | An individual or legal guardian can request the moving, copying, or transfer of their data to another company and/or environment |
+
+##### 6.4.3 The USA Laws
+
+**Table 6.4.3.1**
+
+*Legal Requirements for US Laws*
+
+| Law/Regulation/Industry Practice | Requirements |
+| -------------------------------- | ------------ |
+| HIPAA (Office for Civil Rights, 2022; 45 C.F.R. § 164, 2024) | ISEC-1, ISEC-2, ISEC-3, ISEC-4, ISEC-5, ISEC-6, ISEC-7, ISEC-8, ISEC-9, ISEC-13, PSEC-1, PSEC-2, PSEC-3, PSEC-4, RMGT-1, RMGT-2, RMGT-3, IAAA-1, IAAA-2, IAAA-3, IAAA-4, SECA-1, SECA-2, DAAN-1, DAAN-2, DAAN-3, DAAN-4 |
+| FERPA (Qureshi, 2024; FERPA, 2024; Barbour, 2022) | DAAN-1, DAAN-2, ISEC-1, ISEC-4, PSEC-1 |
+| FISMA (*Federal Information Security Modernization Act*, 2024; *FISMA Compliance Defined*, 2024; National Institute of Standards and Technology, 2006) | SECA-1, SECA-2, RMGT-1, RMGT-2, RMGT-3, RMGT-4, IAAA-1, IAAA-2, IAAA-3, IAAA-4, IAAA-5, PSEC-1, PSEC-2, ISEC-2, ISEC-5, ISEC-6, ISEC-8, ISEC-10, ISEC-11, ISEC-12 |
+| SOX Act (Martinez, 2024; *What Is SOX*, 2023; *The Sarbanes Oxley Act*, 2024) | ISEC-9, ISEC-10, SECA-1, SECA-2, SECA-3, SECA-4, PSEC-1, PSEC-5, IAAA-1, IAAA-2, IAAA-3, IAAA-4, IAAA-5, RMGT-1, RMGT-2, RMGT-3 |
+| GLBA (*FTC Safeguards Rule*, 2022; *How to Comply With the Privacy*, 2002; *What Is GLBA Compliance*, 2021) | ISEC-1, ISEC-5, ISEC-8, ISEC-10, ISEC-13, PSEC-1, PSEC-3, RMGT-1, RMGT-2, RMGT-3, RGMT-4, SECA-1, SECA-5, SECA-6, IAAA-4, IAAA-6, DAAN-1 |
+| PCI DSS (Prajapati, 2024; *PCI DSS Quick Reference Guide*, 2018) | ISEC-5, ISEC-6, ISEC-7, ISEC-8, ISEC-10, ISEC-12, ISEC-13, ISEC-16, ISEC-17, IAAA-2, IAAA-4, IAAA-5, IAAA-6, IAAA-7, IAAA-8, SECA-1, SECA-2, SECA-3, SECA-4, SECA-6, PSEC-1, PSEC-6, PSEC-7, RMGT-1, RMGT-4 |
+
+##### 6.4.4 The EU Laws
+
+**Table 6.4.4.1**
+
+*Legal Requirements for EU Laws*
+
+| Law/Regulation/Industry Practice | Requirements |
+| -------------------------------- | ------------ |
+| GDPR (Bernadini, 2022; IT Governance Europe, 2024; *GDPR Checklist for Data Controllers*, 2022; *An Overview of the Data Protection Act 2018*, 2019) | ISEC-1, ISEC-4, ISEC-9, ISEC-13, ISEC-14, ISEC-18, ISEC-19, DAAN-1, DAAN-2, DAAN-4, DAAN-5, DAAN-6, SECA-7, PSEC-1, PSEC-3, IAAA-1, IAAA-2, RMGT-1, RMGT-2 |
+
+##### 6.4.5 The UK Laws
+
+**Table 6.4.5.1**
+
+*Legal Requirements for UK Laws*
+
+| Law/Regulation/Industry Practice | Requirements |
+| -------------------------------- | ------------ |
+| DPA 2018 (Government Digital Service, 2015; PrivacyPolicies.com Legal Writing Team, 2023; *An Overview of the Data Protection Act 2018*, 2019; Massey et al., 2024) | ISEC-1, ISEC-4, ISEC-9, ISEC-13, ISEC-19, PSEC-1, PSEC-3, DAAN-1, DAAN-2, DAAN-4, DAAN-5, DAAN-6, SECA-7, IAAA-1, IAAA-2 |
+| CA 2006 (Massey et al., 2024; [Viv1], 2023; Department for Science, Innovation & Technology, 2024) | RMGT-1 |
+| NIS Regulations 2018 (*Security Requirements*, 2024; Commission Implementing Regulation, 2018; Smith & Vella, 2023; Massey et al., 2024) | ISEC-7, ISEC-8, ISEC-9, ISEC-11, ISEC-14, ISEC-15, ISEC-19, ISEC-20, IAAA-2, IAAA-5, RMGT-5, DAAN-4, SECA-1 |
+| TSA 2021 (Holmin, 2023; Naylon, 2023; Yermak, 2023; *Telecommunications Security Code of Practice*, 2022) | ISEC-1, ISEC-7, ISEC-9, ISEC-10, ISEC-12, ISEC-13, ISEC-16, ISEC-17, ISEC-18, ISEC-21, ISEC-22, ISEC-23, ISEC-24, ISEC-25, ISEC-26, RMGT-1, RMGT-2, RMGT-3, RMGT-4, RMGT-5, RMGT-6, SECA-1, SECA-6, SECA-8, IAAA-1, IAAA-2, IAAA-4, IAAA-6, PSEC-1, PSEC-3, PSEC-6 |
+| PECR 2003 (*PECR: Everything You Need to Know*, 2024; Massey et al., 2024; *Security of Services*, 2024) | DAAN-1, DAAN-3, DAAN-4, IAAA-1, ISEC-7, ISEC-9, ISEC-13 |
+
+### 7. Security Background
+
+#### 7.1 Defining Information Security
+
+##### 7.1.1 Defining Information
+
+Before discussing information security, one must define information itself though there is a great amount of controversy surrounding this topic. According to Goguen, “It is said that we live in an "Age of Information," but it is an open scandal that there is no theory, nor even definition, of information that is both broad and precise enough to make such an assertion meaningful. Perhaps none is possible” (Goguen, 1998). While an interesting point, I do not consider it very useful. Agre would argue that information is an arbitrary term determined by each field to reflect that field’s needs and current state (Agre, 1995). This establishes the potential to define information within certain constraints which is what this section will do.
+
+Shannon defines information as a reduction of entropy which was sufficient for his purposes of ensuring the successful delivery of information units. He intentionally chose to remove meaning from the definition because meaning is a philosophical topic rather than a quantifiable and measurable discussion. Per this definition, information is a series of random symbols with the amount of Shannon Information being determined by the probability distribution and the degree of reducibility. Shannon Entropy is the closest he came to addressing meaning. If a message is sufficiently complex that removing a single character would render it meaningless, then the message contains a high level of Shannon Entropy though his definition of high entropy also encapsulates the idea that all possibilities are equally probable. By removing the importance of meaning, context, and even content to an extent, Shannon could simplify the complexity of error correction into a more useful tool. Something becomes an information source based on the observer’s interest such that elevation data is noise until recorded in a topographic map by an observer. However, this broadness makes the definition less useful. The lowest entropy is achieved when only the off symbol is being communicated, and despite being meaningless, the result of flipping a single, perfectly fair coin is irreducible and is its own shortest possible program (Puryear, 2023; dcgold4143, 2020; Siegal, 2013; Baldwin, 2005; Grünwald & Vitányi, 2008, p. 23; Bratianu & Bejinaru, 2023, p. 14).
+
+Algorithmic information describes the amount of information in a single computationally-generated object such as a string. Both a story and a string of random letters will possess a large amount of algorithmic information. According to Kolmogorov’s version of algorithmic information, the amount of information in a string would be determined by the size of the smallest computer program necessary to generate that string, measured by Kolmogorov complexity. This approach means that random characters have a high Kolmogorov complexity while regular strings have a low complexity (Grünwald & Vitányi, 2008, pp. 1-2, 4). However, program input and the language generating the string can reduce the usefulness of comparing two strings, with any complexity value only being true up to a certain additive constant (Grünwald & Vitányi, 2008, p. 3). Within a specific set of pre-defined restrictions, algorithmic theory provides a way to measure the meaningfulness of information as opposed to noise without probabilistic assumptions. However, this approach still misses the idea that “information is about something” (Grünwald & Vitányi, 2008, pp. 34-35).
+
+Gitt proposed a set of 5 levels for data and information, expanding on Shannon’s three levels while narrowing the scope. Based on his understanding, information necessitates a “free and deliberate convention” and a “transmitter” or source for that information (Gitt, 1996). At the most basic level, there is statistics which exclusively considers the frequency-related aspects of data such as the number of occurrences of a given character. The syntactical level represents the introduction of a system of symbols and the manner in which they are combined. The semantic level addresses the combination of syntactical rules into a message with a certain meaning. According to him, data only becomes information when it at least reaches the third level and has some degree of meaning. At the fourth level, pragmatics introduces the transmitter’s purpose for communicating with the recipient, namely what behavior they hope to induce in the recipient. The fifth level, apobetics, emphasizes the purpose of the communication and the transmitter’s overall objective. Unfortunately, many of his arguments are based on a misunderstanding on Shannon’s original statements and are predicated on an assumption that he never proves or at least an unclearly stated scope definer, namely that a transmitter is necessary for his type of information. Also, his assumption regarding the “deliberate convention” is flawed since various forms of communication and conveying information, such as body language, were not explicitly decided and declared (Gitt, 1996; [dcgold4143], 2020). However, his definitions are more useful and relevant by further introducing the concept of meaning, even if meaning is a complex and debatable concept. In addition, his model begins to approach the idea that information can be context and time sensitive, per Dervin’s work (Sualman & Jaafar, 2011, pp. 2-5).
+
+The standard DIKW hierarchy or hierarchy of knowledge management states that there is data, information, knowledge, and wisdom with each level experiencing increasing complexity. This hierarchical pyramid assumes that each further up tier can be reached by processing an inferior level of data. Within the hierarchy, data can be defined as structured or unstructured objective facts regarding events or transactions. Data lacks an inherent meaning and would require additional context to make the data usable, relevant, and interpretable within a specific context. Data becomes information after accumulation and through correlating multiple items of data with their context, though the exact details can vary based on one’s “experiential and organizational contexts” (Bratianu & Bejinaru, 2023). According to Floridi, information carries semantic meaning, is well-formed or logically structured, and remains truthful to the transmitter’s knowledge. In addition, Floridi splits information between information as reality or Shannon information, semantic information describing reality, and knowledge management information for reality.  Through the integration of linguistics and the addition of meaning, semantic information primarily extends the mathematical abstraction represented by Shannon information. Based on Davenport and Prusak, knowledge management “information emerges from data through the following processes: contextualization, categorization, computation, correction, and condensation” (Bratianu & Bejinaru, 2023). As discussed by others, the confusion between Shannon information, semantic information, and knowledge management information greatly contributes to the discourse regarding information’s definition. Due to their deeper connections with philosophy and religion, the definitions of knowledge and wisdom can vary greatly and are not particularly relevant to this paper (Bratianu & Bejinaru, 2023).
+
+Cyber threat intelligence (CTI) utilizes 3 levels: data, information, and intelligence. CTI focuses on collecting massive amounts of nonstandard data, extracting information from processed data, and countering any attacks based on intelligence from analyzing the information. Data is the individual, simple, and irreducible values which are often collected in massive quantities that can easily overload an unprepared tool. Interestingly, multiple sources state that data must be truthful, harkening back to Floridi’s work. These tools generate information by correlating, combining, and processing multiple data points. Based on the OMB Circular A-130, information is any potential “representation of knowledge such as facts, data, or opinions in any medium or form.” The information can provide some degree of context or insights, with intelligence offering the actionable insights (Sumari et al., 2021, p. 4; Amaro et al., 2022; RFSID, 2017; Federal Enterprise Data Resources, 2024; Jain, 2023).
+
+For the purposes of this paper, I will primarily utilize the term information to describe knowledge management information with a few concepts derived from the CTI usage of the word. For my purposes, the transmitter’s purpose is not relevant to the discussion, and I will ignore any considerations of the truthfulness of data or information. In my opinion, data and the resulting information can be wrong in circumstances like a flawed collection method or too many data sources (Diwan et al., 2009, pp. 265-266, 274-276; Jansen et al., 2022; Saccenti, 2023). While Shannon information and Kolmogorov complexity provide mathematical ways to calculate the amount of information, this degree of mathematical abstraction renders it unhelpful in a paper attempting to disambiguate complex topics.
+
+##### 7.1.2 Defining Information Security
+
+Before defining cybersecurity, one must define information security, two terms often but mistakenly considered synonymous. According to ISACA, cybersecurity is a higher-level process than information security and addresses a wider “scope, motive, opportunity, and method of attack” (Schatz et al., 2017, p. 55). NIST defines information security as “[t]he protection of information and information systems from unauthorized access, use, disclosure, disruption, modification, or destruction in order to provide confidentiality, integrity, and availability” (National Institute of Standards and Technology, 2018, p. 7). One early definition of information security comes from BS 7799, published in 1995 and the eventual foundation of ISO 27001 and 17799. BS 7799 stated information security is focused on maintaining the confidentiality, integrity, and availability of information used by an organization in its operation (*Information Security and ISO27001*, 2006, pp. 1-2; Rout, 2015). A generalized definition of information security would be the protection of information assets to ensure confidentiality, integrity, and availability (Åhlfeldt, 2008, p. 218).
+
+##### 7.1.3 Subfields of Information Security
+
+**Figure 7.1.3.1**
+
+*Extended Information Security Model to Reflect Its Subfields*
+
+![image alt >< 80](./assets/infosec-model.png)
+*Note*. Adapted from *Information Security in Distributed Healthcare: Exploring the Needs for Achieving Patient Safety and Patient Privacy*, by Åhlfeldt, 2008, pp. 82, 219
+
+Information security can be further broken down into subcategories. Even BS 7799 in 1995 recognized information security extended beyond the original technical scope, though technological solutions were preferred (*Information Security and ISO27001*, 2006, pp. 3-4; Rout, 2015). As such, Administrative Security incorporates any security provided to administrative elements and through communication channels such as risk management, SETA programs, policies, and procedures to ensure accountability. Administrative Security’s priority addresses employees always being the weakest link in an unstable chain (Åhlfeldt, 2008, pp. 33, 72, 218; National Bureau of Standards, 1976, p. 4). Administrative Security can be broken down in accordance with the TFI principles (Åhlfeldt, 2008, pp. 217, 221). Just as laws cannot exist with informal norms to govern them and to provide context, Informal Administrative Security controls cannot always be replaced by formal or technical controls (Åhlfeldt, 2008, p. 221). These informal controls attempt to shift the principal values, attitudes, beliefs, and norms among an organization’s employees, focusing on preventing both accidental and intentional insider threats. They are particularly effective in geographically disparate organizations where formalized controls cannot be efficiently implemented and enforced, instead relying on corporate culture (Åhlfeldt, 2008, pp. 222-223; Skorev et al., 2021, p. 25). Formal Administrative Security incorporates both External laws and regulations along with Internal policies, standards, risk management, and SETA programs (Åhlfeldt, 2008, p. 222). Some argue all Administrative Security should be classified as Informal due to its focus on psychology and its reliance on communication channels (Skorev et al., 2021, pp. 23-24). However, such a broad categorization is one reason for the current struggles within cybersecurity, contributing to varied definitions and scopes.
+
+Within Information Security, Technical Security refers to the people, processes, and technology that do not fall under Administrative Security (Jurvanen, 2023; Maconachy et al., 2001, p. 308). Physical Security protects hardware as someone with physical access can bypass most logical controls. This is accomplished by utilizing the 3Gs or guards, gates, and guns accompanied by locked doors, alarms, cameras, fire suppression systems, equipment maintenance, secure storage media disposal, and measures to protect against natural disasters (Whitman & Mattord, 2019, pp. 242, 254; van Otterloo, 2021; *ISO 27002:2022*, 2022). IT Security encapsulates the rest of Technical Security. Computer Security emphasizes data at rest and in use which includes protecting endpoints, mobile devices, and applications (Åhlfeldt, 2008, p. 218; Frenzel & McAndrew, 2023, p. 9; *What Is Cyber Security*, 2024). Communication Security guards data at collection, in collection motion, and in motion including the network, the cloud, and all devices responsible for managing inter-device communication (Åhlfeldt, 2008, p. 218; Frenzel & McAndrew, 2023, p. 9; National Bureau of Standards, 1976, p. 6).
+
+##### 7.1.4 Comparing Information Defense, Security, and Assurance
+
+When defining information security, one must consider the distinction between information security and the similarly-named information defense or information assurance. As discussed above, information security focuses on ensuring confidentiality, integrity, and availability which are commonly known as the CIA Triad (CNSS, 2015, p. 37; Cherdantseva & Hilton, 2013, pp. 7, 11-15, 18, 29). In contrast, information defense (ID) prioritizes confidentiality and integrity to the detriment of availability. As such, information defense places the focus on security rather than supporting the business and the end-users (Baocun & Fei, 1995). Information assurance (IA) utilizes the full CIA Triad but adds nonrepudiation and authentication to the list of considerations. Due to IA’s broader scope, defense-in-depth is often treated as a necessary component of it (CNSS, 2015, p. 35; Cherdantseva & Hilton, 2013, pp. 20-23, 29; Maconachy et al., 2001, pp. 307-308).
+
+##### 7.1.5 Defining Information Warfare
+
+An interesting perspective regarding information security can be gained from studying information warfare (IW). Due to very different threat actors, information security prevents information from unauthorized damage or alteration by system failures, human errors, or attacks. Information security applies controls based on quantifiable risks to best support the business functions while minimizing costs. However, this approach is insufficiently flexible and reliable to face the unknown and advanced threats present in information warfare. Information warfare can be divided into 5 realms of concern: military, political, social, economic, and physical. Each realm encompasses various systems and processes that could be attacked at any moment by an unknown adversary. The IW realms are loosely associated with the 5 parts of the information spectrum: policy, physical, electromagnetic, infrastructure, and interoperability (Winkler et al., 1996, pp. 2-4).
+
+#### 7.2 Defining Cybersecurity
+
+Before bridging the gap between government and security personnel, the definition of “cybersecurity” must be established. While initially seeming to be simple, defining cybersecurity experiences many of the same difficulties as defining technology, per Section 5.2 (Technical Implementation of Laws & Regulations). Cybersecurity intersects with computing, physical security, data science, statistics, business, risk management, ethics, psychology, law, and education which complicates its definition (Burley et al., 2017, p. 18; Sample et al., 2020, pp. 334-336). There is even disagreement regarding whether cybersecurity should be written as one word or two.
+
+##### 7.2.1 Etymology of Cybersecurity
+
+The first English word with the prefix of cyber- was cybernetics. Cybernetics is the transliterated form of the Greek term kubernētēs which means pilot and kybernan which is a boat’s steering mechanism. Kubernētēs is closely related to kubernēsis which can be translated as “the gift of governance” or “the study of self-governance” with some of the earliest uses being Plato’s *The Laws* and the Septuagint, the Greek translation of the Tanakh created in the 2nd century B.C. (Dawkins, 2022; Britannica, 2024a; Schneider & Hyner, 2006, p. 155; UKEssays, 2018). Until the 1940s, the meaning of kubernēsis meant cybernetics was used in political science to reference the science of governance, coined by physicist André-Marie Ampere in his 1834 *Essay on the Philosophy of Science*. In 1948, Norbert Wiener published *Cybernetics: or, Control and Communication in the Animal and the Machine* which used cybernetics to describe self-governing computing systems, early versions of AI-controlled robots (Newitz, 2013; Britannica, 2024b; Rout, 2015; UKEssays, 2018). In 1966, *Doctor Who* created a cyborg race called cybermen, and Martin Caidin published the book *Cyborg* in 1972 (Coe, 2015). By 1971, Control Data Corporation offered a commercial network called CYBERNET which provided remote super-computer processing, application libraries, and file management (Peterson & Veit, 1971). Especially with the popularity of Gibson’s *Neuromancer* and *Burning Chrome* in 1984 and 1982 respectively, the connection between the prefix cyber- and the concepts of computing became firmly established. However, these uses removed connotations of governance since the Internet was seen as uncontrollable or something which should not be governed (Newitz, 2013; Coe, 2015; Rout, 2015). Cyberspace’s definition has shifted over time from Gibson’s interpretation. I favor a definition incorporating the technology, human, and control aspects of cyberspace. For example, one could define cyberspace as “a time-dependent set of interconnected information systems and the human users that interact with these systems” (Ottis & Lorents, 2012).
+
+First used in 1989, the term cybersecurity emerged from the general popularity of cyber. Before 1989, the government preferred “information security” and “computer security”, though the definitions slightly shifted after cybersecurity was introduced. In fact, cybersecurity does not appear in Ware’s paper or Anderson’s paper, which are considered seminal works on cybersecurity in the USA (Anderson, 1972, pp. 1-33; Ware, 1979). The late 1990s and early 2000s marked a steep decline in the use of most words containing the cyber prefix. Afterward, words using cyber tended to either involve the military, like cyberspace as a domain of combat, or have negative connotations, such as cybercrime or cyberbullying. Unsurprisingly, cybersecurity’s prominence increased as it fell within both categories, eventually replacing other terms like computer and information security as the predominant word for computer-centric security (Newitz, 2013; Cristello, 2023; Rout, 2015).
+
+##### 7.2.2 Number of Words in Cybersecurity
+
+In addition to disagreements regarding the definition of cybersecurity, the use of cybersecurity as one word or two is a disputed topic. Along with the Associated Press, the Cambridge and Merriam-Webster dictionaries spell cybersecurity as one word, which likely explains why most books use it as one word (*Cyber security, Cybersecurity*, 2024; *Is It Cybersecurity or Cyber Security*, 2024). The USA government, especially the NIST and DoD, treat cybersecurity as one word. Linguistically, cyber is a bound morpheme used as a prefix rather than a free-standing word (Dawkins, 2022). Some argue that cyber should be treated as an abbreviation of the original Greek word which was not compound. Also, they contend cyberspace and cybersecurity are portmanteaus where the second term in the resulting compound word remained intact, such that “cyber” should be treated as a distinct word. Commonwealth governments treat cybersecurity as two words, and most laymen worldwide, including in the USA, prefer to spell it as two words. Similarly, IEEE has been using “cyber security” since 1997 (Ramirez & Choucri, 2016, p. 2228). Interestingly, the definitions do not seem dependent on cybersecurity’s spelling (*Is It Cybersecurity or Cyber Security*, 2024). Due to the author’s American nationality and his opinions regarding the word’s etymology, this paper will treat cybersecurity as one word.
+
+##### 7.2.3 Intersection of Cybersecurity & the Computing Disciplines
+
+While cybersecurity can be defined in terms of information security, technical aspects of cybersecurity are best discussed relative to the five core computing disciplines and one of the multidisciplinary fields. Each of these categories within cybersecurity can be referred to as types of technical component-level security. Component-level security or CLSEC refers to any control implemented by a specialist which hardens technology. Hardening decreases the likelihood of compromise or failure and minimizes the damage from such an event. IT CLSEC emphasizes end-user technology, like endpoints, and IT infrastructure that would otherwise be hidden from the end-users. IS CLSEC focuses on systems accessible by the end-user, directly or otherwise, such as databases, email applications, and productivity software. Due to its focus on business and end-user needs IS CLSEC may contain certain risk management practices when they intersect with technical controls. SE CLSEC is based on securing applications and programs after development, often expressed as secure coding practices. CS CLSEC approaches security similarly but emphasizes security during development and from a theoretical perspective. CE CLSEC focuses on securing IoT devices and hardware, sometimes intersecting with physical security. Finally, DS CLSEC seeks to harden databases, data lakes, and data warehouses in particular. Unsurprisingly considering its multidisciplinary nature, DS CLSEC frequently overlaps with IS and SE CLSEC (Frenzel & McAndrew, 2023).
+
+##### 7.2.4 Knowledge Areas and Disciplines Within Cybersecurity
+
+Before addressing any existing definitions for cybersecurity, further discussion of the fields within its purview may be useful. Per the Institute of Information Security Professionals (IISP) Skills Framework, there are 9 skill areas within security, though they emphasize information security over cybersecurity. Information Security Management addresses the need for governance, compliance, and administrative controls within a cost-limited environment (*IISP Information Security Skills Framework*, 2010, pp. 3-4). Information Risk Management covers threat intelligence, risk identification, risk analysis, risk evaluation, and the 4 risk treatment strategies (*IISP Information Security Skills Framework*, 2010, p. 5; Whitman & Mattord, 2019, pp. 319, 343-344, 355, 359, 368). Implementing Secure Systems focuses on the skills to create secure and resilient networks, programs, protocols, and architectures through the implementation of technical controls (*IISP Information Security Skills Framework*, 2010, pp. 6-7). Information Assurance Methodologies and Testing encompasses every skill relevant to auditing and testing a system to validate due diligence and the mitigation of risks (*IISP Information Security Skills Framework*, 2010, p. 8). Operational Security Management emphasizes skills used to monitor and manage a cybersecurity program including IAM, to conduct vulnerability assessments, and to orchestrate change management processes (*IISP Information Security Skills Framework*, 2010, p. 9). Incident Management includes incident response and forensics, both digital and physical (*IISP Information Security Skills Framework*, 2010, pp. 10-11). While Information Assurance focused on verifying risk mitigation, Audit, Assurance & Review emphasizes compliance with the relevant laws, regulations, policies, and standards (*IISP Information Security Skills Framework*, 2010, p. 11). Business Continuity Management encapsulates skills used to maintain an organization’s critical operations after a disaster shuts down activity at the primary site (*IISP Information Security Skills Framework*, 2010, p. 12; Whitman & Mattord, 2019, p. 549). Finally, Information Systems Research addresses skills utilized to conduct both academic and practical research to discover vulnerabilities and to improve existing security controls (*IISP Information Security Skills Framework*, 2010, p. 13).
+
+While the IISP Skills Framework is useful, it struggles to reflect the complexities of cybersecurity. The ACM established another model which was based on 8 core knowledge areas which covered and combined the 5 computing disciplines, along with any other relevant fields (Burley et al., 2017, p. 20). Data Security protects data at rest, during processing, at collection, in collection motion, and in motion which can include the data analysis techniques, forensics processes, legal issues such as privacy, access control (Burley et al., 2017, pp. 25-31; Frenzel & McAndrew, 2023, p. 9). Software Security emphasizes the development, use, and maintenance of software which helps end-users to securely, effectively, and efficiently use the software (Burley et al., 2017, p. 31). According to the ACM, Component Security focuses on ensuring security during “the design, fabrication, procurement, testing and analysis of components”. In this context, components can be treated as discrete assets integrated into a larger system which can include hardware, software, firmware, and ICS (Burley et al., 2017, p. 37). Connection Security protects the logical and physical connections and transmission media which allow for communication between components (Burley et al., 2017, p. 40). System Security addresses many of the other Knowledge Areas from a holistic perspective, viewing them as part of a singular unit (Burley et al., 2017, p. 47). Human Security addresses the risks created by end-users along with privacy concerns regarding user and employee data (Burley et al., 2017, p. 52). Organizational Security focuses on risk management and using cybersecurity to support the business goals and objectives (Burley et al., 2017, p. 59). Finally, Societal Security emphasizes cyber law, ethics, privacy considerations, and the ways that cybersecurity interacts with governments and the wider society (Burley et al., 2017, p. 70). While this approach effectively addresses cybersecurity’s large scope, it does not integrate information security as a subfield and establishes knowledge areas that overlap to a substantial degree. For example, multiple knowledge areas address database protection from slightly different perspectives which increases the model’s complexity and can confuse people, decreasing the model’s usefulness.
+
+Another model based on the work of Cherdantseva, Hilton, Von Solm, Anttila, Shoemaker suffers from similar issues of unnecessary complexity and a lack of conciseness which lead to confusing overlaps. In an attempt to expand information security to address modern needs, they identified 18 dimensions though I propose that their dimensions are more applicable to cybersecurity than information security. These dimensions are Strategic/Corporate Governance, Organizational, Policy, Best Practice, Ethical, Certification, Legal, Privacy, Insurance, Personnel, Awareness, Technical, Measurement or Monitoring, Audit, Physical, System Development, Architecture, and Business Continuity (Cherdantseva & Hilton, 2013, pp. 14-15). Some interesting trends can be identified in these dimensions. The Strategic/Corporate Governance, Organizational, Policy, Best Practice dimensions could be consolidated into two governance-focused dimensions like Strategic Governance and Tactical Governance. The Ethical, Certification, Legal, Privacy dimensions focus on compliance, regulation, and the societal impact of security. The Measurement and Audit dimensions help to demonstrate compliance per the previously discussed dimensions. The Personnel and Awareness dimensions emphasize the human aspect of security and the need to train end-users to be more security-conscious. The Insurance, Technical, Physical, System Development, Architecture, and Business Continuity dimensions can be considered aspects of risk treatment, specifically the defense, mitigation, and transference approaches to risk treatment (Whitman & Mattord, 2019, pp. 368, 549).
+
+The model proposed by Parrish et al. accounts for information security and the broader scope of cybersecurity without expanding to the size of other models. In addition, they already applied many of the consolidations discussed with regards to the 18-dimension model. They established 4 high-level domains within cybersecurity with 16 components: Governance, Risk Management, Constraints, and Controls. The Governance domain covers strategic plans such as goals and objectives, compliance requirements, standardization measures, and organizational policies. The Risk Management domain addresses the needs for threat modeling, asset evaluation and inventorying, risk mitigation, and vulnerability inventories.  The Constraints domain describes the legal, ethical, organizational, political, and data privacy considerations which affect cybersecurity plans and controls. The Controls domain incorporates all administrative, physical, and technical means by which risks and vulnerabilities are treated (Parrish et al., 2018, pp. 14, 16-17). Based on the earlier definitions, the Controls domain encapsulates information security while the Governance and Risk Management domains expand it the discussion with a focus on management and the end-users. The Constraints domain effectively addresses common concerns about integrating cybersecurity into a cost-limited environment where some risks must be accepted without any form of treatment. Managers need cybersecurity to be context-driven and for vulnerabilities to be prioritized based on quantifiable metrics such as the probability and severity of exploitation (Weiss & Jankauskas, 2018, pp. 1650, 1659, 1664).
+
+**Figure 7.2.4.1**
+
+*The 4 Domains and 16 Components of Cybersecurity*
+
+![image alt >< 80](./assets/four-domains-sixteen-components.png)
+*Note*. Based on the model as described in *Global Perspectives on Cybersecurity Education for 2030: A Case for a Meta-Discipline*, by Parrish et al., 2018, pp. 14, 16-17
+
+##### 7.2.5 Existing and Proposed Definitions of Cybersecurity
+
+Various definitions have been proposed for cybersecurity, each offered by different groups further complicating academic works, laws, treaties, and attempts to implement cybersecurity (Schatz et al., 2017, p. 56; Kosseff, 2018, p. 986-988). Those groups have been international organizations, standards bodies, non-profit organizations, industry communities, dictionaries, and technology publishers. Some definitions emphasize the computing disciplines, potentially a hold-over of the transition away from computer and information security towards cybersecurity, and some treat cybersecurity as a branch of information security (Wamala, 2011, p. 13; Schatz et al., 2017, pp. 54-56). Others recognize humans as requisite components of cybersecurity since they can be users, defenders, attackers, or multiple simultaneously. These interactions between society and technology, along with the widespread implementation of computing technology into all fields, complicate the definition of cybersecurity. Many multidisciplinary definitions have been unduly influenced by the inherent assumptions of the researcher’s original disciplines, specifically affecting terms which differ slightly in meaning between fields (Weiss & Jankauskas, 2018, p. 1665-1666). For example, legal scholars tend to confuse cybersecurity and DLSEC while overemphasizing confidentiality (Kosseff, 2018, pp. 995, 998). Even meta-discipline definitions have struggled due to the introduced complexity (Parrish et al., 2018, pp. 1-2, 7-9, 13). Geographic and cultural differences similarly impact the definition of cybersecurity with Russia and China prioritizing the social aspects and placing most responsibility on the government rather than organizations. In contrast, the USA and EU have a martial-centric perspective (Schatz et al., p. 56; Giles & Hagestad, 2013, pp. 419, 426). Confusions regarding the definition of cyberspace have only furthered the difficulties involving cybersecurity (Ottis & Lorents, 2012, p. 2).
+
+**Table 7.2.5.1**
+
+*Table of Different Standards and Their Definitions of Cybersecurity*
+
+| Source Standard | Definition of Cybersecurity |
+| --------------- | --------------------------- |
+| Merriam-Webster Dictionary (Merriam-Webster, n.d.) | “Measures taken to protect a computer or computer system (as on the Internet) against unauthorized access or attack” |
+| TechTarget (Shea & Gillis, 2024) | “The body of technologies, processes and practices designed to protect networks, computers, programs and data from attack, damage or unauthorized access” |
+| Gartner (Gartner, n.d.) | “The combination of people, policies, processes and technologies employed by an enterprise to protect its cyber assets. Cybersecurity is optimized to levels that business leaders define, balancing the resources required with usability/manageability and the amount of risk offset. Subsets of cybersecurity include IT security, IoT security, information security and OT security.” |
+| ITU-T X.1205 (ITU, n.d.) | “The collection of tools, policies, security concepts, security safeguards, guidelines, risk management approaches, actions, training, best practices, assurance and technologies that can be used to protect the cyber environment and organization and user’s assets . Organization and user’s assets include connected computing devices, personnel, infrastructure, applications, services, telecommunications systems, and the totality of transmitted and/or stored information in the cyber environment.” |
+| ISO/IEC 27032:2023 (International Organization for Standardization, 2023) | “Safeguarding of people, society, organizations and nations from cyber risks” |
+| CNSSI 4009-2015 (CNSS, 2015, p. 40) | “Prevention of damage to, protection of, and restoration of computers, electronic communications systems, electronic communications services, wire communication, and electronic communication, including information contained therein, to ensure its availability, integrity, authentication, confidentiality, and nonrepudiation.” |
+| NIST CSF v1.1 (National Institute of Standards and Technology, 2018, p. 45) | “The process of protecting information by preventing, detecting, and responding to attacks” |
+| Republic of South Africa NCSS (Schatz et al., 2017, p. 64) | “The collection of tools, policies, security concepts, security safeguards, guidelines, risk management approaches, actions, trainings, best practices, assurance and technologies that can be used to protect the cyber environment and organization and assets” |
+| USA CISA (*What Is Cybersecurity?*, 2021) | “The art of protecting networks, devices, and data from unauthorized access or criminal use and the practice of ensuring confidentiality, integrity, and availability of information” |
+| WEF (*Partnering for Cyber Resilience*, 2012, p. 14) | “Analysis, warning, information sharing, vulnerability reduction, risk mitigation and recovery efforts for networked information systems” |
+| Composite Definition From Interviewees (Cains et al., 2022, pp. 1648-1649) | “The iterative process of maintaining quantifiable levels of cyber system dependability and control over verifiable data provenance, confidentiality, integrity, and accessibility (CIA) via comprehensive system awareness, human factor and effects characterization, resource protection and management, accurate intrusion detection, threat prediction and prevention, resilient system functionality, and systemic solutions in a cost-limited environment of socio-technical interactions between diverse dimensions and factors, despite evolving security standards and variations in security competence” |
+| Academic Definition Based on Russian Understanding (Godwin et al., 2014, p. 33) | “A property of cyberspace that is ability to resist intentional and/or unintentional threats and respond and recover” |
+| Academic Definition Based on Semantic Analysis of Common Terms (Schatz et al., 2017, p. 66) | “The approach and actions associated with security risk management processes followed by organizations and states to protect confidentiality, integrity, and availability of data and assets used in cyber space. The concept includes guidelines, policies, and collections of safeguards, technologies, tools and training to provide the best protection for the state of the cyber environment and its users” |
+
+##### 7.2.6 New Definition of Cybersecurity
+
+I propose a new definition of cybersecurity which considers the most common terms in the above definitions and the concerns commonly expressed in past research (Weiss & Jankauskas, 2018, pp. 1650, 1651, 1657, 1659, 1664; Schatz et al., 2017, p. 59). To address future problems and expansions to the field, flexibility and adaptability are factors to consider, but they cannot compromise the clarity and specificity of the definition (Kosseff, 2018, p. 1010). Cybersecurity is driven by a constantly shifting environment of adversaries, industry needs, and advancing technology. Between that environment and being a meta-discipline, cybersecurity’s definition necessitates a holistic consideration of engineering, computing, history, political science, psychology, sociology, biology, and material sciences. I propose the following definition:
+
+> Cybersecurity encompasses the laws, policies, standards, guidelines, practices, processes, actions, trainings, technologies, tools, safeguards, and controls continuously implemented and maintained in accordance with quantifiable probabilities to maximize resource usage in a cost-limited environment. Cybersecurity seeks to mitigate the impact of potential risks from known, unknown, technical, physical, and social vulnerabilities related to the confidentiality, integrity, availability, authenticity, and non-repudiability of the wider socio-technical system and cyberspace environment to increase overall resiliency when faced with intentional and unintentional threats without compromising the system’s usability, efficiency, effectiveness, and/or profitability.
+
+To abbreviate that more thorough definition, I propose:
+
+> Cybersecurity encompasses the measures implemented and maintained to mitigate all potential risks within a cost-limited environment to the confidentiality, integrity, availability, authenticity, and non-repudiability of the wider socio-technical system and cyberspace environment without compromising the system’s usability, efficiency, effectiveness, and/or profitability.
+
+### 8. Gap Analysis
+
+Unfortunately, there are many instances of confusing laws and regulations, potentially due to unusual overlapping jurisdictions or ignorance of technical concepts. Access control requirements need to be balanced against the availability concerns within each industry. For example, the healthcare industry should restrict access to patient data, even from insider threats, but cannot prevent doctors and nurses from accessing the information necessary to save the patient’s life such as allergies or current prescriptions (*Third-Party Vendor Remote Access Best Practices*, 2022). Laws can become problematic for security personnel when their scope is confusing or overlaps. For example, HIPAA in the U.S. would not affect a school that “maintains health information only on students” since FERPA defines such information as “education records” within its purview, rather than HIPAA’s scope (Office for Civil Rights, 2008a). While confusing, schools only fall under HIPAA and FERPA if they provide medical services to non-students or conduct electronic transactions which fall under HIPAA’s Transactions and Code Sets Rules (Office for Civil Rights, 2008b; Alder, 2024). In addition, laws like HIPAA may not be effective at providing privacy, potentially failing to account for physical security or creating a culture emphasizing compliance over proper security (Moore et al., 2007, pp. 268-269; Tan et al., 2010, pp. 56, 65).
+
+While there are some examples within laws establishing security requirements, most of the issues become apparent with criminal laws, partially because most security-centric laws are criminal or meant for government agencies (Whitman & Mattord, 2019, pp. 80-84; Massey et al., 2024). The Fraud Act (FA) 2006 in the U.K. and the colloquially named super-DMCA laws in the U.S.A. are interesting examples. The FA bans the development, sale, possession, and use of hardware or software with the capability to commit fraud when paired with the intent. Without the latter caveat, this law would criminalize most privacy tools, but the lawmakers recognized and prevented this problem (*Cybercrime - Prosecution Guidance*, 2024; Massey et al., 2024). In contrast, the super-DMCA laws applied in some states ban the development, sale, possession, and use of hardware or software capable of reverse engineering software, bypassing mechanisms which restrict access to the software, or concealing the source, destination, or existence of any electronic communication. Like some lockpick laws, these super-DMCA laws ignore intent thereby prohibiting steganography, honeypots, encryption, malware analysis, and bug bounty-hunting tools even for the exclusive purpose of security research (Poulsen, 2003; Rasch, 2003; Sardaryzadeh, 2023; TechTarget Contributor, 2011; Hulme, 2003; *Lockpicking Laws in the United States*, 2024; Weigle, 2019, pp. 10-19).
+
+## Chapter 4: Analysis
+
+### 9. Approach & Methodology
+
+#### 9.1 Approach 1
+
+My first approach to bridging the gap between lawmakers and cybersecurity personnel was establishing a limited number of requirements for various relevant laws and classifying them into several categories. The categories would classify the legal requirements from a technical perspective. I identified 61 requirements between 12 laws or standards and grouped them into 6 specific categories. The first category RMGT represents ==R==isk ==M==ana==g==emen==t== and focuses on the various aspects of risk management, supply chain management, and inventory management. The second category IAAA represents ==I==dentification, ==A==uthentication, ==A==uthorization, and ==A==ccountability. As implied by its name, IAAA focuses on physical and logical credentials, access privileges, and accountability controls. The third category ISEC represents ==I==nformation ==Sec==urity and focuses on more specific controls that emphasize confidentiality, integrity, and availability. The fourth category PSEC represents ==P==ersonnel ==Sec==urity and focuses on security measures impacting people or mitigating the risks they create. The fifth category SECA represents ==Sec==urity ==A==ssessment and focuses on different ways to assess a network’s security. The sixth category DAAN represents ==D==isclosures, ==A==ccess, ==a==nd ==N==otifications. The DAAN category focuses on allowing people to control their own data and notifying the appropriate parties of any relevant incidents.
+
+This first attempt revealed the key areas prioritized by lawmakers but still has some issues. However, these categories failed to properly map lawmaker concerns to technical considerations, aspects of the extended InfoSec model, or common cybersecurity frameworks. Lawmaker concerns were not properly identified as this approach emphasized grouping the legal requirements by who is impacted. Also, the models and frameworks need to be incorporated to allow security personnel to more easily understand what is required.
+
+#### 9.2 Approach 2
+
+The first approach failed to address the overarching concerns held by lawmakers which inspired the legal requirements. In this iteration, a greater emphasis was placed on those concerns and how they relate to the identified legal requirements. A table was chosen to summarize the concern to requirement mappings. Then, the individual lawmaker concerns were mapped to the NIST Cybersecurity Framework (CSF), demonstrating how they can be addressed from a technical and administrative perspective.
+
+**Table 9.2.1**
+
+*Mapping Lawmaker Concerns to Legal Requirements*
+
+| ID | Lawmaker Concerns | Legal Requirements |
+| -- | ----------------- | ------------------ |
+| LMKR-1 | Companies need to know what items are on-premises and in their supply chain, along with any risks created by those items and how to handle those risks | RMGT-1, RMGT-2, RMGT-3, RMGT-4, RMGT-5 |
+| LMKR-2 | Companies need to transfer all functions necessary to operate and maintain all relevant services into a given country should international bearers fail or be blocked for diplomatic reasons | RMGT-6 |
+| LMKR-3 | Companies need to ensure that only authenticated and authorized users have physical and logical access to information | IAAA-1, IAAA-2, IAAA-3, IAAA-5, IAAA-6, IAAA-8, PSEC-5, PSEC-7, ISEC-25 |
+| LMKR-4 | Companies must maintain the confidentiality of client, employee, and business data | ISEC-1, ISEC-2, ISEC-3, ISEC-5, ISEC-8, ISEC-12, ISEC-13, ISEC-14, ISEC-16, ISEC-17, ISEC-18, ISEC-19, ISEC-20, ISEC-21, ISEC-22, ISEC-23, ISEC-24, ISEC-25, ISEC-26, PSEC-3 |
+| LMKR-5 | Companies must maintain the integrity of client, employee, and business data | ISEC-1, ISEC-2, ISEC-3, ISEC-6, ISEC-8, ISEC-9, ISEC-10, ISEC-11, ISEC-12, ISEC-13, ISEC-14, ISEC-16, ISEC-17, ISEC-19, ISEC-20, ISEC-21, ISEC-22, ISEC-23, ISEC-24, ISEC-25, ISEC-26 |
+| LMKR-6 | Companies must maintain the availability and accuracy of client, employee, and business data | ISEC-1, ISEC-8, ISEC-9, ISEC-11, ISEC-14, ISEC-17, SECA-7 |
+| LMKR-7 | Companies must keep detailed records and accounts and regularly conduct thorough audits to prove due diligence which includes proving the proper management and identification of risks and threats | ISEC-7, ISEC-8, ISEC-10, ISEC-15, ISEC-17, SECA-1, SECA-2, SECA-3, SECA-4, SECA-5, SECA-6, SECA-8 |
+| LMKR-8 | Employees must understand their responsibility in ensuring the security of data and how to fulfill that responsibility | PSEC-1, PSEC-2, PSEC-4, PSEC 6 |
+| LMKR-9 | People should have informed and ultimate control over their own data | DAAN-1, DAAN-2, DAAN-3, DAAN-5, DAAN-6, ISEC-4 |
+| LMKR-10 | The government needs to be kept informed of incidents | DAAN-4 |
+
+**Table 9.2.2**
+
+*Mapping Lawmaker Concerns to NIST CSF*
+
+| Lawmaker Concerns | NIST CSF Outcome (The NIST Cybersecurity Framework (CSF) 2.0, 2024) |
+| ----------------- | ------------------------------------------------------------------- |
+| LMKR-1 | GV.OC-03, GV.OC-04, GV.OC-05, GV.RM-05, GV.SC, GV.SC-01, GV.SC-02, GV.SC-03, GV.SC-04, GV.SC-05, GV.SC-06, GV.SC-07, GV.SC-08, GV.SC-09, GV.SC-010, ID.AM, ID.AM-01, ID.AM-02, ID.AM-03, ID.AM-04, ID.AM-05, ID.AM-06, ID.AM-07, ID.RA-10, DE.CM-06 |
+| LMKR-2 | GV.OC, GV.OC-03 |
+| LMKR-3 | GV.RR, PR.AA, PR.AA-01, PR.AA-02, PR.AA-03, PR.AA-04, PR.AA-05, PR.AA-06, PR.PS-04, DE.CM-03, PR.IR-01, DE.CM-03, ID.RA-03 |
+| LMKR-4 | ID.AD-08, PR.AA, PR.AA-02, PR.AA-05, PR.AA-06, PR.DS, PR.DS-01, PR.DS-02, PR.DS-10, PR.DS-11, PR.PS, PR.IR, PR.IR-01 |
+| LMKR-5 | ID.RA-09, PR.DS, PR.DS-01, PR.DS-02, PR.DS-10, PR.DS-11, PR.PS, PR.PS-01, PR.PS-02, PR.PS-03, PR.PS-05, PR.PS-06, PR.IR, PR.IR-02, RC.RP-03, RC.RP-05 |
+| LMKR-6 | PR.DS-01, PR.DS-02, PR.DS-10, PR.DS-11, PR.PS, PR.PS-02, PR.PS-03, PR.IR, PR.IR-03, PR.IR-04, RC, RC.RP, RC.RP-01, RC.RP-02, RC.RP-05 |
+| LMKR-7 | GV, GV.OC, GV.OC-01, GV.OC-02, GV.OC-03, GV.OC-04, GV.OC-05, GV.RM, GV.RM-01, GV.RM-02, GV.RM-03, GV.RM-04, GV.RM-06, GV.RM-07, GV.PO, GV.PO-01, GV.PO-02, GV.OV, GV.OV-01, GV.OV-02, GV.OV-03, ID.RA-01, ID.RA-02, ID.RA-03, ID.RA-04, ID.RA-05, ID.RA-06, ID.RA-07, ID.IM, ID.IM-01, ID.IM-02, ID.IM-03, ID.IM-04, PR.PS-04, PR.PS-06, DE, DE.CM, DE.CM-01, DE.CM-02, DE.CM-03, DE.CM-06, DE.CM-09, DE.AE, DE.AE-02, DE.AE-03, DE.AE-04, DE.AE-06, DE.AE-07, DE.AE-08, RS, RS.MA, RS.MA-01, RS.MA-02, RS.MA-03, RS.MA-04, RS.MA-05, RS.AN, RS.AN-03, RS.AN-06, RS.AN-07, RS.AN-08, RS.CO, RS.MI, RS.MI-01, RS.MI-02, RC, RC.RP-02, RC.RP-04, RC.RP-06 |
+| LMKR-8 | GV.RR, GV.RR-01, GV.RR-02, GV.RR-03, GV.RR-04, GV.RM-05, GV.PO, GV.PO-01, GV.PO-02, ID.IM-04, PR.AT, PR.AT-01, PR.AT-02, DE.AE-06 |
+| LMKR-9 | GV.OC-02, GV.OC-03, GV.OC-04, GV.OC-05, RC.CO-02, RC.CO-03, RC.CO, RC.CO-03, RC.CO-04 |
+| LMKR-10 | GV.OC-2, RC.CO, RC.CO-03, RC.CO-04 |
+
+###  10. Case Study: Acme University
+
+#### 10.1 Network Topology & Design
+
+To demonstrate the usefulness of this paper’s methodology, I will apply it to an institution called Acme University. Acme University operates 6 campuses based in New York City, London, Dallas, Los Angeles, Birmingham, and Milton Keynes with the first two being their primary offices. The links between the campuses utilize a partial mesh topology with all campuses in each country being connected. When necessary, all campuses can remotely connect to the others across the Internet using site-to-site VPNs. Under normal operations, all inter-continental traffic passes through the New York and London offices which are directly connected to each other. Using load balancers on each end, such traffic is assigned to one of two dedicated leased lines managed by separate ISPs. In the event of an issue with one ISP, all traffic will be moved to the other line to ensure connectivity remains, albeit at a lower speed.
+
+**Figure 10.1.1**
+
+*Acme University Site-to-Site Topology*
+
+![image alt >< 80-tall](./assets/au-site-to-site.png)
+*Note*. Unlike the load balancers, the presence of VPN concentrators in this diagram does not indicate they are present beyond the firewall. Rather, they indicate that VPN traffic may enter or exit the office, along with standard Internet traffic.
+
+Acme University primarily utilizes two external vendors: Aardvarkdyne and WhatchaMaCallIt Cleaning Services. Aardvarkdyne (AD) handles payment processing and performs accounts receivable operations. WhatchaMaCallIt Cleaning Services (WCS) provides janitorial and facility maintenance personnel. While WCS only needs access to the digital inventory database, AD requires far more extensive access to the database, especially for personnel records and sales information. They are given access through a web portal backed by TLS/SSL VPNs, with each division within the vendor being granted a different user account to improve auditability and apply the principle of least privilege. A VPAM tool handles vendor account authentication with MFA and expiring credentials, forcing vendors to undergo periodic reauthorization processes. A SOAR tool monitors activity without substantial investments of personnel.
+
+**Figure 10.1.2**
+
+*Acme University Campus Network Topology*
+
+![image alt >< 80-tall](./assets/network-topology.png)
+*Note*. Dashed lines indicate connections to dedicated failover devices.
+
+**Figure 10.1.3**
+
+*Several Example Server Racks*
+
+![image alt >< 80](./assets/server-racks.png)
+
+**Figure 10.1.4**
+
+*Server Room Design*
+
+![image alt >< 80](./assets/server-room-design.png)
+
+To minimize documentation and maximize maintainability, the campuses utilize identical topologies. The network utilizes Class B private addressing with a CIDR of 20, allowing for 16 subnets and 4094 usable IP addresses per subnet. The first subnet is reserved for the external and DMZ network segments. In this portion, load balancers receive traffic from one of two WAN links and pass traffic to one of three stateless packet inspection firewalls. In the external-facing segment, ACME University placed their web, mail, and DMZ-focused DNS servers with approximately 2,500 IP addresses reserved for this portion of the subnet. Approximately 1,200 more IP addresses are reserved for the internal-facing portion of the DMZ which contains the VPN concentrators for telecommuters or vendors, along with proxy firewalls. Proxy firewalls prevent exposure of internal implementation details, allow data caching, and filter the content of both inbound and outbound traffic passing through them. When combined with the internal-facing firewalls, the proxy firewalls form a core component of Acme University’s DLP system. Within the firewall, 6 subnets are reserved for internal servers and network management servers, protected by another pair of NGFWs. NGFWs serve as a stateful packet inspection firewall, IDPS, and antivirus application to protect the servers from any potentially compromised devices in the internal network. These network devices are all placed in a single server room which has space for thirty-six 42-unit racks; though, not all rack spaces are currently in use at the smaller campuses. Each of the four buildings on each campus receives a separate subnet. This network segment does not contain any databases due to the university’s reliance on Oracle Cloud’s databases, decreasing the compliance requirements. Importantly, there are three separate databases used for university, medical, and billing information to help ensure more granular access control. All data is encrypted, backed up, and versioned. After data is no longer necessary or access rights have been retracted, the data must be destroyed securely with a zero-overwrite utility and by cross-cut shredding or pulverizing any physical media. All data, access credentials, software, and hardware are tracked in detailed inventories.
+
+All buildings contain switches, routers, VoIP phones, printers, WAPs, and thin clients which link to the VDI servers. WAPs broadcast three separate SSIDs for guests, students, and employees. Student and employee Wi-Fi networks lead to a captive portal where they can log in, with NAC and MDM devices protecting the employee Wi-Fi. WAPs are physically and logically segmented from the other devices in each building. Thin client desktops provide additional security, simplify the deployment of computers to new classrooms, and allow students or professors to easily access school-provided applications remotely. Anti-virus and IDS software present on each VDI server monitor all desktops and connect to a centralized SIEM. Live migration is utilized to perform load balancing of virtual desktops between the VDI servers. To prevent compromise of the live migration, the live migration mechanism has been placed in a separate VLAN, and migration occurs through an encrypted tunnel. Also, an authentication mechanism ensures the authenticity of the source, destination, and management servers along with the migration agent. All students and Acme University employees access their virtual desktops using a password and TOTP provided by the Authy mobile app. MFA is handled by a set of RADIUS servers and NASs which authenticate users, provide RBAC authorization tokens, and track user activity for later analysis. Passwords have a minimum length of 12 characters, must include at least one instance of every character type, and cannot be one of the user’s last 8 passwords. All access privileges and retained data are audited quarterly in accordance with Acme University’s security policies and to enforce the principle of least privilege. Recurring SETA programs, focusing especially on acceptable use and contingency planning, are part of mandatory trainings for all employees. Also, they maintain an inventory to support regular risk assessments, wargames, vulnerability scans, and penetration tests. All of these requirements and policies, including the breach reporting aspects, are overseen by Acme University’s Chief Security and Chief Compliance Officers, supported by data protection, privacy, compliance, technology security, and physical security officers.
+
+Building D in Figure 5.1.2 refers to the university clinic which offers medical services to students and members of the public, with the understanding most employees are students. Since they handle PHI and cardholder data, all of their virtual desktops and file servers are placed behind an additional firewall and have a dedicated IDPS device to protect them. In addition, they utilize distinct Oracle Cloud databases with further security protections. The medical clinic’s patch and change management processes are substantially more rigorous to prevent potential issues. Due to the clinic’s presence, the university’s network is quarterly scanned by a PCI ASV, and special forms are submitted to both the PCI SSC and the governments.
+
+#### 10.2 Application of Methodology
+
+To determine the methodology’s efficacy, Acme University’s network will be analyzed through the lens of lawmaker concerns. As gaps are identified, NIST CSF outcomes will be applied to guide security personnel on technical and administrative ways of addressing the unsatisfied concerns. The handling of AD and WCS in conjunction with the inventory records satisfies LMKR-1. Concern LMKR-2 is addressed by placing a central office in each country and utilizing cloud providers with multiple regions. Acme University implements MFA, RADIUS servers, minimum password requirements, and logs to meet LMKR-3. Through controls like encryption and multi-layered firewalls, AU fulfills the intentions of LMKR-4, LMKR-5, and LMKR-6. Similarly, thorough records, risk management processes, regular audits and tests, and training programs indicate an attempt at compliance with goals LMKR-7 and LMKR-8.
+
+While most concerns are addressed, Acme University lacks policies and controls to keep people and governments properly informed or to grant users control over their own data per LMKR-9 and LMKR-10. DAAN-1 through DAAN-6 and ISEC-4 legal requirements provide additional guidance regarding the legal expectations. AU needs a dedicated function to report incidents or data breaches to affected people and any relevant government agencies, though existing personnel and controls like the Chief Security Officer can help to satisfy these concerns. Data usage notices must be prominently displayed to users, and data control forms need to be available to employees, students, and clients on the company’s website.
+
+## Chapter 5: General Conclusion
+
+### 11. Results & Conclusions
+
+My definitions combined the efforts of multiple past studies to create clear definitions based on the consensus. Without heavily relying on other contested terms like cyberspace, this paper’s proposed definition of cybersecurity provides a thorough, adaptable, and relatively succinct summary of cybersecurity’s components and how it intersects with information security or information assurance. Those definitions further assisted the mappings detailed later in this paper. Developed mappings successfully simplified the process of assessing an organization’s compliance, identifying room for improvement, and providing a common understanding between lawmakers and cybersecurity personnel. My case study provided a good example of utilizing the mappings to quickly and accurately assess complex networks influenced by multiple laws from two separate nations. In addition, some interesting patterns within the laws and frameworks were revealed by the mappings. As discovered by these mappings and supported by past research, governments prefer hierarchical control through delegated authority in cases of attack, sometimes implemented through hard inducements like criminalization. However, they mobilize and orchestrate third parties, motivated through soft inducements such as incentives, to handle general risks (Weiss & Jankauskas, 2018, pp. 259-275; McNeal, 2024, pp. 2-6). In addition, control frameworks seem to favor availability while legal requirements emphasize confidentiality and integrity of client and employee data. This is unsurprising as the computing disciplines exist to support business functions and to ensure profitability. In contrast, governments exist to protect the civil rights and liberties of their citizens from other governments, companies, and people (Qadir & Quadri, 2016; Nissenbaum, 2004, pp. 124-130, 137, 143, 146, 148-149, 154-157; Arango, 2019; Whitman & Mattord, 2019, pp. 230-241).
+
+Reading and comprehending the numerous laws relevant to cybersecurity would be unreasonable, especially since their number will likely continue increasing. This approach allows legal specialists to identify the elements mandated by laws, regulations, and administrative policies. I can simply apply those mappings to my technical controls and policies, proving due diligence and compliance, and without spending the days necessary to read the relevant documentation which allows for a redistribution of efforts.
+
+### 12. Further Discussion
+
+Due to the gaps and ambiguities faced when defining or interpreting the basic components and terms within cybersecurity, a substantial amount of time was spent on that aspect rather than on the mappings. Further research could be conducted to expand these mappings into a more broadly applicable framework. Various USA states and EU member nations have additional laws or regulations which may be applicable when discussing cybersecurity. Previous research involving the interaction between cybersecurity and governments has been conducted for Poland and Hungary, and more specific work building on that research could be integrated into the model I proposed. In addition, many other countries, such as India or Canada, have their own cybersecurity laws which will be important to properly expand the mappings into a framework viable for international companies. Finally, more thorough case studies may uncover further room for improvement or additional uses for the mappings.
+
+## Chapter 6: Bibliography
+
+Ackerman, P. (2019, Feb. 16). *NSA Makes Final Push to Retain Most Mass Surveillance Powers*. The Guardian. www.theguardian.com/world/2014/jan/10/nsa-mass-surveillance-powers-john-inglis-npr
+
+Agre, P. E. (1995). Institutional Circuitry: Thinking About the Forms and Uses of Information. *Information Technology and Libraries, 14*(4), 225-230. www.dourish.com/classes/ics132w04/reading-agre.pdf
+
+Åhlfeldt, R. (2008). *Information Security in Distributed Healthcare: Exploring the Needs for Achieving Patient Safety and Patient Privacy* (DSV Report Series No. 08-003) [Doctoral dissertation, Stockholm University]. Department of Computer and System Science.
+
+Alder, S. (2024, Aug. 29). *What Is the Difference Between FERPA and HIPAA?* The HIPAA Journal. www.hipaajournal.com/difference-between-ferpa-and-hipaa/
+
+Amaro, L. J. B., Azevedo, B. W. P., de Mendonca, F. L. L., Giozza, W. F., Albuquerque, R. de O., Villalba, L. J. G. (2022). Methodological Framework to Collect, Process, Analyze and Visualize Cyber Threat Intelligence Data. *Applied Sciences, 12*(3), 1205. doi.org/10.3390/app12031205
+
+Anderson, J. P. (1972, Oct.). Computer Security Technology Planning Study. *Proceedings of the 21st NISSC, 1*. csrc.nist.gov/files/pubs/conference/1998/10/08/proceedings-of-the-21st-nissc-1998/final/docs/early-cs-papers/ande72a.pdf
+
+Arango, J. (2019, Jul. 22). *A Conflict of Interest?* Fluid Attacks. fluidattacks.com/blog/conflict-interest/
+
+Authorization for Use of Military Force, P.L. 107-40, 115 Stat. 224. (2001).
+
+Bahar, Z. (2022, Jun. 26). *How the Five Eyes Alliance Fuels Global Surveillance*. NordVPN. nordvpn.com/blog/five-eyes-alliance/
+
+Baldwin, R. (2005, Jul. 14). *Information Theory and Creationism*. The TalkOrigins Archive. www.talkorigins.org/faqs/information/shannon.html
+
+Baocun, W., & Fei, L. (1995). *Information Warfare*. Federation of American Scientists Intelligence Resource Program. irp.fas.org/world/china/docs/iw_wang.htm
+
+Barbour, D. (2022, Dec. 6). *What Is FERPA Compliance?* Kiteworks. www.kiteworks.com/regulatory-compliance/ferpa-compliance/
+
+Bernadini, K. (2022, Nov. 9). *GDPR Requirements: Quick Guide on Principles & Rights*. GDPR. www.gdpreu.org/gdpr-requirements/
+
+Bratianu, C., & Bejinaru, R. (2023). From Knowledge to Wisdom: Looking Beyond the Knowledge Hierarchy. *Knowledge, 3*(2), 196-214. doi.org/10.3390/knowledge3020014
+
+Britannica, T. Editors of Encyclopaedia (2024, Nov. 23). *Septuagint*. Encyclopedia Britannica. www.britannica.com/topic/Septuagint
+
+Britannica, T. Editors of Encyclopaedia (2024, November 22). *Norbert Wiener*. Encyclopedia Britannica. www.britannica.com/biography/Norbert-Wiener
+
+Broden, M. (2020). *Managing Information Security for Mobile Devices in Small and Medium-Sized Enterprises* (Dissertation Series No. 32) [Doctoral dissertation, University of Skövde]. DiVA. 
+
+Burley, D. L., Bishop, M., Buck, S., Ekstrom, J. J., Futcher, L., Gibson, D., Hawthorne, E. K., Kaza, S., Levy, Y., Mattord, H., & Parrish, A. (2017, Dec. 31). *Cybersecurity Curricula 2017: Curriculum Guidelines for Post-secondary Degree Programs in Cybersecurity*. ACM, IEEE-CS, AIS SIGSEC, & IFIP WG 11.8. www.acm.org/binaries/content/assets/education/curricula-recommendations/csec2017.pdf
+
+Bushatz, A. (2023, Mar. 21). *What Is an Authorization for Use of Military Force (AUMF)?* Military.com. www.military.com/history/what-authorization-use-of-military-force-aumf.html
+
+Cains, M. G., Flora, L., Taber, D., King, Z., & Henshel, D. S. (2022). Defining Cyber Security and Cyber Security Risk Within a Multidisciplinary Context Using Expert Elicitation. *Risk Analysis, 42*(8), 1643-1669. doi.org/10.1111/risa.13687
+
+Chałubińska-Jentkiewicz, K., Radoniewicz, F., & Zieliński, T. (Ed.). (2022). *Cybersecurity in Poland: Legal Aspects*. Springer.
+
+Cherdantseva, Y., & Hilton, J. (2013). *Information Security and Information Assurance: Discussion About the Meaning, Scope, and Goals*. Organizational, Legal, and Technological Dimensions of IS Administrator. dx.doi.org/10.4018/978-1-4666-4526-4.ch010
+
+Cherry, K. (2022, Nov. 12). *How Groupthink Impacts Our Behavior*. Verywell Mind. www.verywellmind.com/what-is-groupthink-2795213.
+
+Chushing, T. (2015, Apr. 27). *NSA’s Stellar Wind Program Was Almost Completely Useless, Hidden From FISA Court by NSA and FBI*. Techdirt. www.techdirt.com/2015/04/27/nsas-stellar-wind-program-was-almost-completely-useless-hidden-fisa-court-nsa-fbi/
+
+CNSS. (2015, Apr. 6). *Committee on National Security Systems (CNSS) Glossary* (CNSSI-4009). rmf.org/wp-content/uploads/2017/10/CNSSI-4009.pdf
+
+Coe, T. (2015, Mar. 28). *Where Does the Word Cyber Come From?* OUPBlog. blog.oup.com/2015/03/cyber-word-origins/
+
+Commission Implementing Regulation (EU), Art. 2, Publ. L. No. 151. (2018). www.legislation.gov.uk/eur/2018/151/article/2
+
+*Computing Disciplines & Majors*. (2024, Nov. 26). ACM. www.acm.org/binaries/content/assets/education/computing-disciplines.pdf.
+
+Crews, C. W. (2023, Nov. 29). *Chapter 5: Page Counts and Numbers of Rules in the Federal Register*. Competitive Enterprise Institute. cei.org/publication/chapter-5-10kc-2023/
+
+Cristello, B. (2023, May 23). *A Brief History of Cybersecurity*. LinkedIn. www.linkedin.com/pulse/brief-history-cybersecurity-robert-cristello/
+
+*Curricula Recommendations*. (2024, Nov. 26). ACM. www.acm.org/education/curricula-recommendations
+
+*Cybercrime - Prosecution Guidance*. (2024, Jul. 15). CPS. www.cps.gov.uk/legal-guidance/cybercrime-prosecution-guidance
+
+*Cyber security, Cybersecurity*. (2024, Nov. 26). Google Books Ngram Viewer. books.google.com/ngrams/graph?content=cyber+security%2Ccybersecurity&year_start=1800&year_end=2022&corpus=en&smoothing=0&case_insensitive=true
+
+Government Digital Service. (2015, Sep. 16). *Data Protection*. Gov.UK. www.gov.uk/data-protection
+
+Dawkins, J. (2022, Jul. 7). *What’s in a Name? The Origin of Cyber*. CISO Global. www.ciso.inc/blog-posts/origin-cyber/
+
+[dcgold4143]. (2020, Apr. 26). *In Which I Rant About Werner Gitt and Information Theory Because Its Raining Out* [Online forum post]. Reddit. www.reddit.com/r/TalkHeathen/comments/g8hex8/in_which_i_rant_about_werner_gitt_and_information/
+
+Department for Science, Innovation & Technology. (2024, Jan. 23). *Cyber Governance Code of Practice: Call for Views*. Gov.UK. www.gov.uk/government/calls-for-evidence/cyber-governance-code-of-practice-call-for-views/cyber-governance-code-of-practice-call-for-views
+
+Desjardins, J. (2019, Aug. 8). *Mapped: The World’s Oldest Democracies*. World Economic Forum. www.weforum.org/agenda/2019/08/countries-are-the-worlds-oldest-democracies/
+
+Diwan, T. M. A., Hauswirth, M., & Sweeney, P. F. (2009). Producing Wrong Data Without Doing Anything Obviously Wrong! *ACM SIGPLAN Notices, 44*(3), 265-276. doi.org/10.1145/1508284.1508275
+
+Duarte, F. (2023, Dec. 13). *Amount of Data Created Daily* (2024). Exploding Topics. explodingtopics.com/blog/data-generated-per-day
+
+Esteves, F. (2016, Oct. 27). *I Have Nothing to Hide. Why Should I Care About My Privacy?* Medium. medium.com/@FabioAEsteves/i-have-nothing-to-hide-why-should-i-care-about-my-privacy-f488281b8f1d
+
+Federal Enterprise Data Resources. (2024, Dec. 12). *Glossary: Data vs. Information*. Resources.data.gov. resources.data.gov/glossary/data-vs.-information//
+
+*Federal Information Security Modernization Act (FISMA)*. (2024, Nov. 26). CyberGeek. security.cms.gov/learn/federal-information-security-modernization-act-fisma
+
+Ferenstein, G. (2014, Feb. 14). *How the World Butchered Benjamin Franklin’s Quote on Liberty vs. Security*. TechCrunch. techcrunch.com/2014/02/14/how-the-world-butchered-benjamin-franklins-quote-on-liberty-vs-security/
+
+*FERPA*. (2024, Nov. 27). U.S. Department of Education. studentprivacy.ed.gov/ferpa
+
+Fidler, B. (2017). Cybersecurity Governance: A Prehistory and Its Implications. *Digital Policy, Regulation and Governance, 19*(6), 449-465. doi.org/10.1108/DPRG-05-2017-0026
+
+*FISMA Compliance Defined: Requirements & Best Practices*. (2024, Nov. 26). Algosec. www.algosec.com/resources/fisma-compliance
+
+45 C.F.R. § 164 (2024). www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164
+
+Franklin, B. (1840). *Memoirs of Benjamin Franklin* (W. Duane, Ed., Vol. 2). M’Carty & Davis.
+
+Frenzel, E. H., & McAndrew, I. (2023, Jan. 3). Component Security vs. Cybersecurity: Defining Next Generation Cybersecurity. *International Journal of Applied Technology & Leadership, 2*(1). www.ijatl.org/papers/volume-2/issue-1/component-security-vs-cybersecurity-defining-next-generation-cybersecurity/
+
+Friedman, L. M., & Hayden, G. M. (2017). Law: Formal and Informal. *American Law: An Introduction, 3*. doi.org/10.1093/acprof:oso/9780190460587.003.0002
+
+*FTC Safeguards Rule: What Your Business Needs to Know*. (2022, May). Federal Trade Commission. www.ftc.gov/business-guidance/resources/ftc-safeguards-rule-what-your-business-needs-know
+
+Gartner. (n.d.). Cybersecurity. In *Gartner Glossary*. Retrieved Nov. 26, 2024, from www.gartner.com/en/information-technology/glossary/cybersecurity
+
+*GDPR Checklist for Data Controllers*. (2022, May 26). GDPR.EU. gdpr.eu/checklist
+
+Giles, K., & Hagestad, W., II. (2013, Jun. 4-7). Divided by a Common Language: Cyber Definitions in Chinese, Russian and English. *2013 5th International Conference on Cyber Conflict (CYCON 2013)*, 1-17. ieeexplore.ieee.org/document/6568390
+
+Gitt, W. (1996). Information, Science and Biology. *Journal of Creation, 10*(2), 181-187. creation.com/information-science-and-biology
+
+Godwin, J. B., III, Kulpin, A., Rauscher, K. F., & Yaschenko, V. (Ed.). (2014). *The Russia-U.S. Bilateral on Cybersecurity: Critical Terminology Foundations*. EastWest Institute and the Information Security Institute of Moscow State University. www.files.ethz.ch/isn/178418/terminology2.pdf
+
+Goguen, J. A. (1998). Towards a Social, Ethical Theory of Information. *Social Science Research, Technical Systems and Cooperative Work: Beyond the Great Divide*, 27-56. www.taylorfrancis.com/chapters/edit/10.4324/9781315805849-3/toward-social-ethical-theory-information-joseph-goguen
+
+Goldberg, R. (2016, May 13). *Lack of Trust in Internet Privacy and Security May Deter Economic and Other Online Activities*. National Telecommunications and Information Administration. www.ntia.gov/blog/2016/lack-trust-internet-privacy-and-security-may-deter-economic-and-other-online-activities
+
+GovTrack.us. (2014, May 28). *Are Bills Getting Longer?* GovTrack.us Site News. govtracknews.wordpress.com/2014/05/28/are-bills-getting-longer/
+
+Grace, G. (2023, Jun. 18). *NSA Bumblehive*. WorldsTopDataCenters.com. worldstopdatacenters.com/nsa-bumblehive/
+
+Greenberg, A. (2013, Jun. 20). *Leaked NSA Doc Says It Can Collect and Keep Your Encrypted Data as Long as It Takes to Crack It*. Forbes. www.forbes.com/sites/andygreenberg/2013/06/20/leaked-nsa-doc-says-it-can-collect-and-keep-your-encrypted-data-as-long-as-it-takes-to-crack-it/
+
+Grünwald, P. D., & Vitányi, P. M. B. (2008). Algorithmic Information Theory. *arXiv*. doi.org/10.48550/arXiv.0809.2754
+
+Hill, K. (2012, Feb. 16). *How Target Figured Out a Teen Girl Was Pregnant Before Her Father Did*. Forbes. www.forbes.com/sites/kashmirhill/2012/02/16/how-target-figured-out-a-teen-girl-was-pregnant-before-her-father-did/
+
+Holmin, V. (2023, Dec. 13). *Telecoms Security Act 2021: The Journey to Compliance*. World Wide Technology. www.wwt.com/blog/telecoms-security-act-2021-the-journey-to-compliance
+
+Howell, C. (2021, Jan. 18). *I Used to Wiretap. This Is Why Encryption Backdoors Are Dangerous*. Fortune. fortune.com/2021/01/18/encryption-backdoor-data-privacy-security-law/
+
+*How to Comply With the Privacy of Consumer Financial Information Rule of the Gramm-Leach-Bliley Act*. (2002, Jul.). Federal Trade Commission. www.ftc.gov/business-guidance/resources/how-comply-privacy-consumer-financial-information-rule-gramm-leach-bliley-act
+
+Hridoy, M. A. M. (2023, Feb. 17). *Difference Between Laws, Regulations, Acts, Guidance & Policies*. One Education. www.oneeducation.org.uk/difference-between-laws-regulations-acts-guidance-policies/
+
+Hulme, G. V. (2003, Mar. 4). *Update: Software Developer Fears Legal Tar Pit*. Information Week. www.informationweek.com/it-leadership/update-software-developer-fears-legal-tar-pit
+
+*IISP Information Security Skills Framework* (v6.3). (2010. Jul.). Institute of Information Security Professionals (IISP). apmg-international.com/sites/default/files/documents/products/iisp_skills_framework_v1_0.pdf
+
+*Information Security and ISO27001: An Introduction*. (2006). IT Governance, Ltd. www.itgovernance.co.uk/files/Infosec 101v1.1.pdf
+
+International Organization for Standardization. (2023). *Cybersecurity: Guidelines for Internet Security* (ISO/IEC No. 27032). www.iso.org/obp/ui/#iso:std:iso-iec:27032:ed-2:v1:en
+
+The Investopedia Team. (2024, Oct. 6). *Keynesian Economics: Theory and How It’s Used*. Investopedia. www.investopedia.com/terms/k/keynesianeconomics.asp
+
+*Is It Cybersecurity or Cyber Security? How Do You Spell It?* (2024, Nov. 26). Lake Ridge. www.lakeridge.io/is-it-cybersecurity-or-cyber-security-how-do-you-spell-it
+
+*ISO 27002:2022, Control 7.2: Physical Entry*. (2022, Jun. 13). ISMS.online. www.isms.online/iso-27002/control-7-2-physical-entry/
+
+IT Governance Europe. (2024, Sep. 30). *Summary of 10 Key GDPR Requirements*. IT Governance. www.itgovernance.eu/blog/en/summary-of-the-gdprs-10-key-requirements
+
+ITU. (n.d.). Definition of Cybersecurity. In *ITU-T*. Retrieved Nov. 26, 2024, from www.itu.int/en/ITU-T/studygroups/com17/Pages/cybersecurity.aspx
+
+Jain, S. (2023, Jun. 5). *What Is Data vs. What Is Information*. Bloomfire. bloomfire.com/blog/data-vs-information/
+
+Jansen, B. J., Salminen, J., Jung, S., & Almerekhi, H. (2022). The Illusion of Data Validity: Why Numbers About People Are Likely Wrong. *Data and Information Management, 6*(4). doi.org/10.1016/j.dim.2022.100020
+
+Jurvanen, L. (2023, Dec. 29). *What Does Technical Information Security Mean?* Save LAN Oy. www.savelan.fi/en/what-technical-security-means
+
+Kosseff, J. (2018). Defining Cybersecurity Law. *HeinOnline, 103*(985), 985-1031. heinonline.org/HOL/LandingPage?handle=hein.journals/ilr103&div=30&id=&page=
+
+Krahmann, E. (2005). Security Governance and Networks: New Theoretical Perspectives in Transatlantic Security. *Cambridge Review of International Affairs, 18*(1), 15-30. doi.org/10.1080/09557570500059514
+
+*Law and Policy*. (2024, Nov. 26). Administration for Strategic Preparedness & Response. aspr.hhs.gov/S3/Pages/Law-and-Policy.aspx
+
+*Lockpicking Laws in the United States*. (2024, Nov. 26). TOOOL. toool.us/lockpicking-laws/
+
+Lucid Content. (2024, Nov. 26). *The 4 Phases of the Project Management Life Cycle*. Lucidchart. www.lucidchart.com/blog/the-4-phases-of-the-project-management-life-cycle
+
+Kim, S., Lee, D., Lubin, A., & Perlin, P. (2018, Apr. 25). *Newly Disclosed Documents on the Five Eyes Alliance and What They Tell Us About Intelligence-Sharing Agreements*. Yale Law School. law.yale.edu/mfia/case-disclosed/newly-disclosed-documents-five-eyes-alliance-and-what-they-tell-us-about-intelligence-sharing
+
+Kirk, M. (Director). (2014, May 13). *United States of Secrets (Part One): The Program* [Film]. WBGH Educational Foundation.
+
+Laperruque, J. (2021, Sep. 7). *Secrets, Surveillance, and Scandals: The War on Terror’s Unending Impact on Americans’ Private Lives*. POGO. www.pogo.org/analysis/secrets-surveillance-and-scandals-the-war-on-terrors-unending-impact-on-americans-private-lives
+
+Maconachy, W. V., Schou, C. D., Ragsdale, D., & Welch, D. (2001, Jun. 5-6). A Model for Information Assurance: An Integrated Approach. *Proceedings of the 2001 IEEE Workshop on Information Assurance and Security*, 306-310. www.researchgate.net/publication/235470635_A_Model_for_Information_AssuranceAn_Integrated_Approach
+
+Margulies, P. (2017). Global Cybersecurity, Surveillance, and Privacy: The Obama Administration’s Conflicted Legacy. *Roger Williams University Legal Studies Paper, 173*. papers.ssrn.com/sol3/papers.cfm?abstract_id=2902212
+
+Martinez, J. (2024, Oct. 29). *SOX Compliance: 2024 Complete Guide*. StrongDM. www.strongdm.com/sox-compliance
+
+Massey, R., Machin, E., & Bond, R. (2024, Jun. 11). *Cybersecurity Laws and Regulations England & Wales 2025*. ICLG. iclg.com/practice-areas/cybersecurity-laws-and-regulations/england-and-wales
+
+McKinney, R. J. (2020, May 2). *An Overview of the Congressional Record and Its Predecessor Publications: A Research Guide*. Law Librarians’ Society of Washington, DC. www.llsdc.org/congressional-record-overview
+
+McLean, M. (2024, Oct. 10). *Cyberattack Statistics 2024*. Embroker. www.embroker.com/blog/cyber-attack-statistics/
+
+McNeal, A. C. (2024, Nov. 26). *Information Assurance: Structure From the Fog*. Air University. www.airuniversity.af.edu/Portals/10/ASPJ/journals/Chronicles/McNeal.pdf
+
+McStay, A. (2017). *Privacy and the Media*. SAGE.
+
+Mendelow, A. L. (1981). Environmental Scanning: The Impact of the Stakeholder Concept. *International Conference on Interaction Sciences*.
+
+Merriam-Webster. (n.d.). Cybersecurity. In *Merriam-Webster.com dictionary*. Retrieved Nov. 26, 2024, from www.merriam-webster.com/dictionary/cybersecurity
+
+Messe, N. Z. (2021). *Security by Design: An Asset-Based Approach to Bridge the Gap Between Architects and Security Experts* (2021LORIS585) [Doctoral dissertation, Université de Bretagne Sud]. HAL Theses. 
+
+Monticello. *Knowledge Is Power (Quotation)*. www.monticello.org/research-education/thomas-jefferson-encyclopedia/knowledge-power-quotation/
+
+Moore, I. N., Snyder, S. L., Miller, C., & An, A. Q. (2007). Confidentiality and Privacy in Health Care From the Patient’s Perspective: Does HIPAA Help. *Health Matrix: The Journal of Law-Medicine, 17*(2), 215-272. scholarlycommons.law.case.edu/healthmatrix/vol17/iss2/3
+
+Moses, L. B. (2013). How to Think About Law, Regulation and Technology: Problems With ‘Technology’ as a Regulatory Target. *Law, Innovation and Technology, 5*(1), 1-20. doi.org/10.5235/17579961.5.1.1
+
+Mueller, J., & Stewart, M. G. (2018, Oct. 29). Terrorism and Bathtubs: Comparing and Assessing the Risks. *Terrorism and Political Violence, 33*(1), 138-163. doi.org/10.1080/09546553.2018.1530662
+
+Mujović, V. (2021, Sep. 22). *When Did the Internet Start: History of Cyber Security*. Le VPN. www.le-vpn.com/internet-privacy-cyber-security
+
+Munro, A. (2013, Mar. 6). *State Monopoly on Violence*. Encyclopedia Britannica. www.britannica.com/topic/state-monopoly-on-violence
+
+Nath, S. (2024, Oct. 10). *PCI DSS Fines: How Much Will It Cost?* Sprinto. sprinto.com/blog/pci-dss-fines/
+
+National Bureau of Standards. (1976, Feb. 15). *Glossary for Computer Systems Security* (FIPS Pub. 39). nvlpubs.nist.gov/nistpubs/Legacy/FIPS/fipspub39.pdf
+
+National Institute of Standards and Technology. (2018, Apr. 16). *Framework for Improving Critical Infrastructure Cybersecurity* (ver. 1.1). nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.04162018.pdf
+
+National Institute of Standards and Technology. (2006, Mar. 9). *Minimum Security Requirements for Federal Information and Information Systems* (FIPS Pub. 200). nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.200.pdf
+
+Naylon, J. (2023, Aug. 30). *Considerations on the UK Telecommunications (Security) Act*. AWS. d1.awsstatic.com/whitepapers/compliance/Considerations_on_the_UK_Telecommunications_Security_Act.pdf
+
+Newitz, A. (2013, Sep. 16). *The Bizarre Evolution of the Word “Cyber”*. Gizmodo. gizmodo.com/today-cyber-means-war-but-back-in-the-1990s-it-mean-1325671487
+
+Nissenbaum, H. (2004). Privacy as Contextual Integrity. *Washington Law Review, 79*, 119-158. digitalcommons.law.uw.edu/wlr/vol79/iss1/10/
+
+The NIST Cybersecurity Framework (CSF) 2.0. (2024, Feb. 26). *National Institute of Standards and Technology*. doi.org/10.6028/NIST.CSWP.29
+
+Office for Civil Rights. (2008, Nov. 25). *Does the HIPAA Privacy Rule Apply to an Elementary or Secondary School?* U.S. Department of Health and Human Services. www.hhs.gov/hipaa/for-professionals/faq/513/does-hipaa-apply-to-an-elementary-school/index.html
+
+Office for Civil Rights. (2008, Nov. 25). *Does FERPA or HIPAA Apply to Elementary or Secondary School Student Health Records Maintained by a Health Care Provider That Is Not Employed by a School?* U.S. Department of Health and Human Services. www.hhs.gov/hipaa/for-professionals/faq/514/does-hipaa-apply-to-school-student-health-records/index.html
+
+Office for Civil Rights. (2022, Oct. 19). *Summary of the HIPAA Security Rule*. U.S. Department of Health and Human Services. www.hhs.gov/hipaa/for-professionals/security/laws-regulations/index.html
+
+Office of the Director of National Intelligence. (2015, Sep. 18). *Statistical Report to the Senate Select Committee on Intelligence*. www.dni.gov/files/documents/921/PSPvolIIIJ.pdf
+
+Ottis, R., & Lorents, P. (2012, Jan.). *Cyberspace: Definition and Implications*. Dumitru Dumbrava WordPress. dumitrudumbrava.wordpress.com/wp-content/uploads/2012/01/cyberspace-definition-and-implications.pdf
+
+*An Overview of the Data Protection Act 2018* (ver. 2). (2019). ICO. ico.org.uk/media/2614158/ico-introduction-to-the-data-protection-bill.pdf
+
+Parrish, A., Impagliazzo, J., Raj, R. K., Santos, H., Asghar, M. R., Jøsang, A., Pereira, T., & Stavrou, E. (2018, Jul. 2). Global Perspectives on Cybersecurity Education for 2030: A Case for a Meta-Discipline. *ITiCSE 2018 Companion: Proceedings Companion of the 23rd Annual ACM Conference on Innovation and Technology in Computer Science Education*, 36-54. doi.org/10.1145/3293881.3295778
+
+*Partnering for Cyber Resilience*. (2012). World Economic Forum. www3.weforum.org/docs/WEF_IT_PartneringCyberResilience_Guidelines_2012.pdf
+
+*PCI DSS Quick Reference Guide: Understanding the Payment Card Industry Data Security Standard* (ver. 3.2.1). (2018, Jul.). PCI SSC. listings.pcisecuritystandards.org/documents/PCI_DSS-QRG-v3_2_1.pdf
+
+*PECR: Everything You Need to Know*. (2024, Nov. 26). Iubenda. www.iubenda.com/en/help/112127-pecr-everything-you-need-to-know
+
+Peterson, J. J., & Veit, S. A. (1971, Sep. 1). *Survey of Computer Networks*. The MITRE Corporation. nsarchive.gwu.edu/document/22654-document-02-jack-j-peterson-and-sandra-veit
+
+Poulsen, K. (2003, Apr. 14). *‘Super-DMCA’ Fears Suppress Security Research*. The Register. www.theregister.com/2003/04/14/superdmca_fears_suppress_security_research/
+
+Prajapati, A. (2024, Apr. 4). *What Are the 12 Requirements of PCI DSS Compliance?* ControlCase. www.controlcase.com/what-are-the-12-requirements-of-pci-dss-compliance/
+
+PrivacyPolicies.com Legal Writing Team. (2023, Jun. 7). *A Guide to the Data Protection Act 2018*. PrivacyPolicies. www.privacypolicies.com/blog/dpa-2018/
+
+Puryear, S. (2023, Oct. 1). *Here Is Just One of the Reasons Why We Still Call Claude Shannon a Frigging Genius*. LinkedIn. www.linkedin.com/pulse/here-just-one-reasons-why-we-still-call-claude-shannon-puryear/
+
+Qadir, S., & Quadri, S. M. K. (2016, Apr. 15). Information Availability: An Insight Into the Most Important Attribute of Information Security. *Journal of Information Security, 7*(3), 185-194. doi.org/10.4236/jis.2016.73014
+
+Qureshi, A. (2024, Jun. 13). *FERPA Compliance & Requirements [Checklist Included!]*. Intradyn. www.intradyn.com/ferpa-compliance/
+
+Rainie, L., & Anderson, J. (2017, Aug. 10). *The Fate of Online Trust in the Next Decade*. Pew Research Center. www.pewresearch.org/internet/2017/08/10/the-fate-of-online-trust-in-the-next-decade/
+
+Ramirez, R., & Choucri, N. (2016, Mar.). Improving Interdisciplinary Communication With Standardized Cyber Security Terminology: A Literature Review. *IEEE Access, 4*(1). doi.org/10.1109/ACCESS.2016.2544381
+
+Rasch, M. (2003, Apr. 15). *Super-DMCA Not So Bad*. The Register. www.theregister.com/2003/04/15/superdmca_not_so_bad
+
+RFSID. (2017, Mar. 8). *Threat Intelligence, Information, and Data: What Is the Difference?* Recorded Future. www.recordedfuture.com/blog/threat-intelligence-data
+
+Rightly. *What Do Data Brokers Know About You?* right.ly/request-your-data/how-can-i-get-my-data-from-data-brokers/
+
+Roberts, E. (2007, Aug.). *The Ethics (Or Not) of Massive Government Surveillance*. Computer Science Stanford Engineering. cs.stanford.edu/people/eroberts/cs181/projects/ethics-of-surveillance/tech_encryptionbackdoors.html
+
+Rock, M. Y. (2023). *State, Nation and Nation-State: Clarifying Misused Terminology*. Pennsylvania State University. www.e-education.psu.edu/geog128/node/534
+
+Rosenberg, A. (2009, Sep. 23). *Reading Every Word of Every Bill*. Government Executive. www.govexec.com/federal-news/2009/09/reading-every-word-of-every-bill/39321/
+
+Rosenberg, M. (2020, Jan. 27). *Differences Between a Country, State, and Nation*. ThoughtCo. www.thoughtco.com/country-state-and-nation-1433559
+
+Rout, D. (2015, Nov. 9). *Developing a Common Understanding of Cybersecurity*. ISACA. www.isaca.org/resources/isaca-journal/issues/2015/volume-6/developing-a-common-understanding-of-cybersecurity
+
+[Rusty Tuba]. (2014, Dec. 27). *Origin of “You Have Nothing to Fear if You Have Nothing to Hide”?* [Online forum post]. StackExchange. english.stackexchange.com/questions/217196/origin-of-you-have-nothing-to-fear-if-you-have-nothing-to-hide
+
+Saccenti, E. (2023). What Can Go Wrong When Observations Are Not Independently and Identically Distributed: A Cautionary Note on Calculating Correlations on Combined Data Sets From Different Experiments or Conditions. *Frontiers in Systems Biology, 3*. doi.org/10.3389/fsysb.2023.1042156
+
+Sample, C., Loo, S. M., Justice, C., Taylor, E., & Hampton, C. (2020, Jun.). Cyber-Informed: Bridging Cybersecurity and Other Disciplines. *Proceedings of the 19th European Conference on Cyber Warfare and Security, ECCWS 2020*, 334-341. doi.org/10.34190/EWS.20.092
+
+*The Sarbanes Oxley Act*. (2024, Nov. 26). Sarbanes Oxley Association. sarbanes-oxley-act.com
+
+Sardaryzadeh, A. (2023, Apr. 5). *Security Researchers Battle Against the DMCA*. The FinReg Blog. sites.duke.edu/thefinregblog/2023/04/05/security-researchers-battle-against-the-dmca/
+
+Schatz, D., Bashroush, R., & Wall, J. (2017). Towards a More Representative Definition of Cyber Security. *The Journal of Digital Forensics, Security and Law, 12*(2). doi.org/10.15394/jdfsl.2017.1476
+
+Schneider, V., & Hyner, D. (2006). Security in Cyberspace: Governance by Transnational Policy Networks. *New Modes of Governance in the Global System*, 154-176. doi.org/10.1057/9780230372887_7
+
+*Security of Services*. (2024, Nov. 19). ICO. ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/communications-networks-and-services/security-of-services
+
+*Security Requirements*. (2024, Nov. 19). ICO. ico.org.uk/for-organisations/the-guide-to-nis/security-requirements/
+
+Shea, S., & Gillis, A. S. (2024, Feb.). *Cybersecurity*. TechTarget. www.techtarget.com/searchsecurity/definition/cybersecurity
+
+Siegal, J. (2013, Feb. 6). *Shannon’s Definition of Information*. University of Missouri-St. Louis. www.umsl.edu/~siegelj/information_theory/information/shannonsdef.html
+
+Silvergate, H. (2011). *Three Felonies a Day: How the Feds Target the Innocent*. Encounter Books.
+
+Sjouwerman, S. (2019, Jan. 20). *How the NSA Killed Internet Security in 1978*. KnowBe4 Security Awareness Training Blog. blog.knowbe4.com/how-the-nsa-killed-internet-security-in-1978
+
+Skorev, M., Kirishchieva, I., & Zhigunova, A. (2021). Informal Methods and Means of Information Protection in Enterprise Information Security. *Proceedings of the International Scientific and Practical Conference on Computer and Information Security (INFSEC 2021), 1*, 22-28. doi.org/10.5220/0010616800003170
+
+Šlekytė, I. (2023, May 23). *Encryption Backdoors: Is Digital Privacy Taking a Step Backwards?* NordVPN. nordvpn.com/blog/are-encryption-backdoors-safe/
+
+Smeltzer, M., & Buyon, N. (2023, Jan. 13). *Nations in Transit 2022: From Democratic Decline to Authoritarian Aggression*. Freedom House. freedomhouse.org/report/nations-transit/2022/from-democratic-decline-to-authoritarian-aggression
+
+Smith, H. W., & Vella, S. (2023, Jan. 23). *UK Expands Scope of NIS Regulations*. ReedSmith. www.technologylawdispatch.com/2023/01/privacy-data-protection/uk-expands-scope-of-nis-regulations/
+
+Sobers, R. (2024, Sep. 13). *157 Cybersecurity Statistics and Trends [Updated 2024]*. Varonis. www.varonis.com/blog/cybersecurity-statistics
+
+The Socratic Method. (2023, Nov. 13). *Elizabeth I: ‘A Clear and Innocent Conscience Fears Nothing.’* www.socratic-method.com/quote-meanings/elizabeth-i-a-clear-and-innocent-conscience-fears-nothing
+
+Spencer, E. A., & Mahtani, K. (2017). *Hawthorne Effect*. Sackett Catalogue of Bias Collaboration. catalogofbias.org/biases/hawthorne-effect/
+
+Stern, A. [NBC News]. (2022, Jul. 21). *There’s Virtually Nothing You Can Do to Protect Your Online Privacy* [Video]. YouTube. youtu.be/vc7_TKN0kfw?si=ByOiB2GSPu8sQRwb
+
+St. John, M. (2024, Aug. 28). *Cybersecurity Stats: Facts and Figures You Should Know*. Forbes Advisor. www.forbes.com/advisor/education/it-and-tech/cybersecurity-statistics/
+
+Sualman, I., & Jaafar, R. (2011). Sense-Making Approach in Determining Information Seeking and Usage: Case Study in Health Communication. *Journal of Administrative Science, 8*(1), 1-15. jas.uitm.edu.my/images/2011_JUNE/5.pdf
+
+Suh, J. (2024). *Field Listing: Legal System*. CIA.gov. www.cia.gov/the-world-factbook/field/legal-system/
+
+Sumari, A. D. W., Syamsiana, I. N., Patma, T. S., Nuryatno, E. & Suradirapradja, S. (2021). *Bringing Military Intelligence to Business Intelligence Through Cognitive Artificial Intelligence*. ResearchGate. www.researchgate.net/publication/356891886_Bringing_Military_Intelligence_to_Business_Intelligence_through_Cognitive_Artificial_Intelligence
+
+Tan, T. C. C., Ruighaver, A. B., & Ahmad, A. (2010). Information Security Governance: When Compliance Becomes More Important Than Security. *IFIP Advances in Information and Communication Technology, 330*, 55-67. doi.org/10.1007/978-3-642-15257-3_6
+
+TechTarget Contributor. (2011, Mar.). *Digital Millennium Copyright Act (DMCA)*. TechTarget. www.techtarget.com/whatis/definition/Digital-Millennium-Copyright-Act-DMCA
+
+*Telecommunications Security Code of Practice*. (2022, Dec.). Department for Digital, Culture, Media & Sport. assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1120531/E02781980_Telecommunications_Security_CoP_Accessible.pdf
+
+*Third-Party Vendor Remote Access Best Practices*. (2022, Mar. 29). Imprivata. www.imprivata.com/blog/best-practices-third-party-vendor-access
+
+UKEssays. (2018, Nov.). *The Roots of Cybernetic Theory Philosophy Essay*. UKEssays.com. www.ukessays.com/essays/philosophy/the-roots-of-cybernetic-theory-philosophy-essay.php
+
+van Otterloo, S. (2021, Dec. 17). *ISO 27002:2022 Explained: Physical Controls*. ICT Institute. ictinstitute.nl/iso270022022-explained-physical-controls/
+
+[Viv1]. (2023, Sep. 12). *Cybersecurity and Data Protection: Obligations for Companies Under the Companies Act 2006*. Leading. www.leading.uk.com/cybersecurity-and-data-protection-obligations-for-companies-under-the-companies-act-2006/
+
+Wamala, F. (2011, Sep.). *ITU National Cybersecurity Strategy Guide*. International Telecommunication Union. www.itu.int/ITU-D/cyb/cybersecurity/docs/itu-national-cybersecurity-guide.pdf
+
+Ware, W. H. (1979). *Security Controls for Computer Systems: Report of Defense Science Board Task Force on Computer Security*. RAND Corporation. www.rand.org/pubs/reports/R609-1.html
+
+Weigle, K. (2018). How the Digital Millennium Copyright Act Affects Cybersecurity. *Intellectual Property Brief, 9*(1). digitalcommons.wcl.american.edu/ipbrief/vol9/iss1/1/
+
+Weiss, M., & Jankauskas, V. (2018, Oct. 2). Securing Cyberspace: How States Design Governance Arrangements. *Governance: An International Journal of Policy, Administration, and Institutions, 32*(2), 259-275. doi.org/10.1111/gove.12368
+
+Wex Definitions Team. (2023, Jul.). *Legal Systems*. Legal Information Institute Cornell Law School. www.law.cornell.edu/wex/legal_systems
+
+*What Is Cyber Security?* (2024, Nov. 26). Check Point. www.checkpoint.com/cyber-hub/cyber-security/what-is-cybersecurity/
+
+*What Is Cybersecurity?* (2021, Feb. 1). CISA. www.cisa.gov/news-events/news/what-cybersecurity
+
+*What Is GLBA Compliance? (Understand Requirements)*. (2021, Jul. 6). Fortra. www.digitalguardian.com/blog/what-glba-compliance-understanding-data-protection-requirements-gramm-leach-bliley-act
+
+*What Is SOX (Sarbanes-Oxley Act) Compliance?* (2023, Oct. 19). IBM. www.ibm.com/topics/sox-compliance
+
+Whitman, M. E., & Mattord, H. J. (2019). *Management of Information Security*. Cengage Learning, Inc.
+
+Winkler, J. R., O’Shea, C. J., & Stokrp, M. C. (1996). Information Warfare , INFOSEC , and Dynamic Information Defense. *Proceedings of the 19th National Information Systems Security Conference*. www.academia.edu/77450556/Information_Warfare_INFOSEC_and_Dynamic_Information_Defense_
+
+Wood, D. (2009, Aug.). *Chapter 34: The 60/60 Rule*. O’Reilly. www.oreilly.com/library/view/97-things-every/9780596805425/ch34.html
+
+Yermak, K. (2023, Jun. 12). *The UK Telecoms (Security) Act 2021: Implementation Challenges for the Industry*. EPAM. www.epam.com/insights/blogs/the-uk-telecoms-security-act-2021-implementation-challenges-for-the-industry
+
+## Chapter 7: Appendices
+
+### 13. Appendix A: Glossary of Acronyms
+
+* ACM - ==A==ssociation of ==C==omputing ==M==achinery
+* AD - ==A==ardvark==d==yne; fictional company used in this paper’s case study
+* AIS SIGSEC - ==A==ssociation for ==I==nformation ==S==ystems ==S==pecial ==I==nterest ==G==roup on Information ==Sec==urity and Privacy
+* AU - ==A==cme ==U==niversity; fictional university used in this paper’s case study
+* BS - ==B==ritish ==S==tandard as developed by the British Standards Institution
+* CALEA - ==C==ommunications ==A==ssistance for ==L==aw ==E==nforcement ==A==ct of 1994; US law
+* CA 2006 - ==C==ompanies ==A==ct of 2006; UK law
+* CE - ==C==omputer ==E==ngineering
+* CE CLSEC - ==C==omputer ==E==ngineering ==C==omponent-==l==evel ==sec==urity
+* CIA Triad - triad of ==C==onfidentially, ==I==ntegrity, ==A==vailability
+* CIDR - ==C==lassless ==I==nter-==D==omain ==R==outing
+* CLSEC - ==C==omponent-==l==evel ==sec==urity
+* CS - ==C==omputer ==S==cience
+* CS CLSEC - ==C==omputer ==S==cience ==C==omponent-==l==evel ==sec==urity
+* CTI - ==C==yber ==T==hreat ==I==ntelligence
+* Cybersecurity - Cybersecurity encompasses the laws, policies, standards, guidelines, practices, processes, actions, trainings, technologies, tools, safeguards, and controls continuously implemented and maintained in accordance with quantifiable probabilities to maximize resource usage in a cost-limited environment. Cybersecurity seeks to mitigate the impact of potential risks from known, unknown, technical, physical, and social vulnerabilities related to the confidentiality, integrity, availability, authenticity, and non-repudiability of the wider socio-technical system and cyberspace environment to increase overall resiliency when faced with intentional and unintentional threats without compromising the system’s efficiency, effectiveness, and/or profitability.
+    * Summarized Definition: Cybersecurity encompasses the measures implemented and maintained to mitigate all potential risks within a cost-limited environment to the confidentiality, integrity, availability, authenticity, and non-repudiability of the wider socio-technical system and cyberspace environment without compromising the system’s usability, efficiency, effectiveness, and/or profitability.
+* DAAN - ==D==isclosures, ==A==ccess, ==A==nd ==N==otification legal requirements
+* DIKW - ==D==ata, ==I==nformation, ==K==nowledge, ==W==isdom
+* DMCA - ==D==igital ==M==illennium ==C==opyright ==A==ct of 1998; US law
+* DMZ - ==D==e==m==ilitarized ==Z==one
+* DoD - ==D==epartment ==o==f ==D==efense; US agency
+* DPA 2018 - ==D==ata ==P==rotection ==A==ct of 2018; UK law
+* DS - ==D==ata ==S==cience
+* DS CLSEC - ==D==ata ==S==cience ==C==omponent-==l==evel ==sec==urity
+* EU - ==E==uropean ==U==nion
+* FERPA - ==F==amily ==E==ducational ==R==ights and ==P==rivacy ==A==ct of 1974 and all relevant revisions; US law
+* FISMA - ==F==ederal ==I==nformation ==S==ecurity ==M==odernization ==A==ct of 2002 and all relevant revisions; US law
+* GDPR - ==G==eneral ==D==ata ==P==rotection ==R==egulation and all relevant revisions; EU law
+* GLBA - ==G==ramm-==L==each-==B==liley ==A==ct of 1999 and all relevant revisions; US law
+* HIPAA - ==H==ealth ==I==nsurance ==P==ortability and ==A==ccountability ==A==ct of 1996 and all relevant revisions, such as HITECH; US law
+* IA - ==I==nformation ==A==ssurance
+* IAAA - ==I==dentification, ==A==uthentication, ==A==uthorization, and ==A==ccountability legal requirements
+* IAM - ==I==dentity & ==A==ccess ==M==anagement
+* ID - ==I==nformation ==D==efense
+* IDPS - ==I==ntrusion ==D==etection/==P==revention ==S==ystem
+* IDS - ==I==ntrusion ==D==etection ==S==ystem
+* IEEE/IEEE-CS - ==I==nstitute of ==E==lectrical and ==E==lectronics ==E==ngineers ==C==omputer ==S==ociety
+* IFIP WG 11.8 - ==I==nternational ==F==ederation for ==I==nformation ==P==rocessing Technical Committee (==W==orking ===G==roup) on Information Security Education
+* IISP - ==I==nstitute of ==I==nformation ==S==ecurity ==P==rofessionals
+* Information Security - the protection of information assets to ensure confidentiality, integrity, and availability by combining technical and administrative security controls
+* IS - ==I==nformation ==S==ystems
+* IS CLSEC - ==I==nformation ==S==ystems ==C==omponent-==l==evel ==sec==urity
+* ISEC - ==I==nformation ==Sec==urity legal requirements
+* ISO - ==I==nternational ==O==rganization for ==S==tandardization
+* ISP - ==I==nternet ==s==ervice ==p==rovider
+* IT - ==I==nformation ==T==echnology
+* IT CLSEC - ==I==nformation ==T==echnology ==C==omponent-==l==evel ==sec==urity
+* LMKR - ==L==aw==m==a==k==e==r== concerns
+* MDM - ==M==obile ==D==evice ==M==anagement
+* MFA - ==M==ulti==f==actor ==a==uthentication
+* Mgmt. - ==M==ana==g==e==m==en==t==
+* NAC - ==N==etwork ==A==ccess ==C==ontrol
+* NAS - ==N==etwork ==A==ccess ==S==erver
+* NGFW - ==N==ext-==g==eneration ==F==ire==w==all
+* NIS Regulations 2018 - ==N==etwork and ==I==nformation ==S==ystems Regulations of 2018; UK law
+* NIST - ==N==ational ==I==nstitute of ==S==tandards and ==T==echnology
+* NIST CSF - ==N==ational ==I==nstitute of ==S==tandards and ==T==echnology ==C==yber==s==ecurity ==F==ramework
+* PCI ASV - ==P==ayment ==C==ard ==I==ndustry ==A==pproved ==S==canning ==V==endor
+* PCI DSS - ==P==ayment ==C==ard ==I==ndustry ==D==ata ==S==ecurity ==S==tandards
+* PCI SSC - ==P==ayment ==C==ard ==I==ndustry ==S==ecurity ==S==tandards ==C==ouncil
+* PECR 2003 - ==P==rivacy and ==E==lectronic ==C==ommunications (EC Directive) ==R==egulations of 2003; UK law
+* PMLC - ==P==roject ==M==anagement ==L==ife==c==ycle; consists of 4 phases: initiation, planning, execution & control, and closure
+* PSEC - ==P==ersonnel ==Sec==urity legal requirements
+* RADIUS - ==R==emote ==A==uthentication ==D==ial-==i==n ==U==ser ==S==ervice
+* RBAC - ==R==ole-==b==ased ==A==ccess ==C==ontrol
+* RMGT - ==R==isk ==M==ana==g==e==m==en==t== legal requirements
+* RQ - ==R==esearch ==Q==uestion
+* SDLC - ==S==oftware ==D==evelopment ==L==ife==c==ycle; consists of 5 phases: requirements, design, implementation, testing, and maintenance
+* SE - ==S==oftware ==E==ngineering
+* SECA - ==Sec==urity ==A==ssessment legal requirements
+* SEC CLSEC - ==S==oftware ==E==ngineering ==C==omponent-==l==evel ==sec==urity
+* SETA - ==S==ecurity ==E==ducation, ==T==raining, and ==A==wareness
+* SIEM - ==S==ecurity ==I==nformation and ==E==vent ==M==anagement tool
+* SOAR - ==S==ecurity ==O==rchestration, ==A==utomation, and ==R==esponse tools
+* SOX Act - ==S==arbanes-==O==xley ==A==ct of 2002 and all relevant revisions; US law
+* SSID - ==S==ervice ==S==et ==Id==entifier
+* Super-DMCA - colloquial term for more extreme versions of the federal DMCA law instituted by individual states; US state-level law
+* TLS/SSL VPN - ==T==ransport ==L==ayer ==S==ecurity/==S==ecure ==S==ockets ==L==ayer VPN
+* TOTP - ==T==ime-based ==O==ne-==t==ime ==P==asswords
+* TSA 2021 - ==T==elecommunications (==S==ecurity) ==A==ct of 2021; UK law
+* UK - ==U==nited ==K==ingdom of Great Britain and Northern Ireland
+* US/USA - ==U==nited ==S==tates of ==A==merica
+* USD - ==U==nited ==S==tates ==d==ollar
+* VDI - ==V==irtual ==D==esktop ==I==nfrastructure
+* VLAN - ==V==irtual ==L==ocal ==A==rea ==N==etwork
+* VoIP - ==V==oice ==o==ver ==I==nternet ==P==rotocol
+* VPAM - ==V==endor ==P==rivileged ==A==ccess ==M==anagement
+* VPN - ==V==irtual ==P==rivate ==N==etwork
+* WAN - ==W==ide ==A==rea ==N==etwork
+* WAP - ==W==ireless ==A==ccess ==P==oint
+* WCS - ==W==hatchaMaCallIt ==C==leaning ==S==ervices; fictional company used in this paper’s case study
+
+`
