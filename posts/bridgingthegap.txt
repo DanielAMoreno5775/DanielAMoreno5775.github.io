@@ -445,7 +445,7 @@ The first approach failed to address the overarching concerns held by lawmakers 
 | -- | ----------------- | ------------------ |
 | LMKR-1 | Companies need to know what items are on-premises and in their supply chain, along with any risks created by those items and how to handle those risks | RMGT-1, RMGT-2, RMGT-3, RMGT-4, RMGT-5 |
 | LMKR-2 | Companies need to transfer all functions necessary to operate and maintain all relevant services into a given country should international bearers fail or be blocked for diplomatic reasons | RMGT-6 |
-| LMKR-3 | Companies need to ensure that only authenticated and authorized users have physical and logical access to information | IAAA-1, IAAA-2, IAAA-3, IAAA-5, IAAA-6, IAAA-8, PSEC-5, PSEC-7, ISEC-25 |
+| LMKR-3 | Companies need to ensure that only authenticated and authorized users have physical and logical access to information | IAAA-1, IAAA-2, IAAA-3, IAAA-4, IAAA-5, IAAA-6, IAAA-8, PSEC-5, PSEC-7, ISEC-25 |
 | LMKR-4 | Companies must maintain the confidentiality of client, employee, and business data | ISEC-1, ISEC-2, ISEC-3, ISEC-5, ISEC-8, ISEC-12, ISEC-13, ISEC-14, ISEC-16, ISEC-17, ISEC-18, ISEC-19, ISEC-20, ISEC-21, ISEC-22, ISEC-23, ISEC-24, ISEC-25, ISEC-26, PSEC-3 |
 | LMKR-5 | Companies must maintain the integrity of client, employee, and business data | ISEC-1, ISEC-2, ISEC-3, ISEC-6, ISEC-8, ISEC-9, ISEC-10, ISEC-11, ISEC-12, ISEC-13, ISEC-14, ISEC-16, ISEC-17, ISEC-19, ISEC-20, ISEC-21, ISEC-22, ISEC-23, ISEC-24, ISEC-25, ISEC-26 |
 | LMKR-6 | Companies must maintain the availability and accuracy of client, employee, and business data | ISEC-1, ISEC-8, ISEC-9, ISEC-11, ISEC-14, ISEC-17, SECA-7 |
