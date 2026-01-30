@@ -1,7 +1,7 @@
 nsacbc2025task1_text=`
 # Solving NSA CBC's Task 1
 ###### By Daniel Moreno
-###### CTF · _ min read · Jan 29, 2026
+###### CTF · 8 min read · Jan 29, 2026
 ---
 ![image alt >< 60](./assets/NSACodebreakerChallengeBadge.png)
  *Source: the badge for completing Task 1* 
