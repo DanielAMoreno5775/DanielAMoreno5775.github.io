@@ -178,6 +178,15 @@ img[alt$="60"] {
     margin: auto;
     float: none!important;
 }
+img[alt$="60-tall"] {
+    display: block;
+    min-width: 40%;
+    max-width: 60%;
+    max-height: 600px;
+    height: auto;
+    margin: auto;
+    float: none!important;
+}
 img[alt$="80"] {
     display: block;
     min-width: 50%;

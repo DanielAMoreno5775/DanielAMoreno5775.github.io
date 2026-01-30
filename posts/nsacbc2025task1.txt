@@ -1,0 +1,93 @@
+nsacbc2025task1_text=`
+# Solving NSA CBC's Task 1
+###### By Daniel Moreno
+###### CTF · _ min read · Jan 29, 2026
+---
+![image alt >< 60](./assets/NSACodebreakerChallengeBadge.png)
+ *Source: the badge for completing Task 1* 
+
+Greetings and permutations everyone. Since this is my first CTF writeup, I decided to begin with the first and relatively straightforward task of the NSA Codebreaker Challenge CTF. That being said, I still overcomplicated the problem.
+
+### The Challenge Description
+
+##### Task 1 - Getting Started - (Forensics)
+
+> You arrive on site and immediately get to work. The DAFIN-SOC team quickly briefs you on the situation. They have noticed numerous anomalous behaviors, such as; tools randomly failing tests and anti-virus flagging on seemingly clean workstations. They have narrowed in on one machine they would like NSA to thoroughly evaluate.
+> They have provided a zipped EXT2 image from this development machine. Help DAFIN-SOC perform a forensic analysis on this - looking for any suspicious artifacts.
+> 
+> Downloads: zipped EXT2 image (image.ext2.zip)
+> 
+> Prompt: Provide the SHA-1 hash of the suspicious artifact.
+
+### Initial Investigation
+
+Due to past CTFs, I was initially suspicious of the file, and I assumed that there would be more to it. As such, I began simply by confirming the file type.
+
+~~~
+ls -lh image.ext2
+-rwxrwx--- 1 root vboxsf 64M Sep 21 01:44 image.ext2
+~~~
+
+~~~
+file image.ext2
+image.ext2: Linux rev 1.0 ext2 filesystem data, UUID=d167a288-4f8e-599c-ae00-620ee5eb82a9 (large files)
+~~~
+
+~~~
+debugfs -R "ls -l" image.ext2
+~~~
+
+After unzipping the file and transferring it to my Kali box, these commands allowed me to verify that it was indeed an EXT2 filesystem and that it had the proper directory hierarchy. A cursory analysis revealed that only 7 folders had any contents which helped to narrow my search.
+
+### Overcomplicated Forensics Analysis
+While the filesystem looked fine, I still assumed that there would be hidden depths. As such, I chose not to mount the filesystem and instead decided to check for hidden and deleted files.
+
+~~~
+ls -d .*
+
+debugfs -R "lsdel" image.ext2
+~~~
+
+The ls command did not reveal anything relevant. Since the filesystem was not mounted, I knew that any recovered data would not be written to it. As such, I did not need to worry about accidentally overwriting some of the data I hoped to recover from mistyping an option for debugfs. With this particular configuration for debugfs, the command would list all deleted inodes and their metadata in a non-interactive mode. In the past, I have found that this is a faster approach than trying to recover any old deleted files and less prone to issues. After all, this command simply lists what has been deleted and makes it far clearer when it has not detected any such blocks, as opposed to when it simply fails.
+
+While, I did not detect any deleted inodes. I still thought that I was on the right track. As such, I tried using foremost and photorec. Foremost tries to recover files based on headers, footers, and internal data structures rather than exclusively looking at inodes. Similarly, photorec scans the partition and boot sectors along with checking for certain file headers. As such, I was hoping that one of these two tools would succeed where debugfs had failed.
+
+When they failed too, I used binwalk to scan the image. I was hoping to find embedded files, present and not deleted but hidden from even the ls command. The -B option simply found a bunch of irrelevant file signatures. I similarly failed to obtain results when I used -X and -Z to scan for compressed data along with -A to scan for executable opcodes. In most of these cases, I obtained a massive amount of irrelevant data, flooding my screen with hundreds of entries that did not reveal anything useful. As a note, these commands were executed against the image.ext2 file itself, with the exception of the ls command which was executed within the unpacked file system.
+
+### Searching for Anomalies
+
+After I failed to recover any deleted files, I decided to simply start looking for abnormalities. Since there wasn't a penalty for multiple tries, I submitted the hashes for a few libraries or binaries that felt *odd*. Some of them were slightly nonstandard while others seemed to be an unusual size. However, I quickly moved on from that approach.
+
+Next, I decided to look at why only 7 folders seemed to have any contents. Using a combination of ls -R -lahS and 7-zip, I looked at all of the biggest files. Interestingly, the .bash_history file within /root/ was over 138KB. This felt extremely strange to me and led me to take a closer look. Most of the file contained relatively standard machine and nginx setup commands, repeated mutiple times.
+
+![image alt >< 80-tall](./assets/nsacbc2025task1-bashhistory1.png)
+
+However, the curl command with a user passed as a parameter felt odd. As such, I used grep to find all of the curl commands which were targeting the same local address.
+
+![image alt >< 80-tall](./assets/nsacbc2025task1-bashhistory2.png)
+
+Most of the commands did not seem particularly interesting or abnormal. However, I noticed one curl command that retrieved a shell script and piped it directly into the shell, thereby executing the script without revealing its contents.
+
+### Finding the File
+
+This curl command gave me somewhere to look. As such, I opened up .bash_history and read the commands executed after the curl.
+
+![image alt >< 80-tall](./assets/nsacbc2025task1-bashhistory3.png)
+
+As you can see, a file was extracted from a tar archive, and its contents were copied to several places. File a replaced the /bin/console executable to turn it into a Trojan, and file b was placed in the startup directory to establish startup persistence. File c was placed in a folder meant for storing terminal capability data under a semi-random name (xezomncvws), likely meant as a payload or config file. Next, the extracted files were deleted. Then, the trojaned console was started in silent mode. Considering the use of ps and chmod along with multiple executions, the trojan initially lacked the permissions to be executed. Once this issue was corrected, the trojan was used to execute the config.
+
+![image alt >< 60-tall](./assets/nsacbc2025task1-bashhistory4.png)
+
+Almost 3,800 commands later, the attacker tried to clean up their changes by removing the new files. They successfully removed files a and b. However, they forgot the leading '/' when deleting file c. As such, it was the only suspicious artifact still on the system and was the only artifact that I could submit. All I needed to do was calculate the SHA-1 hash of the file with sha1sum.
+
+Before finishing, I was curious and decided to check the contents of this file. As you can see, the file defined 3 strange variables with the final one seeming related to the large number of nginx commands being executed. Regardless, this confirmed my earlier suspicion that it was meant as a config file.
+
+![image alt >< 60-tall](./assets/nsacbc2025task1-bashhistory5.png)
+
+### Solution
+
+**Artifact Path:** /etc/terminfo/s/xezomncvws
+
+**SHA-1 Hash:** 899ed8cf4127aa1afef5ceb9a649756f2e06585b
+
+`
