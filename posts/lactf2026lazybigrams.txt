@@ -1,0 +1,240 @@
+lactf2026lazybigrams_text=`
+# Solving LA CTF 2026's Lazy Bigrams
+###### By Daniel Moreno
+###### CTF · 11 min read · Feb 9, 2026
+---
+![image alt >< 60](./assets/lactf.png)
+ *Source: the logo for the LA CTF* 
+
+Greetings and permutations everyone. I participated in the LA CTF with Georgia Tech's GreyHat club. I solved 3 challenges: welcome/discord, web/the-trial, and crypto/lazy-bigrams. In addition, I worked on 4 other challenges, though I did not solve them: web/job-board, web/clawcha, crypto/not-so-lazy-trigrams, and web/bobles-and-narnes. Of the challenges I solved, I found lazy-bigrams the most interesting.
+
+### The Challenge Description
+
+##### crypto/lazy-bigrams by pstorm
+
+> Don't feel like writing a plaintext...
+> 
+> Flag is all lowercase.
+> 
+> Downloads: ct.txt, chall.py
+
+##### ct.txt
+
+~~~
+RXENUEJGAIYVKMHEAKDANXDAXMMCMCZARPJUDANXXBAKNKSICIEFYTHEAKFKJVEMXMJXPFQHVXCICOXJMUHEAKEARQXRKKDJGXQVDZJWABIXRPQVDZFWXKWPYIDJFKJVPKHACACOXJPKHACATDTDVXCIEARQXRKKUJCARXRSDHHUHYFKJVEMXMVJYIMOWTXKYWFKJVMUHEAKUJCARXQZUJUWQJKZEHFKHACAPCNRTGVXCITFMOSEDPLXUJTGPRZWEILNVXCIFKJVPKHACACOXJMUHEAKEARQXRKKDJGXQVDZTTDHHUHYEARQXRKKSZYUMLUJTGPRZWHSKKXKUJCARXZWHACAFKJVLXUJTGPRZWQVDZHYYVQZUJPKHACACOXJSRRPJUFKJVLXUJLXUJIOABIXRPQVDZTTDHHUHYFKJVEMXMJXPFQHTFMODANXDAXMJXPFQHTFMODANXVJYIMOKMHEAKEARQXRKKFPRIVXCIVXCIUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCIHUCDFKJFHACAUBCPTGTZPRZWUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCISEDPTGPRZWDANXDPLLJFFKHACAQVDZFBQJKZEHMIUJPGEMHUHACARXENHUCDFKIXPRZWQVDZHYYVQZUJPKHACAHUCDFKJFHACAUBCPTGTZPRZWTFMOUEJGQNJILXUJUGDHHUHYEARQXRKKSZYUMLUJTGPRZWHSKKXKUJCARXZWHACAFKJVLXUJQVSIKGJXPFQHVXCIFKJVTGPRZWDANXMJDHHUHYEARQXRKKUEJGNOABIXRPQVDZKGPRZWTFMOVXCIUEJGNQEMNERPJUCOXJQVSIKGJXPFQHVXCIFKJVTGPRZWDANXYLYIDJDANXYIQJKZEHVPEMHUHACAQVDZFBQJKZEHMIUJRPYIDJDANXYIQJKZEHVPEMHUHACAUBCPTGZFQJKZEHNZPFQHHUCDFKJFHACAFKJVPRYVZJSIKGMLUJQJLLJFMIUJUWQJKZEHNZPFQHEARQXRKKSZYUJXPFQHDANXQCHACAHSKKXKUJCARXKMHEAKFKJVUWQJKZEHFKHACAPCNRTGVXCITFMOSEDPLXUJTGPRZWUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCISEDPTGPRZWDANXDPLLJFFKHACAUBCPTGZFQJKZEHNZPFQHHUCDFKJFHACAFKJVPRYVZJSIKGMLUJQJLLJFMIUJUWQJKZEHTTDHHUHYEARQXRKKSZYUMLUJTGPRZWHSKKXKUJCARXZWHACAFKJVLXUJPKHACAEARQXRKKVXCIUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCIKTVUMOSTRPJUUEJGFFSIKGQNJILXUJCSYIMOZWHACAEARQXRKKVXCIRXENUEJGAIYVKMHEAKRXENUEJGAIYVKMHEAKUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCICOXJMUHEAKEARQXRKKDJGXQVDZXKHEAKRXENTDTDCIEFYTHEAKFPRIUEJGDAXMQCHACACOXJSRRPJUFKJVLXUJLXUJUGDHHUHYEARQXRKKSZYUMLUJTGPRZWHSKKXKUJCARXZWHACAFKJVLXUJPKHACAEARQXRKKVXCICOXJMUHEAKEARQXRKKDJGXQVDZTTDHHUHYEARQXRKKSZYUMLUJTGPRZWHSKKXKUJCARXZWHACAFKJVLXUJIOABIXRPQVDZFWXKWPYIDJFKJVPKHACACOXJLFOOEDUJTGPRZWQVDZKGPRZWQVDZHYYVQZUJPKHACAUBCPTGZFQJKZEHORJUCOVXCIFKJVQVSIKGXBAKNKSIQVDZKGPRZWVXCIEARQXRKKQVDZSVLLJFMIUJPRYVWTXKYWVXCIFKJVLFOOEDUJTGPRZWQVDZEPRVSMGCCIEFRXPFQHHSKKXKFPRIVXCIWBNGQZUJCARXJUXMQCHACAHSKKXKVXCIUJCARXRSDHHUHYFKJVEMXMVJYIMOWTXKYWFKJVMUHEAKUJCARXQZUJAB
+~~~
+
+##### chall.py
+
+~~~
+import random
+import re
+
+flag = "lactf{REDACTED}"
+bigrams = [chr(65+i//26)+chr(65+i%26) for i in range(26**2)]
+sub_bigrams = random.sample(bigrams, len(bigrams))
+phonetic_map = {"A":"ALPHA","B":"BRAVO","C":"CHARLIE","D":"DELTA","E":"ECHO","F":"FOXTROT","G":"GOLF","H":"HOTEL","I":"INDIA","J":"JULIETT","K":"KILO","L":"LIMA","M":"MIKE","N":"NOVEMBER","O":"OSCAR","P":"PAPA","Q":"QUEBEC","R":"ROMEO","S":"SIERRA","T":"TANGO","U":"UNIFORM","V":"VICTOR","W":"WHISKEY","X":"XRAY","Y":"YANKEE","Z":"ZULU","_":"UNDERSCORE","{":"OPENCURLYBRACE","}":"CLOSECURLYBRACE","0":"ZERO","1":"ONE","2":"TWO","3":"THREE","4":"FOUR","5":"FIVE","6":"SIX","7":"SEVEN","8":"EIGHT","9":"NINE"}
+
+def phonetic_mapping(ptext):
+    cleanptext = re.sub(r'[^a-zA-Z0-9_{}]', '', ptext).upper()
+    mapped = "".join([phonetic_map[c] for c in cleanptext])
+    if (len(mapped) % 2 == 1):
+        mapped += "X"
+    return mapped
+
+def encryption(ptext):
+    cleanptext = re.sub(r'[^a-zA-Z]', '', ptext).upper()
+    ctext = "".join([sub_bigrams[bigrams.index(cleanptext[i*2:(i+1)*2])] for i, _ in enumerate(cleanptext[::2])])
+    return ctext
+
+def decryption(ctext):
+    return "".join([bigrams[sub_bigrams.index(ctext[i*2:(i+1)*2])] for i, _ in enumerate(ctext[::2])])
+
+pt = phonetic_mapping(phonetic_mapping(flag))
+ct = encryption(pt)
+print(ct)
+
+with open("ct.txt", "wb") as file:
+    file.write(ct)
+~~~
+
+### Automated Efforts
+
+My initial efforts were to create an automated decryptor. I knew that I could manually reverse the cipher, but I was reluctant to spend that much time on it without first trying a simpler solution. As such, I tried creating a decryptor based on frequency analysis and hill climbing. However, I quickly dismissed this solution as fruitless. The title implied a simpler solution, and my prototype provided very little information.
+
+### A Manual Approach
+
+With my automated solution failing, I turned my attention to a more manual approach. Due to the rules, I knew that all flags fit the format of lactf{.*}. Due to having the encryption algorithm, I knew that this was a substitution cipher. Even more importantly, I knew that reversing the bigram encryption would result in one of 39 words from the phonetic alphabet. As such, I knew that the reversed bigrams should read "LIMAINDIAMIKEALPHAALPHALIMAPAPAHOTELALPHACHARLIEHOTELALPHAROMEOLIMAINDIAECHOTANGOALPHANOVEMBERGOLFOSCARFOXTROTOSCARXRAYTANGOROMEOOSCARTANGO". Similar to how the Enigma Machine was cracked, knowing that the plaintext would fit this pattern made decryption substantially easier. I could substitute in bigrams to ensure such a decryption for the known portion.
+
+~~~
+cipher_to_plain = {'RX': 'LI', 'EN': 'MA', 'UE': 'IN', 'JG': 'DI', 'AI': 'AM', 'YV': 'IK', 'KM': 'EA', 'HE': 'LP', 'AK': 'HA', 'DA': 'AL', 'NX': 'PH', 'XM': 'IM', 'MC': 'AP', 'ZA': 'AH', 'RP': 'OT', 'JU': 'EL', 'XB': 'AC', 'NK': 'RL', 'SI': 'IE', 'CI': 'HO', 'EF': 'TE', 'YT': 'LA', 'FK': 'RO', 'JV': 'ME', 'EM': 'OL', 'JX': 'AI', 'PF': 'ND', 'QH': 'IA', 'VX': 'EC', 'CO': 'TA', 'XJ': 'NG', 'MU': 'OA', 'EA': 'NO', 'RQ': 'VE', 'XR': 'MB', 'KK': 'ER', 'DJ': 'GO', 'GX': 'LF', 'QV': 'OS', 'DZ': 'CA', 'JW': 'RF', 'AB': 'OX', 'IX': 'TR', 'FW': 'RX', 'XK': 'RA', 'WP': 'YT', 'YI': 'AN', 'PK': 'OO', 'HA': 'SC', 'CA': 'AR'}
+~~~
+
+Here are my initial mappings and the decrypted results. The values in the left are the ciphertext bigrams while the values on the right of each pair are the plaintext bigrams. To simplify my future efforts, I placed each not-decoded ciphertext bigram in '-{..}-'. This made them much easier to spot and add to the dictionary.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step1.png)
+
+### Low Hanging Fruit
+
+With that done, I looked at the translated code to find more low-hanging fruit. I saw a section containing "NOVEMBER-{UJ}-ARLI-{RS}-". The incomplete word had to be "CHARLIE" as the pattern did not fit any other options in the phonetic alphabet. As such, I could substitute UJ for CH and RS for E?. The question mark served as a reminder to myself that I was uncertain regarding the second letter in the bigram. This allowed me to complete words where possible, without worrying about what the preceding/following word was.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step2.png)
+
+The string "-{TD}--{TD}-" appeared multiple times. There was only one word in the phonetic alphabet that was 4 letters long with the first and second halves being identical: "PAPA". As such, I could substitute TD for PA. Also, the string "INDI-{NO}-OXTROT" clearly meant INDIA FOXTROT, allowing me to map NO.
+
+By this point, the starting decrypted portion translated to "LIMAINDIAMIKEALPHAALPHALIMAPAPAHOTELALPHACHARLIEHOTELALPHAROMEOLIMAINDIAECHOTANGOALPHANOVEMBERGOLFOSCARFOXTROTOSCARXRAYTANGOROMEOOSCARTANGOOSCARPAPAECHONOVEMBERCHARLIE". If I reversed the phonetic alphabet once, I got "LIMAALPHACHARLIETANGOFOXTROTOPENC". The next word was probably "OPENCURLYBRACE". As such, the word after CHARLIE should be UNCLE (yeah... I'll come back to this). Based on that, I set up some mappings: RS -> EU, DH -> NC, HU -> LE. The next part should be ROMEOLIMAYANKEE, which was successfully decrypted. However, the next part was actually "-{HY}-ROMEOLIM-{VJ}-AN-{MO}--{WT}-". The HY bigram indicated a problem, since the preceding and following words started and ended cleanly and none of the possible decryptions were two letters. However, I decided to ignore it at this point. After all, most of the text was translating properly. Therefore, I assumed VJ -> AY, MO -> KE, and WT -> E?. Just like a jigsaw puzzle, I was working my way inwards from the edges.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step5.png)
+
+### Filling in the Gaps
+
+At this point, I kept chugging away at completing partials words. Based on "OSCA-{TT}-NCLE", TT mapped to RU. "INDIA-{TF}-KEALPHA" should have MIKE in it since it is the only 4 letter word ending in KE. As such, TF mapped to MI. "-{OR}-ELTAECHOROMEOSIE-{KG}-ACHARLIE" probably read "DELTA ECHO ROMEO SIERRA CHARLIE". As such, OR -> ?D and KG -> RR. "CHARLI-{QZ}-CHO" probably read "CHARLIE ECHO" so QZ -> EE. "-{HS}-ERRACHARLI-{ZW}-SCAR" probably read "SIERRA CHARLIE OSCAR". As such, I could map HS -> SI and ZW -> EO. "CHARLIEOSCARR-{PR}-EOECHO" probably read "CHARLIE OSCAR ROMEO ECHO" so PR -> OM. "ROME-{LX}-CHOOSCAR" probably read "ROMEO ECHO OSCAR" so LX -> OE. "LIM-{QC}-SCAR" probably read "LIMA OSCAR" so QC -> AO. I know that the description reads like the very repetitive ramblings of a madman or an overly-complex crossword puzzle. However, that's basically what this process was as I went word by word, filling in gaps to complete what I could.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step13.png)
+
+Anyway, I next turned my attention to "YANKEE?RA-{YW}-ROMEO". Only one word had 5 letters with RA in the center: BRAVO. As such, I replaced the question mark with B and mapped YW -> VO. "-{MI}-CHO" meant that the bigram ended with E. By similar means, "-{CS}-ANKEE" had to end with Y, and "ROME-{UW}-" had to start with O. "ROME-{TG}-OMEOALPH-{MJ}-NCLE" probably read "ROMEO ROMEO ALPHA UNCLE". As such, I mapped TG -> OR and MJ -> AU. "ALPHAN-{QJ}--{KZ}--{EH}--{VP}-OL" probably read "ALPHA NOVEMBER GOLF". As such, QJ -> OV, KZ -> EM, EH -> BE, VP -> RG. With that, I now saw strings like "ROMEO?OVEMBEROSCAR" which allowed me to replace the ?O with NO. When I looked at "OSCAR-{PC}--{NR}-ORECHO", I quickly realized that the the missing word was VICTOR since it was the only 6 letter word that ended in OR. This gave me two new mappings: PC -> VI and NR -> CT.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step18.png)
+
+"ALPH-{YL}-ANGO" allowed me to map YL -> AT, and "VEMBE-{NZ}-NDIA" led me to map NZ -> RI. "MIK-{ZJ}-IERR-{ML}-CHO" led me to map ZJ -> ES and ML -> AE. "-{ZF}-OVEMBE?DELTA" meant that I could replace ? with R and partially map ZF to ?N. "ECHO-{WB}--{NG}-EECHARLIE" had 4 missing letters which clearly corresponded to YANKEE, as it was the only word of sufficient length that ended with a double E. "OSCA-{FB}-OVEMBE?E" looked like OSCAR NOVEMBER to me, allowing me to complete those mappings. "ECHOV-{LL}--{JF}-RECHO" contained VICTOR, allowing me to add those mappings. "ROME-{LF}-" meant that LF ended in O, and "-{ED}-CHO" meant that ED started with E. "ALPH-{DP}-ICTOR" allowed me to map DP -> AV. With that done, I could use strings like "ECHO-{SE}-AVOROMEO" to map SE -> BR. "INDI-{FF}-IERR-{QN}-" allowed me to map FF -> AS and QN -> A?. "TANG-{SR}-OTEL" let me map SR -> OH. "ALPHA-{UB}--{CP}-OR?NOVEMBER" required a 7-letter word with OR towards the end. I decided that UNIFORM was the most likely option (I'll come back to this). "UNIFOR-{TZ}-OMEO" let me map TZ -> MR. "-{IO}-OXTROT" meant that IO -> ?F. "TANG?E" let me replace the question mark in that mapping with an O. "INDI-{NQ}-OL-{NE}-OTEL" was an interesting string. NQ clearly started with A, and NE ended with H. Then, I needed a 4-letter word with OL at the center, leading me to GOLF. "OSCA-{SV}-ICTOR" meant SV -> RV. "ECHO-{KT}--{VU}-KE-{ST}-OTELINDIA" was another interesting word. ST ended in H, meaning that the unknown word had to be 7 letters long with KE in the center. Only WHISKEY fit those requirements.
+
+![image alt >< 80-tall](./assets/lazy-bigrams-step34.png)
+
+### Correcting Mistakes
+At this point, I was noticing certain issues. Primarily, UNCLE was always followed by {HY}. I had strings like "LE-{CD}-ROT" with the LE coming from a mapping for UNCLE when the string should have been "FO-{CD}-ROT". Otherwise, the string did not match any of the phonetic words. Much to my annoyance, this is when I remembered that UNCLE doesn't exist in the phonetic alphabet. I do not know why I thought that it did. As such, I began making the necessary changes. For example, "UNCLE-{HY}-" obviously referred to UNIFORM.
+
+Also, I had a recurring problem string in the form of "BRAVEOCHOROMEO". When I reversed the preceding portion, I got NOVEM which meant that this should be BRAVO ECHO ROMEO to finish off the word. However, I had made a mistake somewhere along the way. In addition, I realized that I had mistakenly mapped both ZW and LX in the ciphertext to EO. I quickly fixed the mapping for LX, solving this problem.
+
+### Last Few Pieces
+Next, I wanted to solve "ROMEO-{EI}--{LN}-ECHO". However, I didn't have any letters from those words to use. As such, I reversed the surrounding text that I had decrypted to arrive at "NOVEMBER?EROTANGO". Only one option in the phonetic alphabet fit this pattern: ZERO. Since I knew that the ciphertext had to translate to ZULU, I was able to map EI and LN.
+
+![image alt >< 80](./assets/lazy-bigrams-step38.png)
+
+I used the same trick to figure out "NOVEMBER-{SZ}--{YU}-AECHO" since too many 5-letter words ended in A. The decrypted text was "TANGOUN?ERSCOREROMEO". I decided that this translated to UNDERSCORE and set the mappings for DELTA.
+
+Then, I decided to clean up some of the question marks. For "ECHOECH?FOXTROT", I decided that IO mapped to OF. For "ECH?YANKEE", I decided that CS mapped to OY. For "?CHOROMEO", I decided that ED mapped to EE. With most of the question marks removed, I decided to move along. "NOVEMBERECH-{PG}-OLFOSCAR" meant that PG mapped to OG. To decrypt "NOVEMBER-{FP}--{RI}-ECHO", I once again checked the surrounding plaintext which read "LIMALIMAYAN?EEUNDERSCORE". Since that clearly corresponded to YANKEE, I knew that FP -> KI and RI -> LO. I did the same thing for "INDIA?-{JI}-OECH?UNIFORM" whose surrounding plaintext read "ROMEOFOURMI??UNDERSCORESIERRA". I decided to assume that the plaintext should be MIKE. As such, I set up the mappings for KILO and ECHO.
+
+![image alt >< 80](./assets/lazy-bigrams-step43.png)
+
+My next goal was to decrypt OO. Continuing with the plaintext approach, the surrounding plaintext for "TANGOE-{OO}-EECHO" was "FOXTROT?EROROMEO". This looked like ZERO to me. However, that meant the characters to either side were wrong. While I was initially hesitant, I realized that both OE and EE were the result of two mappings. Since I knew the encryption algorithm, I knew that this meant they were wrong. Since I had settled on them later and in the same step, my first test was to check whether the LF and ED mappings were wrong, which proved correct. As such, I changed the mappings to insert ZULU.
+
+I was down to the last 4 bigrams, all of whom appeared only once and all sequentially. From "ROMEOOSCA-{EP}-", I decided that EP began with R. As such, I knew that I needed a 7-letter word. Then, I translated the surrounding plaintext which read "NOVEMBERZERO?HISKEYCLOSECURLYBRACE". That looked like WHISKEY to me with the W missing, which meant that I was missing the mappings for WHISKEY too.
+
+![image alt >< 80](./assets/lazy-bigrams-step45.png)
+
+Then, I removed the X at the very end of string. Based on the encryption algorithm, this X served the role of padding to ensure that there was an even number of characters for the bigrams. Finally, I called the phonetic reverser on the decrypted plaintext twice to obtain the flag. Since the instructions said the flag would be lowercase, I just added a lower to the script. I had the flag.
+
+![image alt >< 80](./assets/lazy-bigrams-step47.png)
+
+### Solution Script
+
+~~~
+# --- Set up ---
+# Borrowed from challenge code
+bigrams = [chr(65+i//26) + chr(65+i%26) for i in range(26**2)]
+phonetic_map = {
+    "A":"ALPHA","B":"BRAVO","C":"CHARLIE","D":"DELTA","E":"ECHO",
+    "F":"FOXTROT","G":"GOLF","H":"HOTEL","I":"INDIA","J":"JULIETT",
+    "K":"KILO","L":"LIMA","M":"MIKE","N":"NOVEMBER","O":"OSCAR",
+    "P":"PAPA","Q":"QUEBEC","R":"ROMEO","S":"SIERRA","T":"TANGO",
+    "U":"UNIFORM","V":"VICTOR","W":"WHISKEY","X":"XRAY","Y":"YANKEE",
+    "Z":"ZULU",
+    "_":"UNDERSCORE","{":"OPENCURLYBRACE","}":"CLOSECURLYBRACE",
+    "0":"ZERO","1":"ONE","2":"TWO","3":"THREE","4":"FOUR",
+    "5":"FIVE","6":"SIX","7":"SEVEN","8":"EIGHT","9":"NINE"
+}
+# Reverse the phonetic dictionary
+rev_phonetic = {v: k for k, v in phonetic_map.items()}
+phonetic_words = sorted(rev_phonetic, key=len, reverse=True)
+
+# --- Load ciphertext ---
+
+with open("ct.txt", "r") as f:
+    ct = f.read().strip()
+
+cipher_bigrams = [ct[i:i+2] for i in range(0, len(ct), 2)]
+
+# --- My manual mappings ---
+
+cipher_to_plain = {'RX': 'LI', 'EN': 'MA', 'UE': 'IN', 'JG': 'DI', 'AI': 'AM', 'YV': 'IK', 'KM': 'EA', 'HE': 'LP', 'AK': 'HA', 'DA': 'AL', 'NX': 'PH', 'XM': 'IM', 'MC': 'AP', 'ZA': 'AH', 'RP': 'OT', 'JU': 'EL', 'XB': 'AC', 'NK': 'RL', 'SI': 'IE', 'CI': 'HO', 'EF': 'TE', 'YT': 'LA', 'FK': 'RO', 'JV': 'ME', 'EM': 'OL', 'JX': 'AI', 'PF': 'ND', 'QH': 'IA', 'VX': 'EC', 'CO': 'TA', 'XJ': 'NG', 'MU': 'OA', 'EA': 'NO', 'RQ': 'VE', 'XR': 'MB', 'KK': 'ER', 'DJ': 'GO', 'GX': 'LF', 'QV': 'OS', 'DZ': 'CA', 'JW': 'RF', 'AB': 'OX', 'IX': 'TR', 'FW': 'RX', 'XK': 'RA', 'WP': 'YT', 'YI': 'AN', 'PK': 'OO', 'HA': 'SC', 'CA': 'AR', 'UJ': 'CH', 'RS': 'EU', 'TD': 'PA', 'NO': 'AF', 'DH': 'NI', 'HU': 'FO', 'VJ': 'AY', 'MO': 'KE', 'WT': 'EB', 'TT': 'RU', 'TF': 'MI', 'OR': 'RD', 'KG': 'RR', 'QZ': 'EE', 'HS': 'SI', 'ZW': 'EO', 'PR': 'OM', 'LX': 'OE', 'QC': 'AO', 'YW': 'VO', 'MI': 'RE', 'CS': 'OY', 'UW': 'ON', 'TG': 'OR', 'MJ': 'AU', 'QJ': 'OV', 'KZ': 'EM', 'EH': 'BE', 'VP': 'RG', 'PC': 'VI', 'NR': 'CT', 'YL': 'AT', 'NZ': 'RI', 'ZJ': 'ES', 'ML': 'AE', 'ZF': 'MN', 'WB': 'YA', 'NG': 'NK', 'FB': 'RN', 'LL': 'IC', 'JF': 'TO', 'LF': 'OZ', 'ED': 'UE', 'DP': 'AV', 'SE': 'BR', 'FF': 'AS', 'QN': 'AK', 'SR': 'OH', 'UB': 'UN', 'CP': 'IF', 'TZ': 'MR', 'IO': 'OF', 'NQ': 'AG', 'NE': 'FH', 'SV': 'RV', 'KT': 'WH', 'VU': 'IS', 'ST': 'YH', 'HY': 'RM', 'CD': 'XT', 'EI': 'ZU', 'LN': 'LU', 'SZ': 'DE', 'YU': 'LT', 'PG': 'OG', 'FP': 'KI', 'RI': 'LO', 'UG': 'OU', 'JI': 'IL', 'OO': 'UL', 'EP': 'RW', 'RV': 'HI', 'SM': 'SK', 'GC': 'EY'}
+
+# --- Propagate mappings deterministically ---
+
+changed = True
+while changed:
+    changed = False
+
+    # Build partial plaintext 
+    partial = []
+    for cb in cipher_bigrams:
+        if cb in cipher_to_plain:
+            partial.append(cipher_to_plain[cb])
+        else:
+            partial.append("??")
+
+    partial = "".join(partial)
+
+    # Look for phonetic words aligned on bigram boundaries
+    for word in phonetic_words:
+        wlen = len(word)
+        for i in range(0, len(partial) - wlen + 1, 2):
+            segment = partial[i:i+wlen]
+            if "?" in segment:
+                continue
+            if segment == word:
+                # Map corresponding bigrams
+                for j in range(0, wlen, 2):
+                    cb = cipher_bigrams[(i+j)//2]
+                    pb = word[j:j+2]
+                    if cb not in cipher_to_plain:
+                        cipher_to_plain[cb] = pb
+                        changed = True
+
+# --- Full decryption based on mappings ---
+
+decrypted = []
+for cb in cipher_bigrams:
+    decrypted.append(cipher_to_plain.get(cb, "-{"+cb+"}-"))
+
+phonetic_text = "".join(decrypted)
+
+print("[+] Recovered text:")
+print(phonetic_text)
+print("===============")
+print()
+
+# --- Reverse phonetic translation ---
+# Modified version of the provided phonetic translation function
+
+def reverse_phonetic(s):
+    out = []
+    i = 0
+    while i < len(s):
+        for w in phonetic_words:
+            if s.startswith(w, i):
+                out.append(rev_phonetic[w])
+                i += len(w)
+                break
+        else:
+            raise ValueError("Unparsable phonetic stream")
+    return "".join(out)
+    
+"""
+# Temporary translation for decryption purposes
+print(reverse_phonetic('LIMAINDIAMIKEALPHAALPHALIMAPAPAHOTELALPHACHARLIEHOTELALPHAROMEOLIMAINDIAECHOTANGOALPHANOVEMBERGOLFOSCARFOXTROTOSCARXRAYTANGOROMEOOSCARTANGOOSCARPAPAECHONOVEMBERCHARLIEUNIFORMROMEOLIMAYANKEEBRAVOROMEOALPHACHARLIEECHONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOZULUECHOROMEOOSCARTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOROMEOOSCARMIKEECHOOSCARTANGOHOTELROMEOECHOECHOFOXTROTOSCARUNIFORMROMEOLIMAINDIAMIKEALPHALIMAINDIAMIKEALPHAYANKEEALPHANOVEMBERKILOECHOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOFOXTROTOSCARUNIFORMROMEOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOBRAVOROMEOALPHAVICTOROSCAROSCARNOVEMBERECHOGOLFOSCARLIMAFOXTROTROMEOOSCARMIKEECHOOSCARFOXTROTOSCARUNIFORMROMEOMIKEINDIAKILOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOSIERRAINDIAECHOROMEOROMEOALPHAUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKEECHOINDIAGOLFHOTELTANGOSIERRAINDIAECHOROMEOROMEOALPHATANGOALPHANOVEMBERGOLFOSCAROSCARNOVEMBERECHOTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKESIERRAECHOVICTORECHONOVEMBERINDIANOVEMBERDELTAINDIAALPHAOSCARSIERRACHARLIEALPHAROMEONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOBRAVOROMEOALPHAVICTOROSCARUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKESIERRAECHOVICTORECHONOVEMBERUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOOSCARNOVEMBERECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOWHISKEYHOTELINDIASIERRAKILOECHOYANKEEOSCARNOVEMBERECHOLIMAINDIAMIKEALPHALIMAINDIAMIKEALPHAUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOTANGOALPHANOVEMBERGOLFOSCARALPHALIMAPAPAHOTELALPHAKILOINDIALIMAOSCARTANGOHOTELROMEOECHOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOOSCARNOVEMBERECHOTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOFOXTROTOSCARXRAYTANGOROMEOOSCARTANGOZULUECHOROMEOOSCARROMEOOSCARMIKEECHOOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOZULUECHOROMEOOSCAR'))
+print("-----------")
+print(reverse_phonetic('HOTELINDIASIERRAKILOECHOYANKEECHARLIELIMAOSCARSIERRAECHOCHARLIEUNIFORMROMEOLIMAYANKEEBRAVOROMEOALPHACHARLIEECHO'))
+"""
+
+# Copy-pasted decrypted value
+solution = "LIMAINDIAMIKEALPHAALPHALIMAPAPAHOTELALPHACHARLIEHOTELALPHAROMEOLIMAINDIAECHOTANGOALPHANOVEMBERGOLFOSCARFOXTROTOSCARXRAYTANGOROMEOOSCARTANGOOSCARPAPAECHONOVEMBERCHARLIEUNIFORMROMEOLIMAYANKEEBRAVOROMEOALPHACHARLIEECHONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOZULUECHOROMEOOSCARTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOROMEOOSCARMIKEECHOOSCARTANGOHOTELROMEOECHOECHOFOXTROTOSCARUNIFORMROMEOLIMAINDIAMIKEALPHALIMAINDIAMIKEALPHAYANKEEALPHANOVEMBERKILOECHOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOFOXTROTOSCARUNIFORMROMEOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOBRAVOROMEOALPHAVICTOROSCAROSCARNOVEMBERECHOGOLFOSCARLIMAFOXTROTROMEOOSCARMIKEECHOOSCARFOXTROTOSCARUNIFORMROMEOMIKEINDIAKILOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOSIERRAINDIAECHOROMEOROMEOALPHAUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKEECHOINDIAGOLFHOTELTANGOSIERRAINDIAECHOROMEOROMEOALPHATANGOALPHANOVEMBERGOLFOSCAROSCARNOVEMBERECHOTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKESIERRAECHOVICTORECHONOVEMBERINDIANOVEMBERDELTAINDIAALPHAOSCARSIERRACHARLIEALPHAROMEONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOBRAVOROMEOALPHAVICTOROSCARUNIFORMNOVEMBERINDIAFOXTROTOSCARROMEOMIKESIERRAECHOVICTORECHONOVEMBERUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOOSCARNOVEMBERECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOWHISKEYHOTELINDIASIERRAKILOECHOYANKEEOSCARNOVEMBERECHOLIMAINDIAMIKEALPHALIMAINDIAMIKEALPHAUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOTANGOALPHANOVEMBERGOLFOSCARALPHALIMAPAPAHOTELALPHAKILOINDIALIMAOSCARTANGOHOTELROMEOECHOECHOUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOOSCARNOVEMBERECHOTANGOALPHANOVEMBERGOLFOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHOFOXTROTOSCARXRAYTANGOROMEOOSCARTANGOZULUECHOROMEOOSCARROMEOOSCARMIKEECHOOSCARUNIFORMNOVEMBERDELTAECHOROMEOSIERRACHARLIEOSCARROMEOECHONOVEMBEROSCARVICTORECHOMIKEBRAVOECHOROMEOZULUECHOROMEOOSCARWHISKEYHOTELINDIASIERRAKILOECHOYANKEECHARLIELIMAOSCARSIERRAECHOCHARLIEUNIFORMROMEOLIMAYANKEEBRAVOROMEOALPHACHARLIEECHO"
+once = reverse_phonetic(solution)
+twice = reverse_phonetic(once)
+print(twice.lower())
+~~~
+
+### Solution
+
+**Flag:** lactf{n0t_r34lly_4_b1gr4m_su8st1tu7ion_bu7_1_w1ll_tak3_1t_f0r_n0w}
+
+`
