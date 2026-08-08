@@ -3,8 +3,8 @@ optimizedsearch_text=`
 ###### By Daniel Moreno
 ###### Algorithms · 8 min read · Dec 6, 2024
 ---
-![image alt ><](https://easy-networksgh.com/wp-content/uploads/2024/08/website-performance-optimization.png)
- *Source: https://easy-networksgh.com/product/performance-optimization/* 
+![image alt ><](./assets/performance.png)
+ *Source: https://www.linkedin.com/pulse/systems-performance-optimization-netopia-solutions-okmse* 
 
 Greetings and permutations everyone. In this article, I'm going to cover the specific details of optimizing the algorithms that you saw in the [post about designing fuzzy search algorithms](./blogpage.html?page=searchalgorithms). As I mentioned there, I have found blog posts to be invaluable resources, and I want to provide the same service to someone else. This post will be broken up into several stages based on the order in which I tried different optimization techniques.
 

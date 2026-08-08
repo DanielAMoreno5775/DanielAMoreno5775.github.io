@@ -3,10 +3,10 @@ aiopinionpiece_text=`
 ###### By Daniel Moreno
 ###### AI · 13 min read · Mar 8, 2026
 ---
-![image alt ><](https://easy-networksgh.com/wp-content/uploads/2024/08/website-performance-optimization.png)
- *Source: https://easy-networksgh.com/product/performance-optimization/* 
+![image alt ><](./assets/ai_brain.jpeg)
+ *Source: https://www.ibm.com/think/topics/artificial-intelligence* 
 
-Greetings and permutations everyone. In the past month or two, I've been asked my opinion on AI with regards to STEM a few times now. As such, I decided to write a quick piece on my opinion for future reference. No doubt this will age like milk. However, I still think that it is worth it for myself to put my thoughts to paper (or at least the digital equivalent).
+Greetings and permutations everyone. In the past month or two, I've been asked my opinion on AI with regards to STEM a few times now. As such, I decided to write a quick piece on my opinion for future reference. No doubt this will age like milk. However, I still think that it is worth it for myself to put my thoughts to paper (or at least the digital equivalent). Also, check out my [follow-up post](./blogpage.html?page=aiopinionpiece2) for a few more thoughts on some of the other questions.
 
 **Caveat**: My current job involves training enterprise-scale LLMs. Over the past few years, I have helped make certain LLMs better at programming, data science, and CTFs. This definitely colors my perspective.
 
